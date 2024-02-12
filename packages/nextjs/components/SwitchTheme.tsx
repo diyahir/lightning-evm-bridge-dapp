@@ -11,7 +11,7 @@ export const SwitchTheme = ({ className }: { className?: string }) => {
 
   useEffect(() => {
     const body = document.body;
-    body.setAttribute("data-theme", isDarkMode ? "scaffoldEthDark" : "scaffoldEth");
+    body.setAttribute("data-theme", isDarkMode ? "customDark" : "scaffoldEth");
   }, [isDarkMode]);
 
   return (

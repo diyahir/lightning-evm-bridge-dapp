@@ -1,58 +1,102 @@
-import Link from "next/link";
+"use client";
+
+import { useState } from "react";
+// import { QrScanner } from "@yudiel/react-qr-scanner";
+import { PaymentRequestObject, decode } from "bolt11";
 import type { NextPage } from "next";
-import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { useAccount, useWalletClient } from "wagmi";
+import { useAccountBalance, useScaffoldContract } from "~~/hooks/scaffold-eth";
 
 const Home: NextPage = () => {
+  const { address } = useAccount();
+  const { balance } = useAccountBalance(address);
+
+  // function handleScan(data: any) {
+  //   console.log("Scanning", data);
+  //   console.log("Scanning", data);
+  //   const decoded = decode(data);
+  //   console.log(decoded);
+  // }
+  // function handleError(err: any) {
+  //   console.error(err);
+  // }
+  const { data: walletClient } = useWalletClient();
+
+  const { data: yourContract } = useScaffoldContract({
+    contractName: "HashedTimelock",
+    walletClient,
+  });
+
+  function convertToHex(str: string) {
+    let hex = "0x";
+    for (let i = 0; i < str.length; i++) {
+      hex += "" + str.charCodeAt(i).toString(16);
+    }
+    return hex;
+  }
+
+  const [invoice, setInvoice] = useState<string>("");
+  const [decoded, setDecoded] = useState<PaymentRequestObject | null>(null);
+
+  console.log(decoded);
+
+  function handleInvoiceChange(invoice: string) {
+    try {
+      setInvoice(invoice);
+      const tempdecoded = decode(invoice);
+      setDecoded(tempdecoded);
+      console.log(tempdecoded);
+      console.log(convertToHex("secret"));
+      if (!yourContract) return;
+      if (!tempdecoded.satoshis) return;
+      yourContract?.write.newContract(
+        [
+          "0x0f82D24134bDE2e536B801B26F120B8F60f54a9f",
+          "0x68e62910041415a8cbb5fb9a61d389812707693a40027dd2220c49aad06d0cfe",
+          BigInt(tempdecoded.satoshis),
+        ],
+        {
+          value: BigInt(tempdecoded.satoshis),
+        },
+      );
+    } catch (e) {
+      console.error(e);
+      setDecoded(null);
+    }
+  }
+
   return (
     <>
-      <div className="flex items-center flex-col flex-grow pt-10">
+      <div className="flex justify-center flex-col flex-grow pt-10">
         <div className="px-5">
           <h1 className="text-center mb-8">
-            <span className="block text-2xl mb-2">Welcome to</span>
-            <span className="block text-4xl font-bold">Scaffold-ETH 2</span>
+            <span className="block text-4xl font-bold">
+              {balance ? `${(balance * 100_000_000).toLocaleString()} SATS` : "Loading Balance..."}
+            </span>
           </h1>
-          <p className="text-center text-lg">
-            Get started by editing{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/nextjs/app/page.tsx
-            </code>
-          </p>
-          <p className="text-center text-lg">
-            Edit your smart contract{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              YourContract.sol
-            </code>{" "}
-            in{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/hardhat/contracts
-            </code>
-          </p>
         </div>
 
-        <div className="flex-grow bg-base-300 w-full mt-16 px-8 py-12">
-          <div className="flex justify-center items-center gap-12 flex-col sm:flex-row">
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <BugAntIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Tinker with your smart contract using the{" "}
-                <Link href="/debug" passHref className="link">
-                  Debug Contract
-                </Link>{" "}
-                tab.
-              </p>
-            </div>
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <MagnifyingGlassIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Explore your local transactions with the{" "}
-                <Link href="/blockexplorer" passHref className="link">
-                  Block Explorer
-                </Link>{" "}
-                tab.
-              </p>
-            </div>
+        {/* Wallet Section */}
+        <div className="wallet w-full py-8">
+          <div className="flex justify-center gap-4 mt-6">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Invoice"
+              value={invoice}
+              onChange={e => handleInvoiceChange(e.target.value)}
+            />
+            <button className="btn btn-primary">Send</button>
+            <button className="btn btn-secondary">Receive</button>
           </div>
         </div>
+
+        {/* <QrScanner
+          scanDelay={1}
+          onError={handleError}
+          onResult={result => handleScan(result)}
+          onDecode={result => handleScan(result)}
+        /> */}
       </div>
     </>
   );
