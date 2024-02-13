@@ -113,4 +113,23 @@ contract HashedTimelockTest is Test {
         // Verify sender's balance has been refunded
         assertEq(sender.balance, amount);
     }
+
+    function testManualHash() public {
+        bytes32 contractHash = 0xa36d62e7aebf5a543c54f0b28798abfd700d66521c28807662d191d21df23af5;
+        bytes32 preImage = 0x1030b9418e03a35000a2b4e767470b05f9c655820690fb5a6c2635b180eeebc8;
+
+        bytes32 hash2 = sha256(abi.encodePacked(preImage));
+        assertEq(contractHash, hash2);
+
+        bytes32 contractId = htlc.newContract{value: amount}(
+            receiver,
+            contractHash,
+            timelock
+        );
+
+        vm.stopPrank();
+        vm.startPrank(receiver);
+
+        bool success = htlc.withdraw(contractId, preImage);
+    }
 }
