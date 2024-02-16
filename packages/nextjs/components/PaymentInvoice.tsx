@@ -7,10 +7,12 @@ import { LnPaymentInvoice } from "~~/types/utils";
  */
 type PaymentInvoiceProps = {
   invoice: LnPaymentInvoice;
+  contractId: string | null;
   submitPayment: () => void;
   cancelPayment: () => void;
 };
-export const PaymentInvoice = ({ invoice, submitPayment, cancelPayment }: PaymentInvoiceProps) => {
+
+export const PaymentInvoice = ({ invoice, contractId, submitPayment, cancelPayment }: PaymentInvoiceProps) => {
   const expiryDate = new Date(invoice.timeExpireDate * 1000);
   return (
     <Flex h="100%" flexDir={"column"} justifyContent={"center"} alignContent={"center"}>
@@ -27,6 +29,11 @@ export const PaymentInvoice = ({ invoice, submitPayment, cancelPayment }: Paymen
           <Tr>
             <Td>USD</Td>
             <Td textAlign={"end"}>${invoice.satoshis}</Td>
+          </Tr>
+
+          <Tr>
+            <Td>Contract Id</Td>
+            <Td textAlign={"end"}>{contractId ? contractId : "Pending"}</Td>
           </Tr>
         </Tbody>
       </Table>

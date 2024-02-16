@@ -17,7 +17,7 @@ import { QrScanner } from "@yudiel/react-qr-scanner";
 import { PaymentRequestObject, decode } from "bolt11";
 import { useWalletClient } from "wagmi";
 import { PaymentInvoice } from "~~/components/PaymentInvoice";
-import { useScaffoldContract } from "~~/hooks/scaffold-eth";
+import { useScaffoldContract, useScaffoldEventSubscriber } from "~~/hooks/scaffold-eth";
 import { LnPaymentInvoice } from "~~/types/utils";
 
 type SendModalProps = {
@@ -27,12 +27,24 @@ type SendModalProps = {
 function SendModal({ isOpen, onClose }: SendModalProps) {
   const [invoice, setInvoice] = useState<string>("");
   const [lnInvoice, setLnInvoice] = useState<LnPaymentInvoice | null>(null);
+  const [contractId, setContractId] = useState<string | null>(null);
+  const [txHash, setTxHash] = useState<string | null>(null);
 
   const { data: walletClient } = useWalletClient();
 
   const { data: yourContract } = useScaffoldContract({
     contractName: "HashedTimelock",
     walletClient,
+  });
+
+  useScaffoldEventSubscriber({
+    contractName: "HashedTimelock",
+    eventName: "LogHTLCNew",
+    listener: event => {
+      const tmpContractId = event[0].args.contractId;
+      if (event[0].transactionHash === txHash) return;
+      setContractId(tmpContractId ? tmpContractId.toString() : null);
+    },
   });
 
   function handleScan(data: any) {
@@ -55,12 +67,20 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
   function submitPayment() {
     if (!yourContract) return;
     if (!lnInvoice) return;
-    yourContract.write.newContract(
-      ["0x0f82D24134bDE2e536B801B26F120B8F60f54a9f", lnInvoice.paymentHash, BigInt(lnInvoice.timeExpireDate)],
-      {
-        value: BigInt(lnInvoice.satoshis),
-      },
-    );
+    yourContract.write
+      .newContract(
+        ["0xf89335a26933d8Dd6193fD91cAB4e1466e5198Bf", lnInvoice.paymentHash, BigInt(lnInvoice.timeExpireDate)],
+        {
+          value: BigInt(lnInvoice.satoshis),
+        },
+      )
+      .then(tx => {
+        console.log("txHash", tx);
+        setTxHash(tx);
+      })
+      .catch(e => {
+        console.error(e);
+      });
   }
 
   function handleInvoiceChange(invoice: string) {
@@ -127,9 +147,11 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
               <PaymentInvoice
                 invoice={lnInvoice}
                 submitPayment={submitPayment}
+                contractId={contractId}
                 cancelPayment={() => {
                   setLnInvoice(null);
                   setInvoice("");
+                  setContractId(null);
                 }}
               ></PaymentInvoice>
             )}

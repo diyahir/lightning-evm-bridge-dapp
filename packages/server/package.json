@@ -4,15 +4,22 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "start": "ts-node src/app.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/ws": "^8.5.10",
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@cashu/cashu-ts": "^0.9.0"
+    "@cashu/cashu-ts": "^0.9.0",
+    "bolt11": "^1.4.1",
+    "dotenv": "^16.4.4",
+    "ethers": "^6.11.1",
+    "ln-service": "^57.5.1",
+    "ws": "^8.16.0"
   }
 }
