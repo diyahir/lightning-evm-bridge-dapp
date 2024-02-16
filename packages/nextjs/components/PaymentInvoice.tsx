@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, ButtonGroup, Container, Table, Tbody, Td, Tr } from "@chakra-ui/react";
+import { Button, ButtonGroup, Flex, Table, Tbody, Td, Tr } from "@chakra-ui/react";
 import { LnPaymentInvoice } from "~~/types/utils";
 
 /**
@@ -11,28 +11,33 @@ type PaymentInvoiceProps = {
   cancelPayment: () => void;
 };
 export const PaymentInvoice = ({ invoice, submitPayment, cancelPayment }: PaymentInvoiceProps) => {
+  const expiryDate = new Date(invoice.timeExpireDate * 1000);
   return (
-    <Container>
-      <Table width={"100%"} overflowX={"scroll"}>
+    <Flex h="100%" flexDir={"column"} justifyContent={"center"} alignContent={"center"}>
+      <Table>
         <Tbody>
           <Tr>
             <Td>Expiry Time</Td>
-            <Td textAlign={"end"}>{invoice.timeExpireDate}</Td>
+            <Td textAlign={"end"}>{expiryDate.toLocaleTimeString()}</Td>
           </Tr>
           <Tr>
-            <Td>Payment amount</Td>
+            <Td>Amount</Td>
             <Td textAlign={"end"}>{invoice.satoshis} sats</Td>
+          </Tr>
+          <Tr>
+            <Td>USD</Td>
+            <Td textAlign={"end"}>${invoice.satoshis}</Td>
           </Tr>
         </Tbody>
       </Table>
-      <ButtonGroup colorScheme="red" width={"100%"}>
+      <ButtonGroup my="20%" colorScheme="red" width={"100%"}>
         <Button width={"100%"} onClick={() => cancelPayment()}>
-          Cancel Payment
+          Cancel
         </Button>
         <Button colorScheme="green" width={"100%"} onClick={() => submitPayment()}>
-          Confirm Payment
+          Pay
         </Button>
       </ButtonGroup>
-    </Container>
+    </Flex>
   );
 };
