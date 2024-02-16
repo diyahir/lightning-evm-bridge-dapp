@@ -1,5 +1,6 @@
 import React from "react";
-import { Button, ButtonGroup, Flex, Table, Tbody, Td, Tr } from "@chakra-ui/react";
+import { CopyIcon } from "@chakra-ui/icons";
+import { Button, ButtonGroup, Flex, Icon, Table, Tbody, Td, Tr } from "@chakra-ui/react";
 import { LnPaymentInvoice } from "~~/types/utils";
 
 /**
@@ -30,10 +31,22 @@ export const PaymentInvoice = ({ invoice, contractId, submitPayment, cancelPayme
             <Td>USD</Td>
             <Td textAlign={"end"}>${invoice.satoshis}</Td>
           </Tr>
-
           <Tr>
             <Td>Contract Id</Td>
-            <Td textAlign={"end"}>{contractId ? contractId : "Pending"}</Td>
+            <Td textAlign={"end"}>
+              {contractId ? contractId.substring(0, 10) + "... " : "Pending"}
+              {contractId && (
+                <Button
+                  colorScheme="blue"
+                  size="xs"
+                  onClick={() => {
+                    navigator.clipboard.writeText(contractId || "");
+                  }}
+                >
+                  <Icon as={CopyIcon} />
+                </Button>
+              )}
+            </Td>
           </Tr>
         </Tbody>
       </Table>

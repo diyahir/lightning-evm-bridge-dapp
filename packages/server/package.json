@@ -15,7 +15,6 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@cashu/cashu-ts": "^0.9.0",
     "bolt11": "^1.4.1",
     "dotenv": "^16.4.4",
     "ethers": "^6.11.1",
