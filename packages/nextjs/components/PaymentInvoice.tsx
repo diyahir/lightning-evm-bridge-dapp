@@ -1,6 +1,25 @@
 import React from "react";
 import { CopyIcon } from "@chakra-ui/icons";
-import { Button, ButtonGroup, Flex, Icon, Table, Tbody, Td, Tr } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Flex,
+  Icon,
+  Step,
+  StepDescription,
+  StepIcon,
+  StepIndicator,
+  StepNumber,
+  StepSeparator,
+  StepStatus,
+  StepTitle,
+  Stepper,
+  Table,
+  Tbody,
+  Td,
+  Tr,
+} from "@chakra-ui/react";
 import { LnPaymentInvoice } from "~~/types/utils";
 
 /**
@@ -11,29 +30,47 @@ type PaymentInvoiceProps = {
   contractId: string | null;
   submitPayment: () => void;
   cancelPayment: () => void;
+  step: number;
 };
 
-export const PaymentInvoice = ({ invoice, contractId, submitPayment, cancelPayment }: PaymentInvoiceProps) => {
+export const steps = [
+  { title: "Verify Invoice", description: "Verify the invoice is correct" },
+  { title: "Pay deposit", description: "On-chain invoice locked in smart contract" },
+  {
+    title: "On-chain invoice sent to provider",
+    description: "The invoice id is sent and verified by the lightning provider",
+  },
+  { title: "Paid", description: "The lightning provider pays lightning invoice. The reciever must be online." },
+];
+
+export const PaymentInvoice = ({ invoice, contractId, submitPayment, cancelPayment, step }: PaymentInvoiceProps) => {
   const expiryDate = new Date(invoice.timeExpireDate * 1000);
+
   return (
-    <Flex h="100%" flexDir={"column"} justifyContent={"center"} alignContent={"center"}>
-      <Table>
+    <Flex h="100%" flexDir={"column"} justifyContent={"space-evenly"} alignContent={"space-evenly"}>
+      <Table size={"xs"}>
         <Tbody>
           <Tr>
-            <Td>Expiry Time</Td>
-            <Td textAlign={"end"}>{expiryDate.toLocaleTimeString()}</Td>
+            <Td border="transparent">Expiry Time</Td>
+            <Td border="transparent" textAlign={"end"}>
+              {expiryDate.toLocaleTimeString()}
+            </Td>
           </Tr>
           <Tr>
-            <Td>Amount</Td>
-            <Td textAlign={"end"}>{invoice.satoshis} sats</Td>
+            <Td border="transparent">Amount</Td>
+            <Td border="transparent" textAlign={"end"}>
+              {invoice.satoshis} sats
+            </Td>
           </Tr>
           <Tr>
-            <Td>USD</Td>
-            <Td textAlign={"end"}>${invoice.satoshis}</Td>
+            <Td border="transparent">USD</Td>
+            <Td border="transparent" textAlign={"end"}>
+              ${invoice.satoshis}
+            </Td>
           </Tr>
           <Tr>
-            <Td>Contract Id</Td>
-            <Td textAlign={"end"}>
+            <Td border="transparent">Contract Id</Td>
+            <Td border="transparent" textAlign={"end"}>
               {contractId ? contractId.substring(0, 10) + "... " : "Pending"}
               {contractId && (
                 <Button
@@ -50,11 +87,29 @@ export const PaymentInvoice = ({ invoice, contractId, submitPayment, cancelPayme
           </Tr>
         </Tbody>
       </Table>
-      <ButtonGroup my="20%" colorScheme="red" width={"100%"}>
-        <Button width={"100%"} onClick={() => cancelPayment()}>
+
+      <Stepper index={step} orientation="vertical" height="" gap="0">
+        {steps.map((step, index) => (
+          <Step key={index}>
+            <StepIndicator>
+              <StepStatus complete={<StepIcon />} incomplete={<StepNumber />} active={<StepNumber />} />
+            </StepIndicator>
+
+            <Box>
+              <StepTitle>{step.title}</StepTitle>
+              <StepDescription>{step.description}</StepDescription>
+            </Box>
+
+            <StepSeparator />
+          </Step>
+        ))}
+      </Stepper>
+
+      <ButtonGroup colorScheme="red" width={"100%"} isDisabled={step !== 1}>
+        <Button width={"100%"} onClick={() => cancelPayment()} isLoading={step == 2 || step == 3}>
           Cancel
         </Button>
-        <Button colorScheme="green" width={"100%"} onClick={() => submitPayment()}>
+        <Button colorScheme="green" width={"100%"} onClick={() => submitPayment()} isLoading={step == 2 || step == 3}>
           Pay
         </Button>
       </ButtonGroup>

@@ -203,19 +203,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cashu/cashu-ts@npm:^0.9.0":
-  version: 0.9.0
-  resolution: "@cashu/cashu-ts@npm:0.9.0"
-  dependencies:
-    "@gandlaf21/bolt11-decode": ^3.0.6
-    "@noble/curves": ^1.0.0
-    "@scure/bip32": ^1.3.2
-    "@scure/bip39": ^1.2.1
-    buffer: ^6.0.3
-  checksum: e09c45928e1b90d59a0f23f6817d3cd55fbf8fe33b5194f247b30a40ae288fdd8d7f55f57fcf4162c8ed609b2058f188355c5cb6317b2639a3cbf035d9f6f9f1
-  languageName: node
-  linkType: hard
-
 "@chakra-ui/accordion@npm:2.3.1":
   version: 2.3.1
   resolution: "@chakra-ui/accordion@npm:2.3.1"
@@ -2122,17 +2109,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gandlaf21/bolt11-decode@npm:^3.0.6":
-  version: 3.0.6
-  resolution: "@gandlaf21/bolt11-decode@npm:3.0.6"
-  dependencies:
-    bech32: ^1.1.2
-    bn.js: ^4.11.8
-    buffer: ^6.0.3
-  checksum: 511dc1b34d54f2bf531f7ebf62c8c270e3843ad95d4ee0e383edc68719f54ec3dc63776cc26e82075a40e5dd1dcf72b4ec9bf9e5e96a77e304b2ac9785d17a3e
-  languageName: node
-  linkType: hard
-
 "@grpc/grpc-js@npm:1.10.0":
   version: 1.10.0
   resolution: "@grpc/grpc-js@npm:1.10.0"
@@ -2554,7 +2530,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@noble/curves@npm:1.3.0, @noble/curves@npm:^1.0.0, @noble/curves@npm:~1.3.0":
+"@noble/curves@npm:1.3.0, @noble/curves@npm:~1.3.0":
   version: 1.3.0
   resolution: "@noble/curves@npm:1.3.0"
   dependencies:
@@ -2950,7 +2926,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@scure/bip32@npm:1.3.3, @scure/bip32@npm:^1.3.2":
+"@scure/bip32@npm:1.3.3":
   version: 1.3.3
   resolution: "@scure/bip32@npm:1.3.3"
   dependencies:
@@ -2971,7 +2947,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@scure/bip39@npm:1.2.2, @scure/bip39@npm:^1.2.1":
+"@scure/bip39@npm:1.2.2":
   version: 1.2.2
   resolution: "@scure/bip39@npm:1.2.2"
   dependencies:
@@ -11549,8 +11525,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "server@workspace:packages/server"
   dependencies:
-    "@cashu/cashu-ts": ^0.9.0
-    "@chakra-ui/icons": ^2.1.1
     "@types/ws": ^8.5.10
     bolt11: ^1.4.1
     dotenv: ^16.4.4

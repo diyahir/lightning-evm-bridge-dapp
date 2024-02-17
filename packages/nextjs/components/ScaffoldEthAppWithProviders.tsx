@@ -9,6 +9,7 @@ import { Footer } from "~~/components/Footer";
 import { Header } from "~~/components/Header";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { ProgressBar } from "~~/components/scaffold-eth/ProgressBar";
+import theme from "~~/components/theme";
 import { useNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { useDarkMode } from "~~/hooks/scaffold-eth/useDarkMode";
 import { useGlobalState } from "~~/services/store/store";
@@ -41,7 +42,7 @@ export const ScaffoldEthAppWithProviders = ({ children }: { children: React.Reac
   const { isDarkMode } = useDarkMode();
 
   return (
-    <ChakraProvider>
+    <ChakraProvider theme={theme} cssVarsRoot="body">
       <WagmiConfig config={wagmiConfig}>
         <ProgressBar />
         <RainbowKitProvider

@@ -3,6 +3,11 @@ export type InvoiceRequest = {
   lnInvoice: string;
 };
 
+export interface InvoiceResponse {
+  status: "success" | "error";
+  message: string;
+}
+
 export type ContractDetails = {
   sender: string;
   receiver: string;

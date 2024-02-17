@@ -27,20 +27,17 @@ const Home: NextPage = () => {
   const { isOpen, onClose, onOpen } = useDisclosure();
 
   return (
-    <Container>
+    <Container alignContent={"center"} h="95%">
       <Card>
-        <CardHeader>
-          <Heading mt="10%" textAlign={"center"} fontSize={"x-large"}>
+        <CardHeader bg="brand.bg">
+          <Heading fontFamily={"IBM Plex Mono"} mt="10%" textAlign={"center"} fontSize={"x-large"}>
             {" "}
-            <span className="font-bold">
-              {balance ? `${(balance * 100_000_000).toLocaleString()}` : "Loading Balance..."}
-            </span>{" "}
-            sats
+            <span>{balance ? `${(balance * 100_000_000).toLocaleString()}` : "Loading Balance..."}</span> sats
           </Heading>
         </CardHeader>
 
-        <CardBody>
-          <Heading fontWeight={"md"} textAlign={"center"} size={"md"}>
+        <CardBody bg="brand.bg">
+          <Heading fontFamily={"IBM Plex Mono"} textAlign={"center"} size={"md"}>
             History
           </Heading>
           <Table size={"sm"}>
@@ -71,6 +68,7 @@ const Home: NextPage = () => {
         </CardBody>
 
         <CardFooter
+          bg="brand.bg"
           justify="space-between"
           flexWrap="wrap"
           sx={{

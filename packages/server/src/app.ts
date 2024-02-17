@@ -77,11 +77,13 @@ async function processInvoiceRequest(request: InvoiceRequest, ws: WebSocket) {
     console.log("LN Invoice Details:", lnInvoiceDetails);
 
     const contractDetails: ContractDetails = await getContractDetails(
-      request.contractId
+      request.contractId,
+      htlcContract
     );
     console.log("Contract Details:", contractDetails);
 
     if (!validateLnInvoiceAndContract(lnInvoiceDetails, contractDetails)) {
+      console.log("Invalid Invoice or Contract");
       ws.send(
         JSON.stringify({
           status: "error",
@@ -117,9 +119,10 @@ async function processInvoiceRequest(request: InvoiceRequest, ws: WebSocket) {
 }
 
 async function getContractDetails(
-  contractId: string
+  contractId: string,
+  htlcContract: ethers.Contract
 ): Promise<ContractDetails> {
-  const response = await htlcContract.getContract(contractId);
+  const response: any = await htlcContract.getContract(contractId);
   return {
     sender: response[0],
     receiver: response[1],

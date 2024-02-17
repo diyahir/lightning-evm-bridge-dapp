@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Input,
   InputGroup,
@@ -12,12 +12,14 @@ import {
   ModalHeader,
   ModalOverlay,
   VStack,
+  useSteps,
 } from "@chakra-ui/react";
 import { QrScanner } from "@yudiel/react-qr-scanner";
 import { PaymentRequestObject, decode } from "bolt11";
 import { useWalletClient } from "wagmi";
-import { PaymentInvoice } from "~~/components/PaymentInvoice";
+import { PaymentInvoice, steps } from "~~/components/PaymentInvoice";
 import { useScaffoldContract, useScaffoldEventSubscriber } from "~~/hooks/scaffold-eth";
+import { useWebSocket } from "~~/hooks/useWebSocket";
 import { LnPaymentInvoice } from "~~/types/utils";
 
 type SendModalProps = {
@@ -26,15 +28,36 @@ type SendModalProps = {
 };
 function SendModal({ isOpen, onClose }: SendModalProps) {
   const [invoice, setInvoice] = useState<string>("");
-  const [lnInvoice, setLnInvoice] = useState<LnPaymentInvoice | null>(null);
+  const lnInvoiceRef = useRef<LnPaymentInvoice | null>(null);
   const [contractId, setContractId] = useState<string | null>(null);
   const [txHash, setTxHash] = useState<string | null>(null);
+  const { sendMessage, data } = useWebSocket("ws://localhost:3003");
+
+  function cleanAndClose() {
+    lnInvoiceRef.current = null;
+    setInvoice("");
+    setContractId(null);
+    setTxHash(null);
+    setActiveStep(1);
+    onClose();
+  }
+
+  useEffect(() => {
+    if (data?.status === "success") {
+      setActiveStep(4);
+      console.log("data", data);
+    }
+  }, [data]);
 
   const { data: walletClient } = useWalletClient();
-
   const { data: yourContract } = useScaffoldContract({
     contractName: "HashedTimelock",
     walletClient,
+  });
+
+  const { activeStep, setActiveStep } = useSteps({
+    index: 1,
+    count: steps.length,
   });
 
   useScaffoldEventSubscriber({
@@ -43,7 +66,11 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
     listener: event => {
       const tmpContractId = event[0].args.contractId;
       if (event[0].transactionHash === txHash) return;
+      if (!tmpContractId) return;
+      if (lnInvoiceRef.current?.lnInvoice === undefined) return;
       setContractId(tmpContractId ? tmpContractId.toString() : null);
+      sendMessage({ contractId: tmpContractId, lnInvoice: lnInvoiceRef.current?.lnInvoice });
+      setActiveStep(3);
     },
   });
 
@@ -66,16 +93,21 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
 
   function submitPayment() {
     if (!yourContract) return;
-    if (!lnInvoice) return;
+    if (!lnInvoiceRef.current) return;
     yourContract.write
       .newContract(
-        ["0xf89335a26933d8Dd6193fD91cAB4e1466e5198Bf", lnInvoice.paymentHash, BigInt(lnInvoice.timeExpireDate)],
+        [
+          "0xf89335a26933d8Dd6193fD91cAB4e1466e5198Bf",
+          lnInvoiceRef.current.paymentHash,
+          BigInt(lnInvoiceRef.current.timeExpireDate),
+        ],
         {
-          value: BigInt(lnInvoice.satoshis),
+          value: BigInt(lnInvoiceRef.current.satoshis),
         },
       )
       .then(tx => {
         console.log("txHash", tx);
+        setActiveStep(2);
         setTxHash(tx);
       })
       .catch(e => {
@@ -87,19 +119,20 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
     try {
       setInvoice(invoice);
       const tempdecoded = decode(invoice);
-      console.log(tempdecoded);
       const paymentHash = getPaymentHash(tempdecoded);
 
       if (!tempdecoded.satoshis) return;
       if (!paymentHash) return;
       if (!tempdecoded.timeExpireDate) return;
 
-      setLnInvoice({
+      console;
+
+      lnInvoiceRef.current = {
         satoshis: tempdecoded.satoshis,
         timeExpireDate: tempdecoded.timeExpireDate,
         paymentHash,
         lnInvoice: invoice,
-      });
+      };
     } catch (e) {
       console.error(e);
     }
@@ -107,15 +140,15 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={cleanAndClose}>
         <ModalOverlay />
-        <ModalContent h={"100%"} m="0">
-          <ModalHeader textAlign={"center"}>{lnInvoice == null ? "Scan QR Code" : "Review"}</ModalHeader>
+        <ModalContent bg="brand.bg" h={"100%"} m="0">
+          <ModalHeader textAlign={"center"}>{lnInvoiceRef.current == null ? "Scan QR Code" : "Review"}</ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
+          <ModalBody h="100%" alignContent={"space-between"}>
             {/* Wallet Section */}
-            {!lnInvoice && (
-              <VStack>
+            {!lnInvoiceRef.current && (
+              <VStack h="100%" alignContent={"space-between"} gap="20">
                 <QrScanner
                   scanDelay={1}
                   onError={handleError}
@@ -143,13 +176,14 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
               </VStack>
             )}
 
-            {lnInvoice && (
+            {lnInvoiceRef.current && (
               <PaymentInvoice
-                invoice={lnInvoice}
+                invoice={lnInvoiceRef.current}
                 submitPayment={submitPayment}
                 contractId={contractId}
+                step={activeStep}
                 cancelPayment={() => {
-                  setLnInvoice(null);
+                  lnInvoiceRef.current = null;
                   setInvoice("");
                   setContractId(null);
                 }}

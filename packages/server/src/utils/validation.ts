@@ -48,18 +48,3 @@ export function getPaymentHash(
   return ("0x" + paymentHash.data.toString()) as `0x${string}`;
 }
 
-async function getContractDetails(
-  contractId: string
-): Promise<ContractDetails> {
-  const response = await htlcContract.getContract(contractId);
-  return {
-    sender: response[0],
-    receiver: response[1],
-    amount: response[2],
-    hashlock: response[3],
-    timelock: response[4],
-    withdrawn: response[5],
-    refunded: response[6],
-    preimage: response[7],
-  };
-}
