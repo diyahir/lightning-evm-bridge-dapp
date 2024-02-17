@@ -100,10 +100,11 @@ async function processInvoiceRequest(request: InvoiceRequest, ws: WebSocket) {
     });
     console.log("Payment Response:", paymentResponse);
 
-    await htlcContract.withdraw(
-      request.contractId,
-      "0x" + paymentResponse.secret
-    );
+    await htlcContract
+      .withdraw(request.contractId, "0x" + paymentResponse.secret)
+      .then((tx: any) => {
+        console.log("Withdrawal Transaction:", tx);
+      });
     ws.send(
       JSON.stringify({
         status: "success",

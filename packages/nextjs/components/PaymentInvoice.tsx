@@ -62,12 +62,12 @@ export const PaymentInvoice = ({ invoice, contractId, submitPayment, cancelPayme
               {invoice.satoshis} sats
             </Td>
           </Tr>
-          <Tr>
+          {/* <Tr>
             <Td border="transparent">USD</Td>
             <Td border="transparent" textAlign={"end"}>
               ${invoice.satoshis}
             </Td>
-          </Tr>
+          </Tr> */}
           <Tr>
             <Td border="transparent">Contract Id</Td>
             <Td border="transparent" textAlign={"end"}>

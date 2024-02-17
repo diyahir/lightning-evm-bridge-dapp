@@ -99,7 +99,7 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
         [
           "0xf89335a26933d8Dd6193fD91cAB4e1466e5198Bf",
           lnInvoiceRef.current.paymentHash,
-          BigInt(lnInvoiceRef.current.timeExpireDate),
+          BigInt(lnInvoiceRef.current.timeExpireDate + 120),
         ],
         {
           value: BigInt(lnInvoiceRef.current.satoshis),
