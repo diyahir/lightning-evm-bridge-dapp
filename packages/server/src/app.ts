@@ -82,12 +82,17 @@ async function processInvoiceRequest(request: InvoiceRequest, ws: WebSocket) {
     );
     console.log("Contract Details:", contractDetails);
 
-    if (!validateLnInvoiceAndContract(lnInvoiceDetails, contractDetails)) {
-      console.log("Invalid Invoice or Contract");
+    const validation = validateLnInvoiceAndContract(
+      lnInvoiceDetails,
+      contractDetails
+    );
+
+    if (!validation.isValid) {
+      console.log("Invoice and Contract are invalid:", validation.message);
       ws.send(
         JSON.stringify({
           status: "error",
-          message: "Invalid Invoice or Contract",
+          message: validation.message,
         })
       );
       return;
@@ -105,6 +110,7 @@ async function processInvoiceRequest(request: InvoiceRequest, ws: WebSocket) {
       .then((tx: any) => {
         console.log("Withdrawal Transaction:", tx);
       });
+
     ws.send(
       JSON.stringify({
         status: "success",

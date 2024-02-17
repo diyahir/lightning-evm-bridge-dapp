@@ -1,38 +1,49 @@
 import { PaymentRequestObject } from "bolt11";
 import { ContractDetails } from "../types";
 
+type validationResponse = {
+  isValid: boolean;
+  message: string;
+};
+
 export function validateLnInvoiceAndContract(
   lnInvoiceDetails: PaymentRequestObject,
   contractDetails: ContractDetails
-) {
-  if (lnInvoiceDetails.satoshis < Number(contractDetails.amount)) {
-    return false;
+): validationResponse {
+  if (lnInvoiceDetails.satoshis > Number(contractDetails.amount)) {
+    return {
+      isValid: false,
+      message: "Invoice amount is less than contract amount",
+    };
   }
   const currentTimestamp = Math.floor(Date.now() / 1000);
   if (lnInvoiceDetails.timeExpireDate < currentTimestamp) {
-    return false;
+    return { isValid: false, message: "Invoice has expired" };
   }
 
   if (Number(contractDetails.timelock) < currentTimestamp) {
-    return false;
+    return { isValid: false, message: "Contract has expired" };
   }
 
   if (getPaymentHash(lnInvoiceDetails) !== contractDetails.hashlock) {
-    return false;
+    return { isValid: false, message: "Hashlock mismatch" };
   }
 
   if (contractDetails.withdrawn || contractDetails.refunded) {
-    return false;
+    return {
+      isValid: false,
+      message: "Contract has been withdrawn or refunded",
+    };
   }
 
   if (
     contractDetails.preimage !==
     "0x0000000000000000000000000000000000000000000000000000000000000000"
   ) {
-    return false;
+    return { isValid: false, message: "Contract has been withdrawn" };
   }
 
-  return true;
+  return { isValid: true, message: "Invoice and Contract are valid" };
 }
 
 export function getPaymentHash(
@@ -47,4 +58,3 @@ export function getPaymentHash(
   }
   return ("0x" + paymentHash.data.toString()) as `0x${string}`;
 }
-

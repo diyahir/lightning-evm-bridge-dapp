@@ -21,6 +21,8 @@ import { useAccount } from "wagmi";
 import SendModal from "~~/components/SendModalPopup";
 import { useAccountBalance } from "~~/hooks/scaffold-eth";
 
+// Import the CSS file with your animation
+
 const Home: NextPage = () => {
   const { address } = useAccount();
   const { balance } = useAccountBalance(address);
@@ -78,9 +80,8 @@ const Home: NextPage = () => {
           }}
         >
           <Button onClick={onOpen} flex="1">
-            Send
+            Send over Lightning
           </Button>
-          <Button flex="1">Recieve</Button>
         </CardFooter>
       </Card>
 

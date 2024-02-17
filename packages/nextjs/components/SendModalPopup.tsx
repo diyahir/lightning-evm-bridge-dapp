@@ -13,6 +13,7 @@ import {
   ModalOverlay,
   VStack,
   useSteps,
+  useToast,
 } from "@chakra-ui/react";
 import { QrScanner } from "@yudiel/react-qr-scanner";
 import { PaymentRequestObject, decode } from "bolt11";
@@ -31,6 +32,7 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
   const lnInvoiceRef = useRef<LnPaymentInvoice | null>(null);
   const [contractId, setContractId] = useState<string | null>(null);
   const [txHash, setTxHash] = useState<string | null>(null);
+  const toast = useToast();
   const { sendMessage, data } = useWebSocket("ws://localhost:3003");
 
   function cleanAndClose() {
@@ -46,6 +48,24 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
     if (data?.status === "success") {
       setActiveStep(4);
       console.log("data", data);
+      toast({
+        title: "Payment Success",
+        description: "Payment has been successfully completed",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+        position: "top",
+      });
+      cleanAndClose();
+    } else {
+      toast({
+        title: "Payment Failed",
+        description: data?.message || "Payment has failed",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+        position: "top",
+      });
     }
   }, [data]);
 
