@@ -29,7 +29,7 @@ const Home: NextPage = () => {
   const { isOpen, onClose, onOpen } = useDisclosure();
 
   return (
-    <Container alignContent={"center"} h="95%">
+    <Container alignContent={"center"} h="95%" justifyContent={"center"}>
       <Card>
         <CardHeader bg="brand.bg">
           <Heading fontFamily={"IBM Plex Mono"} mt="10%" textAlign={"center"} fontSize={"x-large"}>

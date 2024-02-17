@@ -1,5 +1,5 @@
 {
-  "name": "Scaffold-ETH 2 DApp",
-  "description": "A DApp built with Scaffold-ETH",
+  "name": "Lightning <> Botanix DApp",
+  "description": "Payments to the Lightning Network via Botanix",
   "iconPath": "logo.svg"
 }

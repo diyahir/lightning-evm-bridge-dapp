@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, Flex } from "@chakra-ui/react";
 import { RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit";
 import { Toaster } from "react-hot-toast";
 import { WagmiConfig } from "wagmi";
@@ -30,7 +30,9 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
     <>
       <div className="flex flex-col min-h-screen">
         <Header />
-        <main className="relative flex flex-col flex-1">{children}</main>
+        <Flex dir="col" justifyContent={"center"} flex={1} className="relative flex flex-col flex-1">
+          {children}
+        </Flex>
         <Footer />
       </div>
       <Toaster />

@@ -17,11 +17,11 @@ There are three main parts to this project:
 
 <!-- Make a table with links to each folder -->
 
-| Folder                                 | Description                                                       |
-| -------------------------------------- | ----------------------------------------------------------------- |
-| [Contracts](./packages/foundry)        | This is where the smart contracts live.                           |
-| [Frontend](./packages/nextjs)          | This is the frontend of the app.                                  |
-| [Lightning server](./packages/backend) | This is the lightning service provider who is paying the invoices |
+| Folder                                | Description                                                       |
+| ------------------------------------- | ----------------------------------------------------------------- |
+| [Contracts](./packages/foundry)       | This is where the smart contracts live.                           |
+| [Frontend](./packages/nextjs)         | This is the frontend of the app.                                  |
+| [Lightning server](./packages/server) | This is the lightning service provider who is paying the invoices |
 
 ## Requirements
 
@@ -93,18 +93,14 @@ Check the `hardhat.config.ts` for the networks that are pre-configured. You ca
 Example: To deploy the contract to the Sepolia network, run the command below:
 
 ```
-
 yarn deploy --network sepolia
-
 ```
 
 2. Generate a new account or add one to deploy the contract(s) from. Additionally you will need to add your Alchemy API key. Rename `.env.example` to `.env` and fill the required keys.
 
 ```
-
 ALCHEMY_API_KEY="",
 DEPLOYER_PRIVATE_KEY=""
-
 ```
 
 The deployer account is the account that will deploy your contracts. Additionally, the deployer account will be used to execute any function calls that are part of your deployment script.
@@ -116,9 +112,7 @@ You can generate a random account / private key with `yarn generate` or add th
 Run the command below to deploy the smart contract to the target network. Make sure to have some funds in your deployer account to pay for the transaction.
 
 ```
-
 yarn deploy --network network_name
-
 ```
 
 4. Verify your smart contract
@@ -126,9 +120,7 @@ yarn deploy --network network_name
 You can verify your smart contract on Etherscan by running:
 
 ```
-
 yarn verify --network network_name
-
 ```
 
 eg: `yarn verify --network sepolia`
