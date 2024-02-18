@@ -20,6 +20,7 @@ import {
   Td,
   Tr,
 } from "@chakra-ui/react";
+import { DotLoader } from "react-spinners";
 import { LnPaymentInvoice } from "~~/types/utils";
 
 /**
@@ -37,7 +38,7 @@ export const steps = [
   { title: "Verify Invoice", description: "Verify the invoice is correct" },
   { title: "Pay deposit", description: "On-chain invoice locked in smart contract" },
   {
-    title: "On-chain invoice sent to provider",
+    title: "Waiting to be included in a block",
     description: "The invoice id is sent and verified by the lightning provider",
   },
   { title: "Paid", description: "The lightning provider pays lightning invoice. The reciever must be online." },
@@ -92,7 +93,11 @@ export const PaymentInvoice = ({ invoice, contractId, submitPayment, cancelPayme
         {steps.map((step, index) => (
           <Step key={index}>
             <StepIndicator>
-              <StepStatus complete={<StepIcon />} incomplete={<StepNumber />} active={<StepNumber />} />
+              <StepStatus
+                complete={<StepIcon />}
+                incomplete={<StepNumber />}
+                active={<DotLoader color="#90cdf4" size="42px" />}
+              />
             </StepIndicator>
 
             <Box>
@@ -105,14 +110,21 @@ export const PaymentInvoice = ({ invoice, contractId, submitPayment, cancelPayme
         ))}
       </Stepper>
 
-      <ButtonGroup colorScheme="red" width={"100%"} isDisabled={step !== 1}>
-        <Button width={"100%"} onClick={() => cancelPayment()} isLoading={step == 2 || step == 3}>
-          Cancel
+      {step < 2 && (
+        <ButtonGroup colorScheme="red" width={"100%"} isDisabled={step !== 1}>
+          <Button width={"100%"} onClick={() => cancelPayment()} isLoading={step == 2 || step == 3}>
+            Cancel
+          </Button>
+          <Button colorScheme="green" width={"100%"} onClick={() => submitPayment()} isLoading={step == 2 || step == 3}>
+            Pay
+          </Button>
+        </ButtonGroup>
+      )}
+      {step >= 2 && (
+        <Button width={"100%"} onClick={() => cancelPayment()} isDisabled={step == 2 || step == 3}>
+          Close
         </Button>
-        <Button colorScheme="green" width={"100%"} onClick={() => submitPayment()} isLoading={step == 2 || step == 3}>
-          Pay
-        </Button>
-      </ButtonGroup>
+      )}
     </Flex>
   );
 };

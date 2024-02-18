@@ -7,13 +7,13 @@ export const useWebSocket = (url: string) => {
   const socket = useRef<WebSocket | null>(null);
   const [data, setData] = useState<InvoiceResponse | null>(null);
   const [error, setError] = useState<Event | null>(null);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isWebSocketConnected, setIsWebSocketConnected] = useState<boolean>(false);
 
   useEffect(() => {
     socket.current = new WebSocket(url);
 
-    socket.current.onopen = () => setIsOpen(true);
-    socket.current.onclose = () => setIsOpen(false);
+    socket.current.onopen = () => setIsWebSocketConnected(true);
+    socket.current.onclose = () => setIsWebSocketConnected(false);
     socket.current.onerror = event => setError(event);
     socket.current.onmessage = event => {
       try {
@@ -32,14 +32,14 @@ export const useWebSocket = (url: string) => {
 
   const sendMessage = useCallback(
     (message: InvoiceRequest) => {
-      if (!isOpen) {
+      if (!isWebSocketConnected) {
         console.error("WebSocket is not open");
         return;
       }
       socket.current?.send(JSON.stringify(message));
     },
-    [isOpen],
+    [isWebSocketConnected],
   );
 
-  return { sendMessage, data, error, isOpen };
+  return { sendMessage, data, error, isWebSocketConnected };
 };

@@ -19,8 +19,8 @@ import { QrScanner } from "@yudiel/react-qr-scanner";
 import { PaymentRequestObject, decode } from "bolt11";
 import { useWalletClient } from "wagmi";
 import { PaymentInvoice, steps } from "~~/components/PaymentInvoice";
+import { useLightningApp } from "~~/hooks/LightningProvider";
 import { useScaffoldContract, useScaffoldEventSubscriber } from "~~/hooks/scaffold-eth";
-import { useWebSocket } from "~~/hooks/useWebSocket";
 import { LnPaymentInvoice } from "~~/types/utils";
 
 type SendModalProps = {
@@ -28,12 +28,13 @@ type SendModalProps = {
   onClose: () => void;
 };
 function SendModal({ isOpen, onClose }: SendModalProps) {
+  const { addTransaction } = useLightningApp();
   const [invoice, setInvoice] = useState<string>("");
   const lnInvoiceRef = useRef<LnPaymentInvoice | null>(null);
   const [contractId, setContractId] = useState<string | null>(null);
   const [txHash, setTxHash] = useState<string | null>(null);
   const toast = useToast();
-  const { sendMessage, data } = useWebSocket("ws://localhost:3003");
+  const { sendMessage, data } = useLightningApp();
 
   function cleanAndClose() {
     lnInvoiceRef.current = null;
@@ -45,9 +46,14 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
   }
 
   useEffect(() => {
+    if (data === null) return;
     if (data?.status === "success") {
       setActiveStep(4);
-      console.log("data", data);
+      addTransaction({
+        status: "completed",
+        date: new Date().toLocaleString(),
+        amount: lnInvoiceRef.current ? lnInvoiceRef.current.satoshis : 0,
+      });
       toast({
         title: "Payment Success",
         description: "Payment has been successfully completed",
@@ -66,6 +72,12 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
         isClosable: true,
         position: "top",
       });
+      addTransaction({
+        status: "failed",
+        date: new Date().toISOString(),
+        amount: lnInvoiceRef.current ? lnInvoiceRef.current.satoshis : 0,
+      });
+      cleanAndClose();
     }
   }, [data]);
 

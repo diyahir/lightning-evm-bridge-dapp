@@ -39,6 +39,7 @@
   },
   "packageManager": "yarn@3.2.3",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "react-spinners": "^0.13.8"
   }
 }

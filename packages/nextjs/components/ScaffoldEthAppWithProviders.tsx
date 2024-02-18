@@ -10,6 +10,7 @@ import { Header } from "~~/components/Header";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { ProgressBar } from "~~/components/scaffold-eth/ProgressBar";
 import theme from "~~/components/theme";
+import { LightningProvider } from "~~/hooks/LightningProvider";
 import { useNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { useDarkMode } from "~~/hooks/scaffold-eth/useDarkMode";
 import { useGlobalState } from "~~/services/store/store";
@@ -52,7 +53,9 @@ export const ScaffoldEthAppWithProviders = ({ children }: { children: React.Reac
           avatar={BlockieAvatar}
           theme={isDarkMode ? darkTheme() : lightTheme()}
         >
-          <ScaffoldEthApp>{children}</ScaffoldEthApp>
+          <LightningProvider>
+            <ScaffoldEthApp>{children}</ScaffoldEthApp>
+          </LightningProvider>
         </RainbowKitProvider>
       </WagmiConfig>
     </ChakraProvider>
