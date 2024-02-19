@@ -3,13 +3,16 @@ import { useWebSocket } from "./useWebSocket";
 import { InvoiceRequest, InvoiceResponse } from "~~/types/utils";
 
 // Define the types for your historical transactions and context
-type HistoricalTransaction = {
+export type HistoricalTransaction = {
   status: string;
   date: string;
   amount: number;
+  contractId: string;
+  txHash: string;
+  hashLockTimestamp: number;
 };
 
-type LightningAppContextType = {
+export type LightningAppContextType = {
   transactions: HistoricalTransaction[];
   addTransaction: (transaction: HistoricalTransaction) => void;
   sendMessage: (message: InvoiceRequest) => void;

@@ -53,6 +53,9 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
         status: "completed",
         date: new Date().toLocaleString(),
         amount: lnInvoiceRef.current ? lnInvoiceRef.current.satoshis : 0,
+        txHash: txHash || "",
+        contractId: contractId || "",
+        hashLockTimestamp: lnInvoiceRef.current ? lnInvoiceRef.current.timeExpireDate + 120 : 0,
       });
       toast({
         title: "Payment Success",
@@ -74,8 +77,11 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
       });
       addTransaction({
         status: "failed",
-        date: new Date().toISOString(),
+        date: new Date().toLocaleString(),
         amount: lnInvoiceRef.current ? lnInvoiceRef.current.satoshis : 0,
+        txHash: txHash || "",
+        contractId: contractId || "",
+        hashLockTimestamp: lnInvoiceRef.current ? lnInvoiceRef.current.timeExpireDate + 120 : 0,
       });
       cleanAndClose();
     }
@@ -131,7 +137,7 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
         [
           "0xf89335a26933d8Dd6193fD91cAB4e1466e5198Bf",
           lnInvoiceRef.current.paymentHash,
-          BigInt(lnInvoiceRef.current.timeExpireDate + 120),
+          BigInt(Math.floor(Date.now() / 1000) + 600),
         ],
         {
           value: BigInt(lnInvoiceRef.current.satoshis),
@@ -172,15 +178,21 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={cleanAndClose}>
+      <Modal isCentered isOpen={isOpen} onClose={cleanAndClose}>
         <ModalOverlay />
-        <ModalContent bg="brand.bg" h={"100%"} m="0">
+        <ModalContent bg="brand.bg" h={["100%", "100%", "min-content"]} m="0">
           <ModalHeader textAlign={"center"}>{lnInvoiceRef.current == null ? "Scan QR Code" : "Review"}</ModalHeader>
           <ModalCloseButton />
-          <ModalBody h="100%" alignContent={"space-between"}>
+          <ModalBody
+            display={"flex"}
+            flexDir={"column"}
+            justifyContent={"center"}
+            alignContent={"space-between"}
+            mb={[0, 0, 5]}
+          >
             {/* Wallet Section */}
             {!lnInvoiceRef.current && (
-              <VStack h="100%" alignContent={"space-between"} gap="20">
+              <VStack alignContent={"space-between"} gap={["20", "20", "5"]}>
                 <QrScanner
                   scanDelay={1}
                   onError={handleError}

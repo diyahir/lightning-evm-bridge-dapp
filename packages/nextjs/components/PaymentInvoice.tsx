@@ -48,13 +48,13 @@ export const PaymentInvoice = ({ invoice, contractId, submitPayment, cancelPayme
   const expiryDate = new Date(invoice.timeExpireDate * 1000);
 
   return (
-    <Flex h="100%" flexDir={"column"} justifyContent={"space-evenly"} alignContent={"space-evenly"}>
+    <Flex h="100%" flexDir={"column"} justifyContent={"space-evenly"} alignContent={"space-evenly"} gap={["", "", "5"]}>
       <Table size={"xs"}>
         <Tbody>
           <Tr>
             <Td border="transparent">Expiry Time</Td>
             <Td border="transparent" textAlign={"end"}>
-              {expiryDate.toLocaleTimeString()}
+              {expiryDate.toLocaleString()}
             </Td>
           </Tr>
           <Tr>
