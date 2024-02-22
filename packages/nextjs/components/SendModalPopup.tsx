@@ -55,7 +55,7 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
         amount: lnInvoiceRef.current ? lnInvoiceRef.current.satoshis : 0,
         txHash: txHash || "",
         contractId: contractId || "",
-        hashLockTimestamp: lnInvoiceRef.current ? lnInvoiceRef.current.timeExpireDate + 120 : 0,
+        hashLockTimestamp: getMinTimelock(lnInvoiceRef.current ? lnInvoiceRef.current.timeExpireDate : 0),
       });
       toast({
         title: "Payment Success",
@@ -98,6 +98,13 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
     count: steps.length,
   });
 
+  function getMinTimelock(lnInvoiceTimelock: number) {
+    const now = Math.floor(Date.now() / 1000);
+    console.log("now", now);
+    console.log("lnInvoiceTimelock", lnInvoiceTimelock);
+    return Math.min(now + 600, lnInvoiceTimelock);
+  }
+
   useScaffoldEventSubscriber({
     contractName: "HashedTimelock",
     eventName: "LogHTLCNew",
@@ -137,7 +144,7 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
         [
           "0xf89335a26933d8Dd6193fD91cAB4e1466e5198Bf",
           lnInvoiceRef.current.paymentHash,
-          BigInt(Math.floor(Date.now() / 1000) + 600),
+          BigInt(getMinTimelock(lnInvoiceRef.current.timeExpireDate)),
         ],
         {
           value: BigInt(lnInvoiceRef.current.satoshis),
@@ -145,6 +152,14 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
       )
       .then(tx => {
         console.log("txHash", tx);
+        addTransaction({
+          status: "pending",
+          date: new Date().toLocaleString(),
+          amount: lnInvoiceRef.current ? lnInvoiceRef.current.satoshis : 0,
+          txHash: tx,
+          contractId: contractId || "",
+          hashLockTimestamp: getMinTimelock(lnInvoiceRef.current ? lnInvoiceRef.current.timeExpireDate : 0),
+        });
         setActiveStep(2);
         setTxHash(tx);
       })
@@ -226,6 +241,7 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
                 submitPayment={submitPayment}
                 contractId={contractId}
                 step={activeStep}
+                expiryDate={getMinTimelock(lnInvoiceRef.current.timeExpireDate).toString()}
                 cancelPayment={() => {
                   lnInvoiceRef.current = null;
                   setInvoice("");

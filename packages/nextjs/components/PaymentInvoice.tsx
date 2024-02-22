@@ -29,6 +29,7 @@ import { LnPaymentInvoice } from "~~/types/utils";
 type PaymentInvoiceProps = {
   invoice: LnPaymentInvoice;
   contractId: string | null;
+  expiryDate: string;
   submitPayment: () => void;
   cancelPayment: () => void;
   step: number;

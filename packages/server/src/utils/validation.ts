@@ -16,6 +16,13 @@ export function validateLnInvoiceAndContract(
       message: "Invoice amount is less than contract amount",
     };
   }
+  if (lnInvoiceDetails.satoshis > 42) {
+    return {
+      isValid: false,
+      message: "Invoice amount is higher than 42 satoshis ;(",
+    };
+  }
+
   const currentTimestamp = Math.floor(Date.now() / 1000);
   if (lnInvoiceDetails.timeExpireDate < currentTimestamp) {
     return { isValid: false, message: "Invoice has expired" };

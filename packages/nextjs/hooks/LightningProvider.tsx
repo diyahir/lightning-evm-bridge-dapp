@@ -4,7 +4,7 @@ import { InvoiceRequest, InvoiceResponse } from "~~/types/utils";
 
 // Define the types for your historical transactions and context
 export type HistoricalTransaction = {
-  status: string;
+  status: "pending" | "failed" | "completed" | "refunded";
   date: string;
   amount: number;
   contractId: string;
@@ -29,6 +29,17 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
   const { sendMessage, isWebSocketConnected, data } = useWebSocket("ws://localhost:3003");
 
   const addTransaction = (transaction: HistoricalTransaction) => {
+    // check that amounts is non-zero
+    if (transaction.amount === 0) return;
+    // check if the transaction is already in the list then replace
+    const index = transactions.findIndex(t => t.contractId === transaction.contractId);
+    if (index !== -1) {
+      const newTransactions = [...transactions];
+      newTransactions[index] = transaction;
+      setTransactions(newTransactions);
+      return;
+    }
+
     setTransactions(prevTransactions => [transaction, ...prevTransactions]);
   };
 

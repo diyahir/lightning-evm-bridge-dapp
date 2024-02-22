@@ -1,12 +1,26 @@
 import React, { Fragment, useState } from "react";
 import { CopyIcon } from "@chakra-ui/icons";
-import { Box, Button, CardBody, Heading, Icon, Table, Tbody, Td, Th, Thead, Tr, useToast } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  CardBody,
+  Heading,
+  Icon,
+  Table,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tooltip,
+  Tr,
+  useToast,
+} from "@chakra-ui/react";
 import { useWalletClient } from "wagmi";
 import { HistoricalTransaction, useLightningApp } from "~~/hooks/LightningProvider";
 import { useScaffoldContract } from "~~/hooks/scaffold-eth";
 
 export const HistoryTable = () => {
-  const { transactions } = useLightningApp();
+  const { transactions, addTransaction } = useLightningApp();
   const toast = useToast();
   const [expandedRow, setExpandedRow] = useState<number | null>(null); // State to manage expanded row index
   const { data: walletClient } = useWalletClient();
@@ -36,6 +50,9 @@ export const HistoryTable = () => {
 
   function refund(transaction: HistoricalTransaction) {
     if (transaction.contractId === "") return;
+    if (transaction.hashLockTimestamp < Date.now() / 1000) {
+      return;
+    }
     if (!yourContract) return;
     yourContract.write
       .refund([transaction.contractId as `0x${string}`], {})
@@ -47,6 +64,14 @@ export const HistoryTable = () => {
           status: "success",
           duration: 3000,
           isClosable: true,
+        });
+        addTransaction({
+          status: "refunded",
+          date: new Date().toLocaleString(),
+          amount: transaction.amount,
+          txHash: tx,
+          contractId: transaction.contractId,
+          hashLockTimestamp: transaction.hashLockTimestamp,
         });
       })
       .catch(e => {
@@ -107,22 +132,26 @@ export const HistoryTable = () => {
             <Tbody>
               {transactions.map((transaction, index) => (
                 <React.Fragment key={index}>
-                  <Tr
-                    onClick={() => toggleRow(index)}
-                    cursor={"pointer"}
-                    css={{
-                      "&:hover": {
-                        backgroundColor: "rgba(255, 255, 255, 0.1)",
-                      },
-                    }}
-                  >
-                    <Td>{transaction.status}</Td>
-                    <Td>{transaction.date}</Td>
-                    <Td isNumeric>{transaction.amount} sats</Td>
-                    {/* <Td>
+                  <Tooltip label={transaction.status === "failed" ? "Click to refund" : ""}>
+                    <Tr
+                      onClick={() => toggleRow(index)}
+                      cursor={"pointer"}
+                      bg={transaction.status === "failed" ? "red.400" : ""}
+                      css={{
+                        "&:hover": {
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                        },
+                      }}
+                    >
+                      <Td>{transaction.status}</Td>
+
+                      <Td>{transaction.date}</Td>
+                      <Td isNumeric>{transaction.amount} sats</Td>
+                      {/* <Td>
                       <Icon as={expandedRow === index ? <ChevronUpIcon /> : <ChevronDownIcon />} />
                     </Td> */}
-                  </Tr>
+                    </Tr>
+                  </Tooltip>
                   {/* Expandable row for details */}
                   {expandedRow === index && (
                     <Tr>
