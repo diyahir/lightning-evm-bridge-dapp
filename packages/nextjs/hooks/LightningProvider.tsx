@@ -32,7 +32,7 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
     // check that amounts is non-zero
     if (transaction.amount === 0) return;
     // check if the transaction is already in the list then replace
-    const index = transactions.findIndex(t => t.contractId === transaction.contractId);
+    const index = transactions.findIndex(t => t.txHash === transaction.txHash);
     if (index !== -1) {
       const newTransactions = [...transactions];
       newTransactions[index] = transaction;

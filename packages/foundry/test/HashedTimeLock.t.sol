@@ -131,5 +131,6 @@ contract HashedTimelockTest is Test {
         vm.startPrank(receiver);
 
         bool success = htlc.withdraw(contractId, preImage);
+        assertTrue(success);
     }
 }

@@ -17,6 +17,13 @@ const ABI = parseAbi([
 ]);
 
 export const fetchPriceFromUniswap = async (targetNetwork: ChainWithAttributes): Promise<number> => {
+  if (targetNetwork.nativeCurrency.symbol == "BTC") {
+    // fetch coinmarketcap price
+    // const res = await axios.get(
+    //   `https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=${targetNetwork.nativeCurrency.symbol}`,
+    // );
+    return 51100;
+  }
   if (
     targetNetwork.nativeCurrency.symbol !== "ETH" &&
     targetNetwork.nativeCurrency.symbol !== "SEP" &&

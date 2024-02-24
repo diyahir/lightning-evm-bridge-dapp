@@ -112,7 +112,8 @@ You can generate a random account / private key with `yarn generate` or add th
 Run the command below to deploy the smart contract to the target network. Make sure to have some funds in your deployer account to pay for the transaction.
 
 ```
-yarn deploy --network network_name
+cd packages/foundry
+yarn deployWithGasPrice --network botanixTestnet
 ```
 
 4. Verify your smart contract

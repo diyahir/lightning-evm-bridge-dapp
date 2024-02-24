@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   3636: {
     HashedTimelock: {
-      address: "0x440361Db23aa0875bd2E9C594aB48f09307D1482",
+      address: "0xC96cdda116F9A9EcA7A7cE134ae6AC7Cc20fD9db",
       abi: [
         {
           anonymous: false,
@@ -451,7 +451,7 @@ const deployedContracts = {
   },
   11155111: {
     HashedTimelock: {
-      address: "0x440361Db23aa0875bd2E9C594aB48f09307D1482",
+      address: "0xd7B6Ee95a03d5C538C7C8E7370aFd88864b06506",
       abi: [
         {
           anonymous: false,
