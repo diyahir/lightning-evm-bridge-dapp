@@ -72,6 +72,7 @@ export const HistoryTable = () => {
           txHash: tx,
           contractId: transaction.contractId,
           hashLockTimestamp: transaction.hashLockTimestamp,
+          lnInvoice: transaction.lnInvoice,
         });
       })
       .catch(e => {

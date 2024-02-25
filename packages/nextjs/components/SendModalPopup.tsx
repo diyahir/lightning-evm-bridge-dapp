@@ -20,7 +20,7 @@ import { PaymentRequestObject, decode } from "bolt11";
 import { useWalletClient } from "wagmi";
 import { PaymentInvoice, steps } from "~~/components/PaymentInvoice";
 import { useLightningApp } from "~~/hooks/LightningProvider";
-import { useScaffoldContract, useScaffoldEventSubscriber } from "~~/hooks/scaffold-eth";
+import { useScaffoldContract } from "~~/hooks/scaffold-eth";
 import { LnPaymentInvoice } from "~~/types/utils";
 
 type SendModalProps = {
@@ -28,13 +28,12 @@ type SendModalProps = {
   onClose: () => void;
 };
 function SendModal({ isOpen, onClose }: SendModalProps) {
-  const { addTransaction } = useLightningApp();
+  const { addTransaction, data, transactions } = useLightningApp();
   const [invoice, setInvoice] = useState<string>("");
   const lnInvoiceRef = useRef<LnPaymentInvoice | null>(null);
   const [contractId, setContractId] = useState<string | null>(null);
   const [txHash, setTxHash] = useState<string | null>(null);
   const toast = useToast();
-  const { sendMessage, data } = useLightningApp();
 
   function cleanAndClose() {
     lnInvoiceRef.current = null;
@@ -46,46 +45,18 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
   }
 
   useEffect(() => {
-    if (data === null) return;
-    if (data?.status === "success") {
+    // check if the latest transaction has a contractId then update the active step to 3
+    if (transactions.length === 0) return;
+    const lastTransaction = transactions[transactions.length - 1];
+    if (lastTransaction.lnInvoice !== lnInvoiceRef.current?.lnInvoice) return;
+    if (lastTransaction.status === "pending" && lastTransaction.contractId) {
+      setActiveStep(3);
+    }
+    if (lastTransaction.status === "completed") {
       setActiveStep(4);
-      addTransaction({
-        status: "completed",
-        date: new Date().toLocaleString(),
-        amount: lnInvoiceRef.current ? lnInvoiceRef.current.satoshis : 0,
-        txHash: txHash || "",
-        contractId: contractId || "",
-        hashLockTimestamp: getMinTimelock(lnInvoiceRef.current ? lnInvoiceRef.current.timeExpireDate : 0),
-      });
-      toast({
-        title: "Payment Success",
-        description: "Payment has been successfully completed",
-        status: "success",
-        duration: 9000,
-        isClosable: true,
-        position: "top",
-      });
-      cleanAndClose();
-    } else {
-      toast({
-        title: "Payment Failed",
-        description: data?.message || "Payment has failed",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-        position: "top",
-      });
-      addTransaction({
-        status: "failed",
-        date: new Date().toLocaleString(),
-        amount: lnInvoiceRef.current ? lnInvoiceRef.current.satoshis : 0,
-        txHash: txHash || "",
-        contractId: contractId || "",
-        hashLockTimestamp: lnInvoiceRef.current ? lnInvoiceRef.current.timeExpireDate + 120 : 0,
-      });
       cleanAndClose();
     }
-  }, [data]);
+  }, [transactions]);
 
   const { data: walletClient } = useWalletClient();
   const { data: yourContract } = useScaffoldContract({
@@ -100,24 +71,8 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
 
   function getMinTimelock(lnInvoiceTimelock: number) {
     const now = Math.floor(Date.now() / 1000);
-    console.log("now", now);
-    console.log("lnInvoiceTimelock", lnInvoiceTimelock);
     return Math.min(now + 600, lnInvoiceTimelock);
   }
-
-  useScaffoldEventSubscriber({
-    contractName: "HashedTimelock",
-    eventName: "LogHTLCNew",
-    listener: event => {
-      const tmpContractId = event[0].args.contractId;
-      if (event[0].transactionHash === txHash) return;
-      if (!tmpContractId) return;
-      if (lnInvoiceRef.current?.lnInvoice === undefined) return;
-      setContractId(tmpContractId ? tmpContractId.toString() : null);
-      sendMessage({ contractId: tmpContractId, lnInvoice: lnInvoiceRef.current?.lnInvoice });
-      setActiveStep(3);
-    },
-  });
 
   function handleScan(data: any) {
     console.log("Scanning", data);
@@ -159,6 +114,7 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
           txHash: tx,
           contractId: contractId || "",
           hashLockTimestamp: getMinTimelock(lnInvoiceRef.current ? lnInvoiceRef.current.timeExpireDate : 0),
+          lnInvoice: lnInvoiceRef.current ? lnInvoiceRef.current.lnInvoice : "",
         });
         setActiveStep(2);
         setTxHash(tx);

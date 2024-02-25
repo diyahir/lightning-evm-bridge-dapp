@@ -65,6 +65,8 @@ async function processInvoiceRequest(request: InvoiceRequest, ws: WebSocket) {
   console.log("Invoice Request Received:", request);
 
   try {
+    const options = { gasPrice: ethers.parseUnits("0.001", "gwei") };
+
     const contractExists = await htlcContract.haveContract(request.contractId);
     if (!contractExists) {
       ws.send(
@@ -106,7 +108,7 @@ async function processInvoiceRequest(request: InvoiceRequest, ws: WebSocket) {
     console.log("Payment Response:", paymentResponse);
 
     await htlcContract
-      .withdraw(request.contractId, "0x" + paymentResponse.secret)
+      .withdraw(request.contractId, "0x" + paymentResponse.secret, options)
       .then((tx: any) => {
         console.log("Withdrawal Transaction:", tx);
       });
