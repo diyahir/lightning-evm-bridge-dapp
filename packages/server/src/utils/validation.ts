@@ -1,5 +1,6 @@
 import { PaymentRequestObject } from "bolt11";
-import { ContractDetails } from "../types";
+import { ContractDetails } from "../types/types";
+import { providerConfig } from "../provider.config";
 
 type validationResponse = {
   isValid: boolean;
@@ -16,10 +17,25 @@ export function validateLnInvoiceAndContract(
       message: "Invoice amount is less than contract amount",
     };
   }
-  if (lnInvoiceDetails.satoshis > 42) {
+  if (lnInvoiceDetails.satoshis > providerConfig.maxSats) {
     return {
       isValid: false,
-      message: "Invoice amount is higher than 42 satoshis ;(",
+      message: `Invoice amount is higher than ${providerConfig.maxSats} satoshis ;(`,
+    };
+  }
+  if (lnInvoiceDetails.satoshis < providerConfig.minSats) {
+    return {
+      isValid: false,
+      message: `Invoice amount is less than ${providerConfig.minSats} satoshis ;(`,
+    };
+  }
+  if (
+    Number(contractDetails.amount) <
+    getContractAmountFromInvoice(lnInvoiceDetails.satoshis)
+  ) {
+    return {
+      isValid: false,
+      message: "Invoice amount is less than contract amount with fees",
     };
   }
 
@@ -30,6 +46,13 @@ export function validateLnInvoiceAndContract(
 
   if (Number(contractDetails.timelock) < currentTimestamp) {
     return { isValid: false, message: "Contract has expired" };
+  }
+
+  if (
+    Number(contractDetails.timelock) - currentTimestamp <
+    providerConfig.secondsTillInvoiceExpires
+  ) {
+    return { isValid: false, message: "Insufficient buffer to claim contract" };
   }
 
   if (getPaymentHash(lnInvoiceDetails) !== contractDetails.hashlock) {
@@ -64,4 +87,11 @@ export function getPaymentHash(
     return undefined;
   }
   return ("0x" + paymentHash.data.toString()) as `0x${string}`;
+}
+
+export function getContractAmountFromInvoice(satsInInvoice: number) {
+  return (
+    satsInInvoice * (1 + providerConfig.basisPointFee / 10000) +
+    providerConfig.baseFee
+  );
 }

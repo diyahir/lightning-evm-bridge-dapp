@@ -39,11 +39,6 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
   };
 
   const { sendMessage, isWebSocketConnected, data } = useWebSocket("ws://localhost:3003");
-  // const { data: walletClient } = useWalletClient();
-  // const { data: yourContract } = useScaffoldContract({
-  //   contractName: "HashedTimelock",
-  //   walletClient,
-  // });
 
   useScaffoldEventSubscriber({
     contractName: "HashedTimelock",

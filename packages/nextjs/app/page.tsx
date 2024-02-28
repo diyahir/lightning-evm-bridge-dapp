@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Card, CardFooter, CardHeader, Container, Heading, useDisclosure } from "@chakra-ui/react";
+import { Button, Card, CardFooter, CardHeader, Container, Heading, Tooltip, useDisclosure } from "@chakra-ui/react";
 // import { QrScanner } from "@yudiel/react-qr-scanner";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { HistoryTable } from "~~/components/HistoryTable";
 import SendModal from "~~/components/SendModalPopup";
+import { useLightningApp } from "~~/hooks/LightningProvider";
 import { useAccountBalance, useNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 
 // Import the CSS file with your animation
@@ -15,6 +16,7 @@ const Home: NextPage = () => {
   const { address } = useAccount();
   const { balance } = useAccountBalance(address);
   const price = useNativeCurrencyPrice();
+  const { isWebSocketConnected } = useLightningApp();
   const { isOpen, onClose, onOpen } = useDisclosure();
   const [balanceVisibility, setBalanceVisibility] = useState(0);
 
@@ -60,9 +62,11 @@ const Home: NextPage = () => {
             },
           }}
         >
-          <Button onClick={onOpen} flex="1">
-            Send over Lightning
-          </Button>
+          <Tooltip label={!isWebSocketConnected ? "Lightning Service Provider offline, try refreshing the page." : ""}>
+            <Button isDisabled={!isWebSocketConnected} onClick={onOpen} flex="1">
+              Send over Lightning
+            </Button>
+          </Tooltip>
         </CardFooter>
       </Card>
 

@@ -1,11 +1,9 @@
 import React from "react";
-import { CopyIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
   ButtonGroup,
   Flex,
-  Icon,
   Step,
   StepDescription,
   StepIcon,
@@ -21,6 +19,7 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import { DotLoader } from "react-spinners";
+import { useNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { LnPaymentInvoice } from "~~/types/utils";
 
 /**
@@ -45,8 +44,9 @@ export const steps = [
   { title: "Paid", description: "The lightning provider pays lightning invoice. The reciever must be online." },
 ];
 
-export const PaymentInvoice = ({ invoice, contractId, submitPayment, cancelPayment, step }: PaymentInvoiceProps) => {
+export const PaymentInvoice = ({ invoice, submitPayment, cancelPayment, step }: PaymentInvoiceProps) => {
   const expiryDate = new Date(invoice.timeExpireDate * 1000);
+  const price = useNativeCurrencyPrice();
 
   return (
     <Flex h="100%" flexDir={"column"} justifyContent={"space-evenly"} alignContent={"space-evenly"} gap={["", "", "5"]}>
@@ -71,20 +71,9 @@ export const PaymentInvoice = ({ invoice, contractId, submitPayment, cancelPayme
             </Td>
           </Tr> */}
           <Tr>
-            <Td border="transparent">Contract Id</Td>
+            <Td border="transparent">USD</Td>
             <Td border="transparent" textAlign={"end"}>
-              {contractId ? contractId.substring(0, 10) + "... " : "Pending"}
-              {contractId && (
-                <Button
-                  colorScheme="blue"
-                  size="xs"
-                  onClick={() => {
-                    navigator.clipboard.writeText(contractId || "");
-                  }}
-                >
-                  <Icon as={CopyIcon} />
-                </Button>
-              )}
+              ${((invoice.satoshis * price) / 100_000_000).toFixed(3)}
             </Td>
           </Tr>
         </Tbody>

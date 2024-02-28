@@ -16,6 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { QrScanner } from "@yudiel/react-qr-scanner";
 import { PaymentRequestObject, decode } from "bolt11";
+import toast from "react-hot-toast";
 import { useWalletClient } from "wagmi";
 import { PaymentInvoice, steps } from "~~/components/PaymentInvoice";
 import { useLightningApp } from "~~/hooks/LightningProvider";
@@ -119,7 +120,9 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
         setActiveStep(2);
       })
       .catch(e => {
-        console.error(e);
+        console.error(e.message);
+        toast.error("User rejected transaction");
+        cleanAndClose();
       });
   }
 

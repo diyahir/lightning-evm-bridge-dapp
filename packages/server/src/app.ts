@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import { ethers } from "ethers";
 import { decode } from "bolt11";
 import { validateLnInvoiceAndContract } from "./utils/validation";
-import { InvoiceRequest, ContractDetails } from "./types";
+import { InvoiceRequest, ContractDetails } from "./types/types";
 import deployedContracts from "./contracts/deployedContracts";
 
 dotenv.config();
