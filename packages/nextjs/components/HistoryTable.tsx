@@ -48,9 +48,24 @@ export const HistoryTable = () => {
     });
   };
 
+  function getTooltipText(transaction: HistoricalTransaction) {
+    switch (transaction.status) {
+      case "pending":
+        return "Waiting for the transaction to be included in a block";
+      case "completed":
+        return "Expand for more details";
+      case "failed":
+        return `Transaction failed: Redeemable at ${new Date(transaction.hashLockTimestamp * 1000).toLocaleString()}`;
+      case "refunded":
+        return "Transaction refunded";
+      default:
+        return "";
+    }
+  }
+
   function refund(transaction: HistoricalTransaction) {
     if (transaction.contractId === "") return;
-    if (transaction.hashLockTimestamp < Date.now() / 1000) {
+    if (transaction.hashLockTimestamp > Date.now() / 1000) {
       return;
     }
     if (!yourContract) return;
@@ -87,34 +102,6 @@ export const HistoryTable = () => {
       });
   }
 
-  //   const transactions = [
-  //     {
-  //       status: "Paid",
-  //       date: "2021-10-10",
-  //       amount: "1000 sats",
-  //     },
-  //     {
-  //       status: "Paid",
-  //       date: "2021-10-10",
-  //       amount: "1000 sats",
-  //     },
-  //     {
-  //       status: "Paid",
-  //       date: "2021-10-10",
-  //       amount: "1000 sats",
-  //     },
-  //     {
-  //       status: "Paid",
-  //       date: "2021-10-10",
-  //       amount: "1000 sats",
-  //     },
-  //     {
-  //       status: "Paid",
-  //       date: "2021-10-10",
-  //       amount: "1000 sats",
-  //     },
-  //   ];
-
   return (
     <CardBody bg="brand.bg">
       <Heading fontFamily={"IBM Plex Mono"} textAlign={"center"} size={"md"} mb="5">
@@ -133,7 +120,7 @@ export const HistoryTable = () => {
             <Tbody>
               {transactions.map((transaction, index) => (
                 <React.Fragment key={index}>
-                  <Tooltip label={transaction.status === "failed" ? "Click to refund" : ""}>
+                  <Tooltip label={getTooltipText(transaction)}>
                     <Tr
                       onClick={() => toggleRow(index)}
                       cursor={"pointer"}

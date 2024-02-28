@@ -31,6 +31,7 @@ const HistoricalTransactionsContext = createContext<LightningAppContextType | un
 export const LightningProvider = ({ children }: { children: React.ReactNode }) => {
   const [transactions, setTransactionsState] = useState<HistoricalTransaction[]>([]);
   const transactionRef = React.useRef<HistoricalTransaction[]>([]);
+  const [invoiceContractIdPair, setInvoiceContractIdPair] = useState<string[]>([]);
   const toast = useToast();
   const setTransactions = (transactions: HistoricalTransaction[]) => {
     transactionRef.current = transactions;
@@ -55,21 +56,29 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
       const index = transactionRef.current.findIndex(t => t.txHash === txHash);
       if (index === -1) return;
       sendMessage({ contractId: tmpContractId, lnInvoice: transactionRef.current[index]?.lnInvoice });
-      addTransaction({
-        status: "pending",
-        date: new Date().toLocaleString(),
-        amount: transactionRef.current[index].amount,
-        txHash: txHash,
-        contractId: tmpContractId.toString(),
-        hashLockTimestamp: transactionRef.current[index].hashLockTimestamp,
-        lnInvoice: transactionRef.current[index].lnInvoice,
-      });
+      setInvoiceContractIdPair([tmpContractId, transactionRef.current[index]?.lnInvoice]);
     },
   });
 
   useEffect(() => {
+    const lastTransaction = transactionRef.current[0];
+    if (invoiceContractIdPair.length === 0) return;
+    const [contractId, lnInvoice] = invoiceContractIdPair;
+    addTransaction({
+      status: "pending",
+      date: lastTransaction.date,
+      amount: lastTransaction.amount,
+      txHash: lastTransaction.txHash,
+      contractId,
+      hashLockTimestamp: lastTransaction.hashLockTimestamp,
+      lnInvoice,
+    });
+  }, [invoiceContractIdPair]);
+
+  useEffect(() => {
     if (data === null) return;
-    const lastTransaction = transactionRef.current[transactionRef.current.length - 1];
+    const lastTransaction = transactionRef.current[0];
+    console.log("Last Transaction", lastTransaction);
     if (data?.status === "success") {
       addTransaction({
         status: "completed",
@@ -113,15 +122,20 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
     // check that amounts is non-zero
     if (transaction.amount === 0) return;
     // check if the transaction is already in the list then replace
-    const index = transactions.findIndex(t => t.txHash === transaction.txHash);
+    let index = transactionRef.current.findIndex(t => t.txHash === transaction.txHash);
+
+    if (index === -1) {
+      index = transactionRef.current.findIndex(t => t.contractId === transaction.contractId);
+    }
+
     if (index !== -1) {
-      const newTransactions = [...transactions];
+      const newTransactions = [...transactionRef.current];
       newTransactions[index] = transaction;
       setTransactions(newTransactions);
       return;
     }
 
-    setTransactions([transaction, ...transactions]);
+    setTransactions([transaction, ...transactionRef.current]);
   };
 
   return (

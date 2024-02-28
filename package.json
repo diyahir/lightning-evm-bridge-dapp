@@ -23,6 +23,7 @@
     "next:lint": "yarn workspace @se-2/nextjs lint",
     "precommit": "lint-staged",
     "prepare": "install-self-peers -- --ignore-scripts",
+    "server": "yarn workspace server start",
     "start": "yarn workspace @se-2/nextjs dev",
     "test": "yarn foundry:test",
     "vercel": "yarn workspace @se-2/nextjs vercel",

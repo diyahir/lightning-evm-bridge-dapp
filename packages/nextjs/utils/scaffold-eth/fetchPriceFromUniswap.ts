@@ -22,7 +22,7 @@ export const fetchPriceFromUniswap = async (targetNetwork: ChainWithAttributes):
     // const res = await axios.get(
     //   `https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=${targetNetwork.nativeCurrency.symbol}`,
     // );
-    return 51100;
+    return 59300;
   }
   if (
     targetNetwork.nativeCurrency.symbol !== "ETH" &&

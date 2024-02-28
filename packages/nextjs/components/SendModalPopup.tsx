@@ -13,7 +13,6 @@ import {
   ModalOverlay,
   VStack,
   useSteps,
-  useToast,
 } from "@chakra-ui/react";
 import { QrScanner } from "@yudiel/react-qr-scanner";
 import { PaymentRequestObject, decode } from "bolt11";
@@ -28,18 +27,15 @@ type SendModalProps = {
   onClose: () => void;
 };
 function SendModal({ isOpen, onClose }: SendModalProps) {
-  const { addTransaction, data, transactions } = useLightningApp();
+  const { addTransaction, transactions } = useLightningApp();
   const [invoice, setInvoice] = useState<string>("");
   const lnInvoiceRef = useRef<LnPaymentInvoice | null>(null);
   const [contractId, setContractId] = useState<string | null>(null);
-  const [txHash, setTxHash] = useState<string | null>(null);
-  const toast = useToast();
 
   function cleanAndClose() {
     lnInvoiceRef.current = null;
     setInvoice("");
     setContractId(null);
-    setTxHash(null);
     setActiveStep(1);
     onClose();
   }
@@ -47,12 +43,16 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
   useEffect(() => {
     // check if the latest transaction has a contractId then update the active step to 3
     if (transactions.length === 0) return;
-    const lastTransaction = transactions[transactions.length - 1];
+    const lastTransaction = transactions[0];
     if (lastTransaction.lnInvoice !== lnInvoiceRef.current?.lnInvoice) return;
     if (lastTransaction.status === "pending" && lastTransaction.contractId) {
       setActiveStep(3);
     }
     if (lastTransaction.status === "completed") {
+      setActiveStep(4);
+      cleanAndClose();
+    }
+    if (lastTransaction.status === "failed") {
       setActiveStep(4);
       cleanAndClose();
     }
@@ -117,7 +117,6 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
           lnInvoice: lnInvoiceRef.current ? lnInvoiceRef.current.lnInvoice : "",
         });
         setActiveStep(2);
-        setTxHash(tx);
       })
       .catch(e => {
         console.error(e);
