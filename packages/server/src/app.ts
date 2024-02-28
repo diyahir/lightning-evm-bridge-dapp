@@ -6,6 +6,7 @@ import { decode } from "bolt11";
 import { validateLnInvoiceAndContract } from "./utils/validation";
 import { InvoiceRequest, ContractDetails } from "./types/types";
 import deployedContracts from "./contracts/deployedContracts";
+import { providerConfig } from "./provider.config";
 
 dotenv.config();
 
@@ -32,6 +33,13 @@ const htlcContract = new ethers.Contract(
   htlcContractInfo.abi,
   signer
 );
+
+export type CachedPayment = {
+  contractId: string;
+  secret: string;
+};
+let cachedPayments: CachedPayment[] = [];
+// ideally this should be stored in a database, but for the sake of simplicity we are using an in-memory cache
 
 console.log(`RPC Provider is running on ${ETH_PROVIDER_URL}`);
 console.log(`WebSocket server is running on ws://localhost:${PORT || 3003}`);
@@ -104,13 +112,24 @@ async function processInvoiceRequest(request: InvoiceRequest, ws: WebSocket) {
     const paymentResponse = await lnService.pay({
       lnd,
       request: request.lnInvoice,
+      max_fee: providerConfig.maxLNFee,
     });
     console.log("Payment Response:", paymentResponse);
+
+    // Critical point, if this withdraw fails, the LSP will lose funds
+    // We should cache the paymentResponse.secret and request.contractId and retry the withdrawal if it fails
 
     await htlcContract
       .withdraw(request.contractId, "0x" + paymentResponse.secret, options)
       .then((tx: any) => {
         console.log("Withdrawal Transaction:", tx);
+      })
+      .catch((error: any) => {
+        console.error("Withdrawal Error:", error);
+        cachedPayments.push({
+          contractId: request.contractId,
+          secret: paymentResponse.secret,
+        });
       });
 
     ws.send(
@@ -143,3 +162,43 @@ async function getContractDetails(
     preimage: response[7],
   };
 }
+
+// Function to process cached payments
+async function processCachedPayments() {
+  console.log(`Processing ${cachedPayments.length} cached payments...`);
+  for (let i = 0; i < cachedPayments.length; i++) {
+    const payment = cachedPayments[i];
+    try {
+      console.log(
+        `Attempting to withdraw for contractId: ${payment.contractId}`
+      );
+      const options = { gasPrice: ethers.parseUnits("0.001", "gwei") };
+      await htlcContract
+        .withdraw(payment.contractId, "0x" + payment.secret, options)
+        .then((tx) => {
+          console.log("Withdrawal Transaction Success:", tx);
+          // Remove the successfully processed payment from the cache
+          cachedPayments = cachedPayments.filter(
+            (p) => p.contractId !== payment.contractId
+          );
+        })
+        .catch(async (error) => {
+          // try again with a higher gas price
+          // carefull consideration should be given to the gas price
+          await htlcContract.withdraw(
+            payment.contractId,
+            "0x" + payment.secret
+          );
+        });
+    } catch (error) {
+      console.error(
+        `Error processing cached payment for contractId ${payment.contractId}:`,
+        error
+      );
+      // Handle any unexpected errors here
+    }
+  }
+}
+
+// Poll every 30 seconds
+setInterval(processCachedPayments, 30000);

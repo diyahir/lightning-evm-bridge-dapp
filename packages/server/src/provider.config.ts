@@ -4,6 +4,7 @@ export type ProviderConfig = {
   baseFee: number;
   basisPointFee: number; // 100 = 1%
   secondsTillInvoiceExpires: number;
+  maxLNFee: number;
 };
 
 export const providerConfig: ProviderConfig = {
@@ -12,4 +13,5 @@ export const providerConfig: ProviderConfig = {
   baseFee: 0, // 100 = 1%
   basisPointFee: 0,
   secondsTillInvoiceExpires: 3 * 60,
+  maxLNFee: 100,
 };

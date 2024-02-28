@@ -1,5 +1,6 @@
 import { CurrencyAmount, Token } from "@uniswap/sdk-core";
 import { Pair, Route } from "@uniswap/v2-sdk";
+import axios from "axios";
 import { Address, createPublicClient, http, parseAbi } from "viem";
 import { mainnet } from "wagmi";
 import scaffoldConfig from "~~/scaffold.config";
@@ -18,11 +19,8 @@ const ABI = parseAbi([
 
 export const fetchPriceFromUniswap = async (targetNetwork: ChainWithAttributes): Promise<number> => {
   if (targetNetwork.nativeCurrency.symbol == "BTC") {
-    // fetch coinmarketcap price
-    // const res = await axios.get(
-    //   `https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=${targetNetwork.nativeCurrency.symbol}`,
-    // );
-    return 59300;
+    const res = await axios.get(`https://api.coinbase.com/v2/exchange-rates?currency=BTC`);
+    return res.data.data.rates.USD;
   }
   if (
     targetNetwork.nativeCurrency.symbol !== "ETH" &&

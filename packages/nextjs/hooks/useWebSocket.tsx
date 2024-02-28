@@ -8,6 +8,13 @@ export const useWebSocket = (url: string) => {
   const [data, setData] = useState<InvoiceResponse | null>(null);
   const [error, setError] = useState<Event | null>(null);
   const [isWebSocketConnected, setIsWebSocketConnected] = useState<boolean>(false);
+  const reconnect = () => {
+    if (socket.current) {
+      socket.current.close();
+    }
+    socket.current = new WebSocket(url);
+    setIsWebSocketConnected(true);
+  };
 
   useEffect(() => {
     socket.current = new WebSocket(url);
@@ -41,5 +48,5 @@ export const useWebSocket = (url: string) => {
     [isWebSocketConnected],
   );
 
-  return { sendMessage, data, error, isWebSocketConnected };
+  return { sendMessage, data, error, isWebSocketConnected, reconnect };
 };

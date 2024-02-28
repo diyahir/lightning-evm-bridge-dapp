@@ -3,6 +3,7 @@
 import React, { useCallback, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Button } from "@chakra-ui/react";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useLightningApp } from "~~/hooks/LightningProvider";
@@ -62,7 +63,7 @@ export const Header = () => {
     burgerMenuRef,
     useCallback(() => setIsDrawerOpen(false), []),
   );
-  const { isWebSocketConnected } = useLightningApp();
+  const { isWebSocketConnected, reconnect } = useLightningApp();
   return (
     <div className="sticky lg:static top-0 navbar bg-base-100 min-h-0 flex-shrink-0 justify-between z-20 px-0 sm:px-2">
       <div className="navbar-start w-auto lg:w-1/2">
@@ -100,7 +101,18 @@ export const Header = () => {
       </div>
       <div className="navbar-end flex-grow mr-4">
         {/* a div that shows if the client is connected to the server */}
-        <div className={`${isWebSocketConnected ? "bg-success" : "bg-error"} rounded-full w-2 h-2 self-center`}></div>
+        <Button
+          size={"xs"}
+          fontWeight={"light"}
+          background={"transparent"}
+          onClick={() => {
+            if (!isWebSocketConnected) reconnect();
+          }}
+        >
+          <div className={`${isWebSocketConnected ? "bg-success" : "bg-error"} rounded-full w-2 h-2 self-center`}></div>
+          &nbsp; {isWebSocketConnected ? "LSP Connected" : "LSP Disconnected"}
+        </Button>
+        &nbsp;
         <RainbowKitCustomConnectButton />
         <FaucetButton />
       </div>

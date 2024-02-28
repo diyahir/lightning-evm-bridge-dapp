@@ -15,21 +15,20 @@ import { useAccountBalance, useNativeCurrencyPrice } from "~~/hooks/scaffold-eth
 const Home: NextPage = () => {
   const { address } = useAccount();
   const { balance } = useAccountBalance(address);
-  const price = useNativeCurrencyPrice();
-  const { isWebSocketConnected } = useLightningApp();
+  const { isWebSocketConnected, price } = useLightningApp();
   const { isOpen, onClose, onOpen } = useDisclosure();
   const [balanceVisibility, setBalanceVisibility] = useState(0);
 
   function getBalanceWithVisibility() {
     if (balance === null) return "Loading Balance...";
     if (balanceVisibility === 0) {
-      return (balance * 100_000_000).toLocaleString() + " sats";
+      return Math.floor(balance * 100_000_000).toLocaleString() + " sats";
     }
     if (balanceVisibility === 1) {
       return "$" + (balance * price).toFixed(2) + " USD";
     }
     if (balanceVisibility === 2) {
-      return "******** sats";
+      return "****** sats";
     }
   }
 

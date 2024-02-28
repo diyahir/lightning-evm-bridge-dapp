@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useScaffoldEventSubscriber } from "./scaffold-eth";
+import { useNativeCurrencyPrice, useScaffoldEventSubscriber } from "./scaffold-eth";
 import { useWebSocket } from "./useWebSocket";
 import { useToast } from "@chakra-ui/react";
 // import { useWalletClient } from "wagmi";
@@ -20,8 +20,10 @@ export type LightningAppContextType = {
   transactions: HistoricalTransaction[];
   addTransaction: (transaction: HistoricalTransaction) => void;
   sendMessage: (message: InvoiceRequest) => void;
+  reconnect: () => void;
   isWebSocketConnected: boolean;
   data: InvoiceResponse | null;
+  price: number;
 };
 
 // Create the context
@@ -29,6 +31,7 @@ const HistoricalTransactionsContext = createContext<LightningAppContextType | un
 
 // Provider component
 export const LightningProvider = ({ children }: { children: React.ReactNode }) => {
+  const price = useNativeCurrencyPrice();
   const [transactions, setTransactionsState] = useState<HistoricalTransaction[]>([]);
   const transactionRef = React.useRef<HistoricalTransaction[]>([]);
   const [invoiceContractIdPair, setInvoiceContractIdPair] = useState<string[]>([]);
@@ -38,7 +41,7 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
     setTransactionsState(transactions);
   };
 
-  const { sendMessage, isWebSocketConnected, data } = useWebSocket("ws://localhost:3003");
+  const { sendMessage, isWebSocketConnected, data, reconnect } = useWebSocket("ws://localhost:3003");
 
   useScaffoldEventSubscriber({
     contractName: "HashedTimelock",
@@ -135,7 +138,7 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
 
   return (
     <HistoricalTransactionsContext.Provider
-      value={{ transactions, data, addTransaction, sendMessage, isWebSocketConnected }}
+      value={{ transactions, data, addTransaction, sendMessage, isWebSocketConnected, price, reconnect }}
     >
       {children}
     </HistoricalTransactionsContext.Provider>

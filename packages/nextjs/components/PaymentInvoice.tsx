@@ -19,7 +19,7 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import { DotLoader } from "react-spinners";
-import { useNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
+import { useLightningApp } from "~~/hooks/LightningProvider";
 import { LnPaymentInvoice } from "~~/types/utils";
 
 /**
@@ -46,7 +46,7 @@ export const steps = [
 
 export const PaymentInvoice = ({ invoice, submitPayment, cancelPayment, step }: PaymentInvoiceProps) => {
   const expiryDate = new Date(invoice.timeExpireDate * 1000);
-  const price = useNativeCurrencyPrice();
+  const { price } = useLightningApp();
 
   return (
     <Flex h="100%" flexDir={"column"} justifyContent={"space-evenly"} alignContent={"space-evenly"} gap={["", "", "5"]}>

@@ -10,8 +10,7 @@ import { Header } from "~~/components/Header";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { ProgressBar } from "~~/components/scaffold-eth/ProgressBar";
 import theme from "~~/components/theme";
-import { LightningProvider } from "~~/hooks/LightningProvider";
-import { useNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
+import { LightningProvider, useLightningApp } from "~~/hooks/LightningProvider";
 import { useDarkMode } from "~~/hooks/scaffold-eth/useDarkMode";
 import { useGlobalState } from "~~/services/store/store";
 import { botanixTestnet } from "~~/services/web3/botanixTestnet";
@@ -19,7 +18,7 @@ import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 import { appChains } from "~~/services/web3/wagmiConnectors";
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
-  const price = useNativeCurrencyPrice();
+  const { price } = useLightningApp();
   const setNativeCurrencyPrice = useGlobalState(state => state.setNativeCurrencyPrice);
 
   useEffect(() => {
@@ -30,13 +29,13 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <>
-      <div className="flex flex-col min-h-screen">
+      <Flex flexDir={"column"} minH={"100vh"} background={"brand.bg"}>
         <Header />
         <Flex dir="col" justifyContent={"center"} flex={1} className="relative flex flex-col flex-1">
           {children}
         </Flex>
         <Footer />
-      </div>
+      </Flex>
       <Toaster />
     </>
   );
