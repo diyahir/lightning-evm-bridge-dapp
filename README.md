@@ -73,9 +73,7 @@ This command starts a local Ethereum network using Hardhat. The network runs on 
 3. On a second terminal, deploy the test contract:
 
 ```
-
 yarn deploy
-
 ```
 
 Visit your app on: `http://localhost:3000`. You can interact with your smart contract using the contract component or the example ui in the frontend. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
@@ -134,17 +132,15 @@ If the chain you're using is not supported by any of the verifying methods, you 
 
 **Make sure your `packages/nextjs/scaffold.config.ts` file has the values you need.**
 
-### Deploying to Vercel without any checks
+### Future Work
 
-By default, Vercel runs types and lint checks before building your app. The deployment will fail if there are any types or lint errors.
-
-To ignore these checks while deploying from the CLI, use:
-
-```shell
-yarn vercel:yolo
-```
-
-If your repo is connected to Vercel, you can set `NEXT_PUBLIC_IGNORE_BUILD_ERROR` to `true` in a [environment variable](https://vercel.com/docs/concepts/projects/environment-variables).
+- [ ] Server funds rebalancing (cycle funds from the evm chain to the lightning network channel)
+- [ ] ERC20 support for tBTC on other chains (Base, Arbitrum, etc.)
+- [ ] Make server multi-chain
+- [ ] Add support to receive payments from the lightning network to the evm chain
+- [ ] Create proper database for the server
+- [ ] Add ability to change LSP
+- [ ] Integrate service fee for the LSP
 
 ### Disabling Github Workflow
 
