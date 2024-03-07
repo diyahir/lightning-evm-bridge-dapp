@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import { ethers } from "ethers";
 import { decode } from "bolt11";
 import { validateLnInvoiceAndContract } from "./utils/validation";
-import { InvoiceRequest, ContractDetails } from "./types/types";
+import { InvoiceRequest, ContractDetails, GWEIPERSAT } from "./types/types";
 import deployedContracts from "./contracts/deployedContracts";
 import { providerConfig } from "./provider.config";
 
@@ -154,7 +154,7 @@ async function getContractDetails(
   return {
     sender: response[0],
     receiver: response[1],
-    amount: response[2],
+    amount: BigInt(Number(response[2]) / GWEIPERSAT),
     hashlock: response[3],
     timelock: response[4],
     withdrawn: response[5],

@@ -76,6 +76,12 @@ export const PaymentInvoice = ({ invoice, submitPayment, cancelPayment, step }: 
               ${((invoice.satoshis * price) / 100_000_000).toFixed(3)}
             </Td>
           </Tr>
+          <Tr>
+            <Td border="transparent">Service Fee</Td>
+            <Td border="transparent" textAlign={"end"}>
+              0 sats
+            </Td>
+          </Tr>
         </Tbody>
       </Table>
 

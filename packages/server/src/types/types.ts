@@ -18,3 +18,5 @@ export type ContractDetails = {
   refunded: boolean;
   preimage: string;
 };
+
+export const GWEIPERSAT = 1e10;

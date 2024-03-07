@@ -14,6 +14,9 @@ const nextConfig = {
     config.externals.push("pino-pretty", "lokijs", "encoding");
     return config;
   },
+  env: {
+    WEBSOCKET_URL: process.env.WEBSOCKET_URL??"ws://localhost:3003",
+  }
 };
 
 module.exports = nextConfig;

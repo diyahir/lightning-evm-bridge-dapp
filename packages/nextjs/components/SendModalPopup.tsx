@@ -22,6 +22,7 @@ import { PaymentInvoice, steps } from "~~/components/PaymentInvoice";
 import { useLightningApp } from "~~/hooks/LightningProvider";
 import { useScaffoldContract } from "~~/hooks/scaffold-eth";
 import { LnPaymentInvoice } from "~~/types/utils";
+import { GWEIPERSAT } from "~~/utils/scaffold-eth/common";
 
 type SendModalProps = {
   isOpen: boolean;
@@ -103,7 +104,7 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
           BigInt(getMinTimelock(lnInvoiceRef.current.timeExpireDate)),
         ],
         {
-          value: BigInt(lnInvoiceRef.current.satoshis),
+          value: BigInt(lnInvoiceRef.current.satoshis * GWEIPERSAT),
         },
       )
       .then(tx => {

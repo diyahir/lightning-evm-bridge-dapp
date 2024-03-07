@@ -3,7 +3,7 @@
 import React, { useCallback, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Button } from "@chakra-ui/react";
+import { Button, Image } from "@chakra-ui/react";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useLightningApp } from "~~/hooks/LightningProvider";
@@ -89,7 +89,9 @@ export const Header = () => {
             </ul>
           )}
         </div>
+
         <Link href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6 shrink-0">
+          <Image src="/logo.svg" alt="Botanix Logo" width={"32px"} height={"32px"} />
           <div className="flex flex-col">
             <span className="font-bold leading-tight">Lightning Payments</span>
             <span className="text-xs">Botanix {"<>"} Lightning Network</span>

@@ -23,7 +23,7 @@ export const Footer = () => {
             {nativeCurrencyPrice > 0 && (
               <div>
                 <Button>
-                  <span>${nativeCurrencyPrice}</span>
+                  <span>${nativeCurrencyPrice.toLocaleString()}</span>
                 </Button>
               </div>
             )}

@@ -40,8 +40,10 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
     transactionRef.current = transactions;
     setTransactionsState(transactions);
   };
-
-  const { sendMessage, isWebSocketConnected, data, reconnect } = useWebSocket("ws://localhost:3003");
+  console.log(process.env.WEBSOCKET_URL ?? "ws://localhost:3003");
+  const { sendMessage, isWebSocketConnected, data, reconnect } = useWebSocket(
+    process.env.WEBSOCKET_URL ?? "ws://localhost:3003",
+  );
 
   useScaffoldEventSubscriber({
     contractName: "HashedTimelock",
@@ -77,6 +79,7 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
     if (data === null) return;
     const lastTransaction = transactionRef.current[0];
     console.log("Last Transaction", lastTransaction);
+
     if (data?.status === "success") {
       addTransaction({
         status: "completed",

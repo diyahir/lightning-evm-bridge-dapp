@@ -8,7 +8,7 @@ import { useAccount } from "wagmi";
 import { HistoryTable } from "~~/components/HistoryTable";
 import SendModal from "~~/components/SendModalPopup";
 import { useLightningApp } from "~~/hooks/LightningProvider";
-import { useAccountBalance, useNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
+import { useAccountBalance } from "~~/hooks/scaffold-eth";
 
 // Import the CSS file with your animation
 
