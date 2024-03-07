@@ -35,7 +35,7 @@ const Home: NextPage = () => {
   return (
     <Container alignContent={"center"} h="95%" justifyContent={"center"}>
       <Card>
-        <CardHeader bg="brand.bg">
+        <CardHeader color={"white"} bg="brand.bg !important">
           <Heading
             style={{ cursor: "pointer" }}
             onClick={() => setBalanceVisibility((balanceVisibility + 1) % 3)}
@@ -62,7 +62,13 @@ const Home: NextPage = () => {
           }}
         >
           <Tooltip label={!isWebSocketConnected ? "Lightning Service Provider offline, try refreshing the page." : ""}>
-            <Button isDisabled={!isWebSocketConnected} onClick={onOpen} flex="1">
+            <Button
+              background={"gray.300 !important"}
+              isDisabled={!isWebSocketConnected}
+              onClick={onOpen}
+              flex="1"
+              _hover={{ bg: "gray.100 !impoprtant" }}
+            >
               Send over Lightning
             </Button>
           </Tooltip>

@@ -50,7 +50,7 @@ export const PaymentInvoice = ({ invoice, submitPayment, cancelPayment, step }: 
 
   return (
     <Flex h="100%" flexDir={"column"} justifyContent={"space-evenly"} alignContent={"space-evenly"} gap={["", "", "5"]}>
-      <Table size={"xs"}>
+      <Table color={"white"} size={"xs"}>
         <Tbody>
           <Tr>
             <Td border="transparent">Expiry Time</Td>
@@ -85,20 +85,20 @@ export const PaymentInvoice = ({ invoice, submitPayment, cancelPayment, step }: 
         </Tbody>
       </Table>
 
-      <Stepper index={step} orientation="vertical" height="" gap="0">
+      <Stepper color={"white"} index={step} orientation="vertical" height="" gap="0">
         {steps.map((step, index) => (
           <Step key={index}>
-            <StepIndicator>
+            <StepIndicator borderColor={"gray.300"}>
               <StepStatus
-                complete={<StepIcon />}
+                complete={<StepIcon borderColor={"gray.300"} />}
                 incomplete={<StepNumber />}
                 active={<DotLoader color="#90cdf4" size="42px" />}
               />
             </StepIndicator>
 
             <Box>
-              <StepTitle>{step.title}</StepTitle>
-              <StepDescription>{step.description}</StepDescription>
+              <StepTitle style={{ color: "white" }}>{step.title}</StepTitle>
+              <StepDescription style={{ color: "gray.100" }}>{step.description}</StepDescription>
             </Box>
 
             <StepSeparator />
@@ -108,10 +108,21 @@ export const PaymentInvoice = ({ invoice, submitPayment, cancelPayment, step }: 
 
       {step < 2 && (
         <ButtonGroup colorScheme="red" width={"100%"} isDisabled={step !== 1}>
-          <Button width={"100%"} onClick={() => cancelPayment()} isLoading={step == 2 || step == 3}>
+          <Button
+            bg={"red.800 !important"}
+            width={"100%"}
+            onClick={() => cancelPayment()}
+            isLoading={step == 2 || step == 3}
+          >
             Cancel
           </Button>
-          <Button colorScheme="green" width={"100%"} onClick={() => submitPayment()} isLoading={step == 2 || step == 3}>
+          <Button
+            bg={"green.800 !important"}
+            colorScheme="green"
+            width={"100%"}
+            onClick={() => submitPayment()}
+            isLoading={step == 2 || step == 3}
+          >
             Pay
           </Button>
         </ButtonGroup>

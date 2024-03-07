@@ -14,10 +14,12 @@
     "vercel:yolo": "vercel --build-env NEXT_PUBLIC_IGNORE_BUILD_ERROR=true"
   },
   "dependencies": {
+    "@chakra-ui/core": "^0.8.0",
     "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/next-js": "^2.2.0",
     "@chakra-ui/react": "^2.8.2",
-    "@emotion/react": "^11.11.3",
+    "@emotion/core": "^11.0.0",
+    "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
     "@ethersproject/providers": "~5.7.2",
     "@heroicons/react": "~2.0.11",
@@ -28,7 +30,8 @@
     "blo": "~1.0.1",
     "bolt11": "^1.4.1",
     "daisyui": "~4.4.19",
-    "framer-motion": "^11.0.5",
+    "emotion-theming": "^11.0.0",
+    "framer-motion": "^11.0.8",
     "next": "~14.0.4",
     "nprogress": "~0.2.0",
     "qrcode.react": "~3.1.0",

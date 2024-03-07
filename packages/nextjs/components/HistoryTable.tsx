@@ -103,7 +103,7 @@ export const HistoryTable = () => {
   }
 
   return (
-    <CardBody bg="brand.bg">
+    <CardBody color={"white"} bg="brand.bg">
       <Heading fontFamily={"IBM Plex Mono"} textAlign={"center"} size={"md"} mb="5">
         History
       </Heading>

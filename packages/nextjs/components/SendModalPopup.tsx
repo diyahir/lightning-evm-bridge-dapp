@@ -155,7 +155,9 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
       <Modal isCentered isOpen={isOpen} onClose={cleanAndClose}>
         <ModalOverlay />
         <ModalContent bg="brand.bg" h={["100%", "100%", "min-content"]} m="0">
-          <ModalHeader textAlign={"center"}>{lnInvoiceRef.current == null ? "Scan QR Code" : "Review"}</ModalHeader>
+          <ModalHeader color={"white !important"} textAlign={"center"}>
+            {lnInvoiceRef.current == null ? "Scan QR Code" : "Review"}
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody
             display={"flex"}

@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 import { ChakraProvider, Flex } from "@chakra-ui/react";
+import createCache from "@emotion/cache";
+import { CacheProvider } from "@emotion/react";
 import { RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit";
 import { Toaster } from "react-hot-toast";
 import { WagmiConfig } from "wagmi";
@@ -43,21 +45,27 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
 
 export const ScaffoldEthAppWithProviders = ({ children }: { children: React.ReactNode }) => {
   const { isDarkMode } = useDarkMode();
+  const emotionCache = createCache({
+    key: "emotion-css-cache",
+    prepend: true, // ensures styles are prepended to the <head>, instead of appended
+  });
 
   return (
-    <ChakraProvider theme={theme} cssVarsRoot="body">
-      <WagmiConfig config={wagmiConfig}>
-        <ProgressBar />
-        <RainbowKitProvider
-          chains={[...appChains.chains, botanixTestnet]}
-          avatar={BlockieAvatar}
-          theme={isDarkMode ? darkTheme() : lightTheme()}
-        >
-          <LightningProvider>
-            <ScaffoldEthApp>{children}</ScaffoldEthApp>
-          </LightningProvider>
-        </RainbowKitProvider>
-      </WagmiConfig>
-    </ChakraProvider>
+    <CacheProvider value={emotionCache}>
+      <ChakraProvider theme={theme} cssVarsRoot="body">
+        <WagmiConfig config={wagmiConfig}>
+          <ProgressBar />
+          <RainbowKitProvider
+            chains={[...appChains.chains, botanixTestnet]}
+            avatar={BlockieAvatar}
+            theme={isDarkMode ? darkTheme() : lightTheme()}
+          >
+            <LightningProvider>
+              <ScaffoldEthApp>{children}</ScaffoldEthApp>
+            </LightningProvider>
+          </RainbowKitProvider>
+        </WagmiConfig>
+      </ChakraProvider>
+    </CacheProvider>
   );
 };

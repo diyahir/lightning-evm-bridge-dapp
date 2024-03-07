@@ -3,7 +3,7 @@
 import React, { useCallback, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Button, Image } from "@chakra-ui/react";
+import { Button, Image, Text } from "@chakra-ui/react";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useLightningApp } from "~~/hooks/LightningProvider";
@@ -63,6 +63,7 @@ export const Header = () => {
     burgerMenuRef,
     useCallback(() => setIsDrawerOpen(false), []),
   );
+
   const { isWebSocketConnected, reconnect } = useLightningApp();
   return (
     <div className="sticky lg:static top-0 navbar bg-base-100 min-h-0 flex-shrink-0 justify-between z-20 px-0 sm:px-2">
@@ -90,11 +91,13 @@ export const Header = () => {
           )}
         </div>
 
-        <Link href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6 shrink-0">
-          <Image src="/logo.svg" alt="Botanix Logo" width={"32px"} height={"32px"} />
+        <Link color={"white"} href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6 shrink-0">
+          <Image src="/logo.svg" alt="Botanix Logo" width={"24px"} height={"24px"} />
           <div className="flex flex-col">
-            <span className="font-bold leading-tight">Lightning Payments</span>
-            <span className="text-xs">Botanix {"<>"} Lightning Network</span>
+            <Text fontWeight={"bold"} fontFamily={"IBM Plex Mono"} color={"white"}>
+              {" "}
+              Botanix {"<>"} Lightning{" "}
+            </Text>
           </div>
         </Link>
         <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">
@@ -105,6 +108,7 @@ export const Header = () => {
         {/* a div that shows if the client is connected to the server */}
         <Button
           size={"xs"}
+          color={"gray.500"}
           fontWeight={"light"}
           background={"transparent"}
           onClick={() => {
