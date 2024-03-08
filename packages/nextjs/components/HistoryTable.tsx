@@ -30,20 +30,20 @@ export const HistoryTable = () => {
     });
   };
 
-  function getTooltipText(transaction: HistoricalTransaction) {
-    switch (transaction.status) {
-      case "pending":
-        return "Waiting for the transaction to be included in a block";
-      case "completed":
-        return "Expand for more details";
-      case "failed":
-        return `Transaction failed: Redeemable at ${new Date(transaction.hashLockTimestamp * 1000).toLocaleString()}`;
-      case "refunded":
-        return "Transaction refunded";
-      default:
-        return "";
-    }
-  }
+  // function getTooltipText(transaction: HistoricalTransaction) {
+  //   switch (transaction.status) {
+  //     case "pending":
+  //       return "Waiting for the transaction to be included in a block";
+  //     case "completed":
+  //       return "Expand for more details";
+  //     case "failed":
+  //       return `Transaction failed: Redeemable at ${new Date(transaction.hashLockTimestamp * 1000).toLocaleString()}`;
+  //     case "refunded":
+  //       return "Transaction refunded";
+  //     default:
+  //       return "";
+  //   }
+  // }
 
   function refund(transaction: HistoricalTransaction) {
     if (transaction.contractId === "") return;
