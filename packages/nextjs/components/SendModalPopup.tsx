@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Scanner } from "@yudiel/react-qr-scanner";
 import { PaymentRequestObject, decode } from "bolt11";
-import toast from "react-hot-toast";
 import { useWalletClient } from "wagmi";
 import { PaymentInvoice } from "~~/components/PaymentInvoice";
 import { useLightningApp } from "~~/hooks/LightningProvider";
@@ -16,7 +15,7 @@ type SendModalProps = {
   onClose: () => void;
 };
 function SendModal({ isOpen, onClose }: SendModalProps) {
-  const { addTransaction, transactions } = useLightningApp();
+  const { addTransaction, transactions, toastError } = useLightningApp();
   const [invoice, setInvoice] = useState<string>("");
   const lnInvoiceRef = useRef<LnPaymentInvoice | null>(null);
   const [contractId, setContractId] = useState<string | null>(null);
@@ -106,7 +105,7 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
       })
       .catch(e => {
         console.error(e.message);
-        toast.error("User rejected transaction");
+        toastError("User rejected transaction");
         cleanAndClose();
       });
   }

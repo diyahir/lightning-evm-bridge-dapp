@@ -1,12 +1,11 @@
 import React, { Fragment, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useWalletClient } from "wagmi";
 import { HistoricalTransaction, useLightningApp } from "~~/hooks/LightningProvider";
 import { useScaffoldContract } from "~~/hooks/scaffold-eth";
 
 export const HistoryTable = () => {
-  const { transactions, addTransaction } = useLightningApp();
+  const { transactions, addTransaction, toastSuccess, toastError } = useLightningApp();
   const [expandedRow, setExpandedRow] = useState<number | null>(null); // State to manage expanded row index
   const { data: walletClient } = useWalletClient();
   const { data: yourContract } = useScaffoldContract({
@@ -24,10 +23,7 @@ export const HistoryTable = () => {
 
   const toastAndCopy = (text: string, message: string) => {
     navigator.clipboard.writeText(text);
-    toast.success(message, {
-      position: "top-center",
-      autoClose: 5000,
-    });
+    toastSuccess(message);
   };
 
   // function getTooltipText(transaction: HistoricalTransaction) {
@@ -55,10 +51,7 @@ export const HistoryTable = () => {
       .refund([transaction.contractId as `0x${string}`], {})
       .then(tx => {
         console.log(tx);
-        toast.success("Refund Successful", {
-          position: "top-center",
-          autoClose: 5000,
-        });
+        toastSuccess("Refund Successful");
         addTransaction({
           status: "refunded",
           date: new Date().toLocaleString(),
@@ -71,10 +64,7 @@ export const HistoryTable = () => {
       })
       .catch(e => {
         console.error(e);
-        toast.error("Refund Failed", {
-          position: "top-center",
-          autoClose: 5000,
-        });
+        toastError("Refund Failed");
       });
   }
 
@@ -82,7 +72,7 @@ export const HistoryTable = () => {
     <div className="card bg-brand-bg text-white">
       <div className="card-body p-4">
         <h2 className="text-center font-mono text-md mb-5">History</h2>
-        <table className="table-auto w-full text-sm">
+        <table className="table table-auto w-full text-sm">
           {transactions.length > 0 && (
             <>
               <thead>
@@ -113,21 +103,45 @@ export const HistoryTable = () => {
                             <br />
                             <br />
                             <button
-                              className="btn btn-ghost text-white text-xs p-2"
+                              className="btn btn-neutral text-white text-xs p-2"
                               onClick={() => toastAndCopy(transaction.txHash, "Transaction hash copied to clipboard")}
                             >
-                              {/* Assuming CopyIcon is a SVG or similar; ensure you have a Tailwind way to display it */}
-                              Copy txHash
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={1.5}
+                                stroke="currentColor"
+                                className="w-6 h-6"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5A3.375 3.375 0 0 0 6.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0 0 15 2.25h-1.5a2.251 2.251 0 0 0-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5a9 9 0 0 0-9-9Z"
+                                />
+                              </svg>
                             </button>
                             &nbsp; txHash: {transaction.txHash.substring(0, 20)}...
                             <br />
                             <br />
                             <button
-                              className="btn text-white text-xs p-2"
+                              className="btn btn-neutral text-white text-xs p-2"
                               onClick={() => toastAndCopy(transaction.contractId, "Contract ID copied to clipboard")}
                             >
-                              {/* Assuming CopyIcon is a SVG or similar; ensure you have a Tailwind way to display it */}
-                              Copy contractId
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={1.5}
+                                stroke="currentColor"
+                                className="w-6 h-6"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5A3.375 3.375 0 0 0 6.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0 0 15 2.25h-1.5a2.251 2.251 0 0 0-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5a9 9 0 0 0-9-9Z"
+                                />
+                              </svg>
                             </button>
                             &nbsp; contractId: {transaction.contractId.substring(0, 16)}...
                           </div>
@@ -148,7 +162,6 @@ export const HistoryTable = () => {
           )}
         </table>
       </div>
-      <ToastContainer />
     </div>
   );
 };

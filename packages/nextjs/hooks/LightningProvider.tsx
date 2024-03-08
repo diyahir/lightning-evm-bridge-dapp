@@ -25,6 +25,8 @@ export type LightningAppContextType = {
   isWebSocketConnected: boolean;
   data: InvoiceResponse | null;
   price: number;
+  toastSuccess: (message: string) => void;
+  toastError: (message: string) => void;
 };
 
 // Create the context
@@ -44,6 +46,24 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
   const { sendMessage, isWebSocketConnected, data, reconnect } = useWebSocket(
     process.env.WEBSOCKET_URL ?? "ws://localhost:3003",
   );
+
+  const toastSuccess = (message: string) => {
+    toast.success(message, {
+      position: "top-center",
+      autoClose: 5000,
+      theme: "colored",
+      toastId: Date.now().toString(),
+    });
+  };
+
+  const toastError = (message: string) => {
+    toast.error(message, {
+      position: "top-center",
+      autoClose: 5000,
+      theme: "colored",
+      toastId: Date.now().toString(),
+    });
+  };
 
   useScaffoldEventSubscriber({
     contractName: "HashedTimelock",
@@ -90,17 +110,9 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
         hashLockTimestamp: lastTransaction.hashLockTimestamp,
         lnInvoice: lastTransaction.lnInvoice,
       });
-      toast.success("Payment Success", {
-        position: "top-center",
-        autoClose: 5000,
-        theme: "colored",
-      });
+      toastSuccess("Payment successful");
     } else {
-      toast.error(data?.message || "Payment has failed", {
-        autoClose: 5000,
-        position: "top-center",
-        theme: "colored",
-      });
+      toastError(data.message);
       addTransaction({
         status: "failed",
         date: lastTransaction.date,
@@ -135,7 +147,17 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
 
   return (
     <HistoricalTransactionsContext.Provider
-      value={{ transactions, data, addTransaction, sendMessage, isWebSocketConnected, price, reconnect }}
+      value={{
+        transactions,
+        data,
+        addTransaction,
+        sendMessage,
+        isWebSocketConnected,
+        price,
+        reconnect,
+        toastError,
+        toastSuccess,
+      }}
     >
       {children}
       <ToastContainer position="top-center" />
