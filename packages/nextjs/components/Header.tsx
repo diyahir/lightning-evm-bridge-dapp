@@ -3,7 +3,6 @@
 import React, { useCallback, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Button, Image, Text } from "@chakra-ui/react";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useLightningApp } from "~~/hooks/LightningProvider";
@@ -92,13 +91,8 @@ export const Header = () => {
         </div>
 
         <Link color={"white"} href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6 shrink-0">
-          <Image src="/logo.svg" alt="Botanix Logo" width={"24px"} height={"24px"} />
-          <div className="flex flex-col">
-            <Text fontWeight={"bold"} fontFamily={"IBM Plex Mono"} color={"white"}>
-              {" "}
-              Botanix {"<>"} Lightning{" "}
-            </Text>
-          </div>
+          <img src="/logo.svg" alt="Botanix Logo" width={"24px"} height={"24px"} />
+          <div className="flex flex-col font-plex font-bold text-white">Botanix {"<>"} Lightning </div>
         </Link>
         <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">
           <HeaderMenuLinks />
@@ -106,18 +100,15 @@ export const Header = () => {
       </div>
       <div className="navbar-end flex-grow mr-4">
         {/* a div that shows if the client is connected to the server */}
-        <Button
-          size={"xs"}
-          color={"gray.500"}
-          fontWeight={"light"}
-          background={"transparent"}
+        <button
+          className="btn btn-ghost btn-sm text-white font-plex"
           onClick={() => {
             if (!isWebSocketConnected) reconnect();
           }}
         >
           <div className={`${isWebSocketConnected ? "bg-success" : "bg-error"} rounded-full w-2 h-2 self-center`}></div>
-          &nbsp; {isWebSocketConnected ? "LSP Connected" : "LSP Disconnected"}
-        </Button>
+          {isWebSocketConnected ? "LSP Connected" : "LSP Disconnected"}
+        </button>
         &nbsp;
         <RainbowKitCustomConnectButton />
         <FaucetButton />

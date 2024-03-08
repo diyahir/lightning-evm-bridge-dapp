@@ -1,6 +1,5 @@
 import React from "react";
 import Link from "next/link";
-import { Button } from "@chakra-ui/react";
 import { hardhat } from "viem/chains";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Faucet } from "~~/components/scaffold-eth";
@@ -22,9 +21,9 @@ export const Footer = () => {
           <div className="flex flex-col md:flex-row gap-2 pointer-events-auto">
             {nativeCurrencyPrice > 0 && (
               <div>
-                <Button>
+                <button className="btn btn-neutral">
                   <span>${nativeCurrencyPrice.toLocaleString()}</span>
-                </Button>
+                </button>
               </div>
             )}
             {isLocalNetwork && (

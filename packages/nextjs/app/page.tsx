@@ -1,31 +1,30 @@
 "use client";
 
+// Import necessary hooks and components
 import { useState } from "react";
-import { Button, Card, CardFooter, CardHeader, Container, Heading, Tooltip, useDisclosure } from "@chakra-ui/react";
-// import { QrScanner } from "@yudiel/react-qr-scanner";
-import type { NextPage } from "next";
 import { useAccount } from "wagmi";
+// Import your custom components and hooks
 import { HistoryTable } from "~~/components/HistoryTable";
-import SendModal from "~~/components/SendModalPopup";
+import SendModalPopup from "~~/components/SendModalPopup";
 import { useLightningApp } from "~~/hooks/LightningProvider";
 import { useAccountBalance } from "~~/hooks/scaffold-eth";
 
-// Import the CSS file with your animation
-
-const Home: NextPage = () => {
+const Home = () => {
   const { address } = useAccount();
   const { balance } = useAccountBalance(address);
   const { isWebSocketConnected, price } = useLightningApp();
-  const { isOpen, onClose, onOpen } = useDisclosure();
+  const [isOpen, setIsOpen] = useState(false);
+  const onClose = () => setIsOpen(false);
+  const onOpen = () => setIsOpen(true);
   const [balanceVisibility, setBalanceVisibility] = useState(0);
 
   function getBalanceWithVisibility() {
     if (balance === null) return "Loading Balance...";
     if (balanceVisibility === 0) {
-      return Math.floor(balance * 100_000_000).toLocaleString() + " sats";
+      return `${Math.floor(balance * 100_000_000).toLocaleString()} sats`;
     }
     if (balanceVisibility === 1) {
-      return "$" + (balance * price).toFixed(2) + " USD";
+      return `$${(balance * price).toFixed(2)} USD`;
     }
     if (balanceVisibility === 2) {
       return "****** sats";
@@ -33,50 +32,32 @@ const Home: NextPage = () => {
   }
 
   return (
-    <Container alignContent={"center"} h="95%" justifyContent={"center"}>
-      <Card>
-        <CardHeader color={"white"} bg="brand.bg !important">
-          <Heading
-            style={{ cursor: "pointer" }}
+    <div className="font-plex container mx-auto flex h-[95%] items-center justify-center">
+      <div className="card w-[500px] ">
+        <div className="card-header text-white p-4">
+          <h1
+            className="cursor-pointer text-center text-lg font-mono mt-10"
             onClick={() => setBalanceVisibility((balanceVisibility + 1) % 3)}
-            fontFamily={"IBM Plex Mono"}
-            mt="10%"
-            textAlign={"center"}
-            fontSize={"x-large"}
           >
-            {" "}
-            <span>{getBalanceWithVisibility()}</span>
-          </Heading>
-        </CardHeader>
+            {getBalanceWithVisibility()}
+          </h1>
+        </div>
 
         <HistoryTable />
 
-        <CardFooter
-          bg="brand.bg"
-          justify="space-between"
-          flexWrap="wrap"
-          sx={{
-            "& > button": {
-              minW: "136px",
-            },
-          }}
-        >
-          <Tooltip label={!isWebSocketConnected ? "Lightning Service Provider offline, try refreshing the page." : ""}>
-            <Button
-              background={"gray.300 !important"}
-              isDisabled={!isWebSocketConnected}
-              onClick={onOpen}
-              flex="1"
-              _hover={{ bg: "gray.100 !impoprtant" }}
-            >
-              Send over Lightning
-            </Button>
-          </Tooltip>
-        </CardFooter>
-      </Card>
+        <div className="card-footer p-4 flex justify-between flex-wrap">
+          <button
+            className={`btn btn-neutral w-[100%] min-w-[136px] disabled:opacity-50`}
+            disabled={!isWebSocketConnected}
+            onClick={onOpen}
+          >
+            Send over Lightning
+          </button>
+        </div>
+      </div>
 
-      <SendModal isOpen={isOpen} onClose={onClose} />
-    </Container>
+      <SendModalPopup isOpen={isOpen} onClose={onClose} />
+    </div>
   );
 };
 

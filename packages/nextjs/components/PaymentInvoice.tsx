@@ -1,24 +1,5 @@
 import React from "react";
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Flex,
-  Step,
-  StepDescription,
-  StepIcon,
-  StepIndicator,
-  StepNumber,
-  StepSeparator,
-  StepStatus,
-  StepTitle,
-  Stepper,
-  Table,
-  Tbody,
-  Td,
-  Tr,
-} from "@chakra-ui/react";
-import { DotLoader } from "react-spinners";
+// import { DotLoader } from "react-spinners";
 import { useLightningApp } from "~~/hooks/LightningProvider";
 import { LnPaymentInvoice } from "~~/types/utils";
 
@@ -48,90 +29,68 @@ export const PaymentInvoice = ({ invoice, submitPayment, cancelPayment, step }: 
   const expiryDate = new Date(invoice.timeExpireDate * 1000);
   const { price } = useLightningApp();
 
+  // Assuming steps is an array of step objects used in your Stepper
+
   return (
-    <Flex h="100%" flexDir={"column"} justifyContent={"space-evenly"} alignContent={"space-evenly"} gap={["", "", "5"]}>
-      <Table color={"white"} size={"xs"}>
-        <Tbody>
-          <Tr>
-            <Td border="transparent">Expiry Time</Td>
-            <Td border="transparent" textAlign={"end"}>
-              {expiryDate.toLocaleString()}
-            </Td>
-          </Tr>
-          <Tr>
-            <Td border="transparent">Amount</Td>
-            <Td border="transparent" textAlign={"end"}>
-              {invoice.satoshis} sats
-            </Td>
-          </Tr>
-          {/* <Tr>
-            <Td border="transparent">USD</Td>
-            <Td border="transparent" textAlign={"end"}>
-              ${invoice.satoshis}
-            </Td>
-          </Tr> */}
-          <Tr>
-            <Td border="transparent">USD</Td>
-            <Td border="transparent" textAlign={"end"}>
-              ${((invoice.satoshis * price) / 100_000_000).toFixed(3)}
-            </Td>
-          </Tr>
-          <Tr>
-            <Td border="transparent">Service Fee</Td>
-            <Td border="transparent" textAlign={"end"}>
-              0 sats
-            </Td>
-          </Tr>
-        </Tbody>
-      </Table>
+    <div className="flex h-full flex-col justify-evenly content-evenly gap-5">
+      <table className="w-full text-white text-xs">
+        <tbody>
+          <tr>
+            <td className="border-transparent">Expiry Time</td>
+            <td className="border-transparent text-right">{expiryDate.toLocaleString()}</td>
+          </tr>
+          <tr>
+            <td className="border-transparent">Amount</td>
+            <td className="border-transparent text-right">{invoice.satoshis} sats</td>
+          </tr>
+          <tr>
+            <td className="border-transparent">USD</td>
+            <td className="border-transparent text-right">${((invoice.satoshis * price) / 100_000_000).toFixed(3)}</td>
+          </tr>
+          <tr>
+            <td className="border-transparent">Service Fee</td>
+            <td className="border-transparent text-right">0 sats</td>
+          </tr>
+        </tbody>
+      </table>
 
-      <Stepper color={"white"} index={step} orientation="vertical" height="" gap="0">
-        {steps.map((step, index) => (
-          <Step key={index}>
-            <StepIndicator borderColor={"gray.300"}>
-              <StepStatus
-                complete={<StepIcon borderColor={"gray.300"} />}
-                incomplete={<StepNumber />}
-                active={<DotLoader color="#90cdf4" size="42px" />}
-              />
-            </StepIndicator>
-
-            <Box>
-              <StepTitle style={{ color: "white" }}>{step.title}</StepTitle>
-              <StepDescription style={{ color: "gray.100" }}>{step.description}</StepDescription>
-            </Box>
-
-            <StepSeparator />
-          </Step>
+      {/* Stepper Component */}
+      {/* You'll need to adapt or implement your own stepper logic with Tailwind CSS */}
+      <ul className="steps steps-vertical">
+        {steps.map((stepInfo, index) => (
+          <li key={index} className={`${index < step ? "step step-primary" : "step"} text-white`}>
+            {stepInfo.title}
+          </li>
         ))}
-      </Stepper>
+      </ul>
 
-      {step < 2 && (
-        <ButtonGroup colorScheme="red" width={"100%"} isDisabled={step !== 1}>
-          <Button
-            bg={"red.800 !important"}
-            width={"100%"}
+      {/* Buttons */}
+      {step < 2 ? (
+        <div className="w-full flex justify-between">
+          <button
+            className={`btn btn-error text-white ${step !== 1 ? "opacity-50 cursor-not-allowed" : ""}`}
             onClick={() => cancelPayment()}
-            isLoading={step == 2 || step == 3}
+            disabled={step == 2 || step == 3}
           >
             Cancel
-          </Button>
-          <Button
-            bg={"green.800 !important"}
-            colorScheme="green"
-            width={"100%"}
+          </button>
+          <button
+            className={`btn btn-success text-white ${step !== 1 ? "opacity-50 cursor-not-allowed" : ""}`}
             onClick={() => submitPayment()}
-            isLoading={step == 2 || step == 3}
+            disabled={step == 2 || step == 3}
           >
             Pay
-          </Button>
-        </ButtonGroup>
-      )}
-      {step >= 2 && (
-        <Button width={"100%"} onClick={() => cancelPayment()} isDisabled={step == 2 || step == 3}>
+          </button>
+        </div>
+      ) : (
+        <button
+          className="bg-blue-500 w-full text-white"
+          onClick={() => cancelPayment()}
+          disabled={step == 2 || step == 3}
+        >
           Close
-        </Button>
+        </button>
       )}
-    </Flex>
+    </div>
   );
 };

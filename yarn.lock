@@ -3108,7 +3108,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ~5.40.0
     "@uniswap/sdk-core": ~4.0.1
     "@uniswap/v2-sdk": ~3.0.1
-    "@yudiel/react-qr-scanner": ^1.2.6
+    "@yudiel/react-qr-scanner": ^2.0.0-beta.3
     autoprefixer: ~10.4.12
     blo: ~1.0.1
     bolt11: ^1.4.1
@@ -4880,15 +4880,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@yudiel/react-qr-scanner@npm:^1.2.6":
-  version: 1.2.6
-  resolution: "@yudiel/react-qr-scanner@npm:1.2.6"
+"@yudiel/react-qr-scanner@npm:^2.0.0-beta.3":
+  version: 2.0.0-beta.3
+  resolution: "@yudiel/react-qr-scanner@npm:2.0.0-beta.3"
   dependencies:
     "@zxing/library": ^0.20.0
   peerDependencies:
-    react: ^18.0.0
-    react-dom: ^18.0.0
-  checksum: 85a621c6eae0ae052f8f9dfe1bf11726fa17b7192be15bd13ee9c7c70ae6388511f2ae309f852a075c487c5cf4e7b258040b83d4b3e4e485fbbdbfa4163d1827
+    react: ^18.2.0
+    react-dom: ^18.2.0
+  checksum: fe82275151b51402b37dbd959d0329f807551b96b028dba301b708f3ca26faf7fd599a6056f5eb11221d33d3c12157ecc65225f0262227d3d5543a5e5dee32a2
   languageName: node
   linkType: hard
 

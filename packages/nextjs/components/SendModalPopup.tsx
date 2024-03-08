@@ -1,20 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  Input,
-  InputGroup,
-  InputLeftAddon,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  VStack,
-  useSteps,
-} from "@chakra-ui/react";
-import { QrScanner } from "@yudiel/react-qr-scanner";
+import { useSteps } from "@chakra-ui/react";
+import { Scanner } from "@yudiel/react-qr-scanner";
 import { PaymentRequestObject, decode } from "bolt11";
 import toast from "react-hot-toast";
 import { useWalletClient } from "wagmi";
@@ -86,7 +74,7 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
 
   function getPaymentHash(requestObject: PaymentRequestObject): `0x${string}` | undefined {
     // go through the tags and find the 'payment_hash' tagName and return the 'data'
-    const paymentHash = requestObject.tags.find(tag => tag.tagName === "payment_hash");
+    const paymentHash = requestObject.tags.find((tag: any) => tag.tagName === "payment_hash");
     if (!paymentHash) {
       return undefined;
     }
@@ -152,67 +140,63 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
 
   return (
     <>
-      <Modal isCentered isOpen={isOpen} onClose={cleanAndClose}>
-        <ModalOverlay />
-        <ModalContent bg="brand.bg" h={["100%", "100%", "min-content"]} m="0">
-          <ModalHeader color={"white !important"} textAlign={"center"}>
-            {lnInvoiceRef.current == null ? "Scan QR Code" : "Review"}
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody
-            display={"flex"}
-            flexDir={"column"}
-            justifyContent={"center"}
-            alignContent={"space-between"}
-            mb={[0, 0, 5]}
-          >
-            {/* Wallet Section */}
-            {!lnInvoiceRef.current && (
-              <VStack alignContent={"space-between"} gap={["20", "20", "5"]}>
-                <QrScanner
-                  scanDelay={1}
-                  onError={handleError}
-                  onResult={result => handleScan(result)}
-                  onDecode={result => handleScan(result)}
-                />
-                <InputGroup>
-                  <InputLeftAddon
-                    style={{ cursor: "pointer" }}
-                    onClick={() => {
-                      navigator.clipboard.readText().then(text => {
-                        handleInvoiceChange(text);
-                      });
-                    }}
-                  >
-                    Paste
-                  </InputLeftAddon>
-                  <Input
-                    type="text"
-                    placeholder="ln1232...."
-                    value={invoice}
-                    onChange={e => handleInvoiceChange(e.target.value)}
+      {isOpen && (
+        <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-40 flex justify-center items-center">
+          <div className="bg-base-200 rounded-lg">
+            <div className="text-white bg-brand-bg text-center p-4 rounded-t-lg">
+              {lnInvoiceRef.current == null ? "Scan QR Code" : "Review"}
+              <button onClick={cleanAndClose} className="absolute top-0 right-0 m-4">
+                X
+              </button>
+            </div>
+            <div className="flex flex-col items-center justify-center p-6">
+              {!lnInvoiceRef.current && (
+                <div className="flex flex-col items-center gap-5">
+                  {/* QR Scanner */}
+                  <Scanner
+                    onError={handleError}
+                    onResult={result => handleScan(result)}
+                    // onDecode={result => handleScan(result)}
                   />
-                </InputGroup>
-              </VStack>
-            )}
-
-            {lnInvoiceRef.current && (
-              <PaymentInvoice
-                invoice={lnInvoiceRef.current}
-                submitPayment={submitPayment}
-                contractId={contractId}
-                step={activeStep}
-                expiryDate={getMinTimelock(lnInvoiceRef.current.timeExpireDate).toString()}
-                cancelPayment={() => {
-                  lnInvoiceRef.current = null;
-                  setInvoice("");
-                  setContractId(null);
-                }}
-              ></PaymentInvoice>
-            )}
-          </ModalBody>
-        </ModalContent>
-      </Modal>
+                  <div className="flex">
+                    <button
+                      className="cursor-pointer bg-gray-200 p-2"
+                      onClick={() => {
+                        navigator.clipboard.readText().then(text => {
+                          handleInvoiceChange(text);
+                        });
+                      }}
+                    >
+                      Paste
+                    </button>
+                    <input
+                      type="text"
+                      placeholder="ln1232...."
+                      className="border p-2"
+                      value={invoice}
+                      onChange={e => handleInvoiceChange(e.target.value)}
+                    />
+                  </div>
+                </div>
+              )}
+              {lnInvoiceRef.current && (
+                <PaymentInvoice
+                  invoice={lnInvoiceRef.current}
+                  submitPayment={submitPayment}
+                  contractId={contractId}
+                  step={activeStep}
+                  expiryDate={getMinTimelock(lnInvoiceRef.current.timeExpireDate).toString()}
+                  cancelPayment={() => {
+                    lnInvoiceRef.current = null;
+                    setInvoice("");
+                    setContractId(null);
+                  }}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

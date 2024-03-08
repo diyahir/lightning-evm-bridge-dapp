@@ -1,20 +1,5 @@
 import React, { Fragment, useState } from "react";
-import { CopyIcon } from "@chakra-ui/icons";
-import {
-  Box,
-  Button,
-  CardBody,
-  Heading,
-  Icon,
-  Table,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tooltip,
-  Tr,
-  useToast,
-} from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
 import { useWalletClient } from "wagmi";
 import { HistoricalTransaction, useLightningApp } from "~~/hooks/LightningProvider";
 import { useScaffoldContract } from "~~/hooks/scaffold-eth";
@@ -103,90 +88,75 @@ export const HistoryTable = () => {
   }
 
   return (
-    <CardBody color={"white"} bg="brand.bg">
-      <Heading fontFamily={"IBM Plex Mono"} textAlign={"center"} size={"md"} mb="5">
-        History
-      </Heading>
-      <Table size={"sm"}>
-        {transactions.length > 0 && (
-          <>
-            <Thead>
-              <Tr>
-                <Th>Status</Th>
-                <Th>Date</Th>
-                <Th isNumeric>Amount</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {transactions.map((transaction, index) => (
-                <React.Fragment key={index}>
-                  <Tooltip label={getTooltipText(transaction)}>
-                    <Tr
+    <div className="card bg-brand-bg text-white">
+      <div className="card-body p-4">
+        <h2 className="text-center font-mono text-md mb-5">History</h2>
+        <table className="table-auto w-full text-sm">
+          {transactions.length > 0 && (
+            <>
+              <thead>
+                <tr>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th className="text-right">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {transactions.map((transaction, index) => (
+                  <React.Fragment key={index}>
+                    <tr
                       onClick={() => toggleRow(index)}
-                      cursor={"pointer"}
-                      bg={transaction.status === "failed" ? "red.400" : ""}
-                      css={{
-                        "&:hover": {
-                          backgroundColor: "rgba(255, 255, 255, 0.1)",
-                        },
-                      }}
+                      className={`cursor-pointer ${
+                        transaction.status === "failed" ? "bg-red-400" : ""
+                      } hover:bg-white hover:bg-opacity-10`}
                     >
-                      <Td>{transaction.status}</Td>
-
-                      <Td>{transaction.date}</Td>
-                      <Td isNumeric>{transaction.amount} sats</Td>
-                      {/* <Td>
-                      <Icon as={expandedRow === index ? <ChevronUpIcon /> : <ChevronDownIcon />} />
-                    </Td> */}
-                    </Tr>
-                  </Tooltip>
-                  {/* Expandable row for details */}
-                  {expandedRow === index && (
-                    <Tr>
-                      <Td colSpan={3}>
-                        <Box>
-                          TimeLock exiry: {new Date(transaction.hashLockTimestamp * 1000).toLocaleString()}
-                          <br />
-                          <br />
-                          <Button
-                            colorScheme="blue"
-                            size="xs"
-                            onClick={() => {
-                              toastAndCopy(transaction.txHash, "Transaction hash copied to clipboard");
-                            }}
-                          >
-                            <Icon as={CopyIcon} />
-                          </Button>
-                          &nbsp; txHash: {transaction.txHash.substring(0, 20)}...
-                          <br />
-                          <br />
-                          <Button
-                            colorScheme="blue"
-                            size="xs"
-                            onClick={() => {
-                              toastAndCopy(transaction.contractId, "Contract ID copied to clipboard");
-                            }}
-                          >
-                            <Icon as={CopyIcon} />
-                          </Button>
-                          &nbsp; contractId: {transaction.contractId.substring(0, 16)}...
-                        </Box>
-                      </Td>
-                    </Tr>
-                  )}
-                </React.Fragment>
-              ))}
-            </Tbody>
-          </>
-        )}
-        {transactions.length === 0 && (
-          <Tr>
-            <Td border={"#787878"} borderStyle={"dashed"} textAlign={"center"}>
-              Send your first lightning transaction!
-            </Td>
-          </Tr>
-        )}
-      </Table>
-    </CardBody>
+                      <td>{transaction.status}</td>
+                      <td>{transaction.date}</td>
+                      <td className="text-right">{transaction.amount} sats</td>
+                    </tr>
+                    {expandedRow === index && (
+                      <tr>
+                        <td colSpan={3}>
+                          <div className="p-4">
+                            TimeLock expiry: {new Date(transaction.hashLockTimestamp * 1000).toLocaleString()}
+                            <br />
+                            <br />
+                            <button
+                              className="btn btn-ghost text-white text-xs p-2"
+                              onClick={() => toastAndCopy(transaction.txHash, "Transaction hash copied to clipboard")}
+                            >
+                              {/* Assuming CopyIcon is a SVG or similar; ensure you have a Tailwind way to display it */}
+                              Copy txHash
+                            </button>
+                            &nbsp; txHash: {transaction.txHash.substring(0, 20)}...
+                            <br />
+                            <br />
+                            <button
+                              className="btn text-white text-xs p-2"
+                              onClick={() => toastAndCopy(transaction.contractId, "Contract ID copied to clipboard")}
+                            >
+                              {/* Assuming CopyIcon is a SVG or similar; ensure you have a Tailwind way to display it */}
+                              Copy contractId
+                            </button>
+                            &nbsp; contractId: {transaction.contractId.substring(0, 16)}...
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                ))}
+              </tbody>
+            </>
+          )}
+          {transactions.length === 0 && (
+            <tr>
+              <td className="border border-gray-400 border-dashed text-center py-4">
+                Send your first lightning transaction!
+              </td>
+            </tr>
+          )}
+        </table>
+      </div>
+    </div>
   );
 };
