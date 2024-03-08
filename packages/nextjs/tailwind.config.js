@@ -9,7 +9,7 @@ module.exports = {
     themes: [
       {
         customDark: {
-          primary: "#8A3FFC", // A shade of purple for primary elements
+          primary: "#67cff1", // A shade of purple for primary elements
           "primary-content": "#F9FBFF", // High contrast content color for readability
           secondary: "#323f61", // A subdued shade for secondary elements
           "secondary-content": "#F9FBFF",

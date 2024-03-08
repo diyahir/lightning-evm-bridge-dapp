@@ -1,12 +1,12 @@
 import React, { Fragment, useState } from "react";
-import { useToast } from "@chakra-ui/react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useWalletClient } from "wagmi";
 import { HistoricalTransaction, useLightningApp } from "~~/hooks/LightningProvider";
 import { useScaffoldContract } from "~~/hooks/scaffold-eth";
 
 export const HistoryTable = () => {
   const { transactions, addTransaction } = useLightningApp();
-  const toast = useToast();
   const [expandedRow, setExpandedRow] = useState<number | null>(null); // State to manage expanded row index
   const { data: walletClient } = useWalletClient();
   const { data: yourContract } = useScaffoldContract({
@@ -24,12 +24,9 @@ export const HistoryTable = () => {
 
   const toastAndCopy = (text: string, message: string) => {
     navigator.clipboard.writeText(text);
-    toast({
-      position: "top",
-      title: message,
-      status: "success",
-      duration: 3000,
-      isClosable: true,
+    toast.success(message, {
+      position: "top-center",
+      autoClose: 5000,
     });
   };
 
@@ -58,12 +55,9 @@ export const HistoryTable = () => {
       .refund([transaction.contractId as `0x${string}`], {})
       .then(tx => {
         console.log(tx);
-        toast({
-          position: "top",
-          title: "Refund Success",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
+        toast.success("Refund Successful", {
+          position: "top-center",
+          autoClose: 5000,
         });
         addTransaction({
           status: "refunded",
@@ -77,12 +71,9 @@ export const HistoryTable = () => {
       })
       .catch(e => {
         console.error(e);
-        toast({
-          position: "top",
-          title: "Refund Failed",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
+        toast.error("Refund Failed", {
+          position: "top-center",
+          autoClose: 5000,
         });
       });
   }
@@ -157,6 +148,7 @@ export const HistoryTable = () => {
           )}
         </table>
       </div>
+      <ToastContainer />
     </div>
   );
 };

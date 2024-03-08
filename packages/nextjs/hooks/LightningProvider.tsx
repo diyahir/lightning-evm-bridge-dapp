@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useNativeCurrencyPrice, useScaffoldEventSubscriber } from "./scaffold-eth";
 import { useWebSocket } from "./useWebSocket";
-import { useToast } from "@chakra-ui/react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 // import { useWalletClient } from "wagmi";
 import { InvoiceRequest, InvoiceResponse } from "~~/types/utils";
 
@@ -35,7 +36,6 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
   const [transactions, setTransactionsState] = useState<HistoricalTransaction[]>([]);
   const transactionRef = React.useRef<HistoricalTransaction[]>([]);
   const [invoiceContractIdPair, setInvoiceContractIdPair] = useState<string[]>([]);
-  const toast = useToast();
   const setTransactions = (transactions: HistoricalTransaction[]) => {
     transactionRef.current = transactions;
     setTransactionsState(transactions);
@@ -90,22 +90,16 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
         hashLockTimestamp: lastTransaction.hashLockTimestamp,
         lnInvoice: lastTransaction.lnInvoice,
       });
-      toast({
-        title: "Payment Success",
-        description: "Payment has been successfully completed",
-        status: "success",
-        duration: 9000,
-        isClosable: true,
-        position: "top",
+      toast.success("Payment Success", {
+        position: "top-center",
+        autoClose: 5000,
+        theme: "colored",
       });
     } else {
-      toast({
-        title: "Payment Failed",
-        description: data?.message || "Payment has failed",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-        position: "top",
+      toast.error(data?.message || "Payment has failed", {
+        autoClose: 5000,
+        position: "top-center",
+        theme: "colored",
       });
       addTransaction({
         status: "failed",
@@ -144,6 +138,7 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
       value={{ transactions, data, addTransaction, sendMessage, isWebSocketConnected, price, reconnect }}
     >
       {children}
+      <ToastContainer position="top-center" />
     </HistoricalTransactionsContext.Provider>
   );
 };

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { ChakraProvider } from "@chakra-ui/react";
 import { RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit";
 import { Toaster } from "react-hot-toast";
 import { WagmiConfig } from "wagmi";
@@ -42,19 +41,17 @@ export const ScaffoldEthAppWithProviders = ({ children }: { children: React.Reac
   const { isDarkMode } = useDarkMode();
 
   return (
-    <ChakraProvider>
-      <WagmiConfig config={wagmiConfig}>
-        <ProgressBar />
-        <RainbowKitProvider
-          chains={[...appChains.chains, botanixTestnet]}
-          avatar={BlockieAvatar}
-          theme={isDarkMode ? darkTheme() : lightTheme()}
-        >
-          <LightningProvider>
-            <ScaffoldEthApp>{children}</ScaffoldEthApp>
-          </LightningProvider>
-        </RainbowKitProvider>
-      </WagmiConfig>
-    </ChakraProvider>
+    <WagmiConfig config={wagmiConfig}>
+      <ProgressBar />
+      <RainbowKitProvider
+        chains={[...appChains.chains, botanixTestnet]}
+        avatar={BlockieAvatar}
+        theme={isDarkMode ? darkTheme() : lightTheme()}
+      >
+        <LightningProvider>
+          <ScaffoldEthApp>{children}</ScaffoldEthApp>
+        </LightningProvider>
+      </RainbowKitProvider>
+    </WagmiConfig>
   );
 };

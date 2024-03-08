@@ -1,5 +1,4 @@
 import React from "react";
-// import { DotLoader } from "react-spinners";
 import { useLightningApp } from "~~/hooks/LightningProvider";
 import { LnPaymentInvoice } from "~~/types/utils";
 
@@ -33,7 +32,7 @@ export const PaymentInvoice = ({ invoice, submitPayment, cancelPayment, step }: 
 
   return (
     <div className="flex h-full flex-col justify-evenly content-evenly gap-5">
-      <table className="w-full text-white text-xs">
+      <table className="w-full text-white text-sm">
         <tbody>
           <tr>
             <td className="border-transparent">Expiry Time</td>
@@ -58,8 +57,16 @@ export const PaymentInvoice = ({ invoice, submitPayment, cancelPayment, step }: 
       {/* You'll need to adapt or implement your own stepper logic with Tailwind CSS */}
       <ul className="steps steps-vertical">
         {steps.map((stepInfo, index) => (
-          <li key={index} className={`${index < step ? "step step-primary" : "step"} text-white`}>
-            {stepInfo.title}
+          <li
+            // data-content={index === step ? "" : index + 1}
+            key={index}
+            className={`${index < step ? "step step-primary" : "step"} text-gray-400`}
+          >
+            <div className="flex">
+              {stepInfo.title}
+              &nbsp;
+              {step === index && <span className="loading loading-spinner"></span>}
+            </div>
           </li>
         ))}
       </ul>
@@ -68,14 +75,14 @@ export const PaymentInvoice = ({ invoice, submitPayment, cancelPayment, step }: 
       {step < 2 ? (
         <div className="w-full flex justify-between">
           <button
-            className={`btn btn-error text-white ${step !== 1 ? "opacity-50 cursor-not-allowed" : ""}`}
+            className={`btn btn-error w-2/5 text-white ${step !== 1 ? "opacity-50 cursor-not-allowed" : ""}`}
             onClick={() => cancelPayment()}
             disabled={step == 2 || step == 3}
           >
             Cancel
           </button>
           <button
-            className={`btn btn-success text-white ${step !== 1 ? "opacity-50 cursor-not-allowed" : ""}`}
+            className={`btn btn-success w-2/5 text-white ${step !== 1 ? "opacity-50 cursor-not-allowed" : ""}`}
             onClick={() => submitPayment()}
             disabled={step == 2 || step == 3}
           >
@@ -84,7 +91,7 @@ export const PaymentInvoice = ({ invoice, submitPayment, cancelPayment, step }: 
         </div>
       ) : (
         <button
-          className="bg-blue-500 w-full text-white"
+          className="btn btn-neutral  w-full text-white "
           onClick={() => cancelPayment()}
           disabled={step == 2 || step == 3}
         >

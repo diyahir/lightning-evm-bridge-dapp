@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useSteps } from "@chakra-ui/react";
 import { Scanner } from "@yudiel/react-qr-scanner";
 import { PaymentRequestObject, decode } from "bolt11";
 import toast from "react-hot-toast";
 import { useWalletClient } from "wagmi";
-import { PaymentInvoice, steps } from "~~/components/PaymentInvoice";
+import { PaymentInvoice } from "~~/components/PaymentInvoice";
 import { useLightningApp } from "~~/hooks/LightningProvider";
 import { useScaffoldContract } from "~~/hooks/scaffold-eth";
 import { LnPaymentInvoice } from "~~/types/utils";
@@ -54,10 +53,7 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
     walletClient,
   });
 
-  const { activeStep, setActiveStep } = useSteps({
-    index: 1,
-    count: steps.length,
-  });
+  const [activeStep, setActiveStep] = useState<number>(1);
 
   function getMinTimelock(lnInvoiceTimelock: number) {
     const now = Math.floor(Date.now() / 1000);
@@ -143,9 +139,12 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
       {isOpen && (
         <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-40 flex justify-center items-center">
           <div className="bg-base-200 rounded-lg">
-            <div className="text-white bg-brand-bg text-center p-4 rounded-t-lg">
-              {lnInvoiceRef.current == null ? "Scan QR Code" : "Review"}
-              <button onClick={cleanAndClose} className="absolute top-0 right-0 m-4">
+            <div className="flex items-center justify-center relative text-white bg-brand-bg pt-4 rounded-t-lg">
+              <span className="">{lnInvoiceRef.current == null ? "Scan QR Code" : "Review"}</span>
+              <button
+                onClick={cleanAndClose}
+                className="btn-neutral absolute right-5 top-1/2 transform -translate-y-2 btn btn-circle btn-sm"
+              >
                 X
               </button>
             </div>
@@ -158,9 +157,9 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
                     onResult={result => handleScan(result)}
                     // onDecode={result => handleScan(result)}
                   />
-                  <div className="flex">
+                  <div className="join">
                     <button
-                      className="cursor-pointer bg-gray-200 p-2"
+                      className="btn join-item cursor-pointer bg-gray-600 p-2"
                       onClick={() => {
                         navigator.clipboard.readText().then(text => {
                           handleInvoiceChange(text);
@@ -172,7 +171,7 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
                     <input
                       type="text"
                       placeholder="ln1232...."
-                      className="border p-2"
+                      className="input input-bordered join-item"
                       value={invoice}
                       onChange={e => handleInvoiceChange(e.target.value)}
                     />
