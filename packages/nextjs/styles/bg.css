@@ -1,0 +1,35 @@
+@keyframes rotate {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .bg-oval-gradient {
+    --size: 300px;
+    --speed: 25s;
+    --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
+  
+    width: var(--size);
+    height: var(--size);
+    filter: blur(calc(var(--size) / 5));
+    animation: rotate var(--speed) var(--easing) alternate infinite;
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+  }
+  
+  @media (min-width: 720px) {
+    .bg-oval-gradient {
+      --size: 400px;
+      /* position to the center of the screen calculating the vh and vw*/
+        position: absolute;
+        top: 25%;
+        left: 40%;
+    }
+  }
+
+  * {
+    transition: all 0.25s ease-out;
+  }
+  

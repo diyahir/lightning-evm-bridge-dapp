@@ -1,0 +1,7 @@
+.glow-on-hover:focus, .glow-on-hover:hover {
+    box-shadow: 0 0 15px #9D7FEA, 0 0 20px #9D7FEA; /* Stronger glow on hover/focus */
+  }
+  
+  .glow {
+    box-shadow: 0 0 8px #9D7FEA; /* Default glow */
+  }

@@ -118,6 +118,14 @@ module.exports = {
       fontFamily: {
         plex: ["IBM Plex Mono"],
       },
+      backgroundImage: {
+        "custom-gradient": 'radial-gradient(var(--tw-gradient-stops))',
+      },
+    },
+  },
+  variants: {
+    extend: {
+      backgroundImage: ["dark"],
     },
   },
 };
