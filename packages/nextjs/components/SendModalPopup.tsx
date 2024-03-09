@@ -137,8 +137,8 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
     <>
       {isOpen && (
         <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-40 flex justify-center items-center">
-          <div className="bg-base-200 rounded-lg">
-            <div className="flex items-center justify-center relative text-white bg-brand-bg pt-4 rounded-t-lg">
+          <div className="card bg-base-200 rounded-lg">
+            <div className="flex w-full items-center justify-center relative text-white bg-brand-bg pt-4 rounded-t-lg">
               <span className="">{lnInvoiceRef.current == null ? "Scan QR Code" : "Review"}</span>
               <button
                 onClick={cleanAndClose}
@@ -149,14 +149,14 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
             </div>
             <div className="flex flex-col items-center justify-center p-6">
               {!lnInvoiceRef.current && (
-                <div className="flex flex-col items-center gap-5">
+                <div className="flex w-full flex-col items-center gap-5">
                   {/* QR Scanner */}
                   <Scanner
                     onError={handleError}
                     onResult={result => handleScan(result)}
                     // onDecode={result => handleScan(result)}
                   />
-                  <div className="join">
+                  <div className="join w-full">
                     <button
                       className="btn join-item cursor-pointer bg-gray-600 p-2"
                       onClick={() => {
@@ -170,7 +170,7 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
                     <input
                       type="text"
                       placeholder="ln1232...."
-                      className="input input-bordered join-item"
+                      className="input input-bordered join-item w-full"
                       value={invoice}
                       onChange={e => handleInvoiceChange(e.target.value)}
                     />

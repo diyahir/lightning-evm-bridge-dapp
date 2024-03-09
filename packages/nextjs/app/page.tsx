@@ -42,9 +42,6 @@ const Home = () => {
             {getBalanceWithVisibility()}
           </h1>
         </div>
-
-        <HistoryTable />
-
         <div className="card-footer p-4 flex justify-between flex-wrap">
           <button
             className={`btn btn-neutral w-[100%] min-w-[136px] disabled:opacity-50`}
@@ -54,6 +51,7 @@ const Home = () => {
             Send over Lightning
           </button>
         </div>
+        <HistoryTable />
       </div>
 
       <SendModalPopup isOpen={isOpen} onClose={onClose} />

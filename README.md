@@ -141,6 +141,8 @@ If the chain you're using is not supported by any of the verifying methods, you 
 - [ ] Create proper database for the server
 - [ ] Add ability to change LSP
 - [ ] Integrate service fee for the LSP
+- [ ] Preconfirmations for the LSP before user pays on-chain
+- [ ] Indexing payments to provide most recent history
 
 ### Disabling Github Workflow
 

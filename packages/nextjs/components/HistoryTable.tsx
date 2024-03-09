@@ -71,7 +71,7 @@ export const HistoryTable = () => {
   return (
     <div className="card bg-brand-bg text-white">
       <div className="card-body p-4">
-        <h2 className="text-center font-mono text-md mb-5">History</h2>
+        <h2 className="text-center font-mono text-md ">History</h2>
         <table className="table table-auto w-full text-sm">
           {transactions.length > 0 && (
             <>
@@ -98,7 +98,7 @@ export const HistoryTable = () => {
                     {expandedRow === index && (
                       <tr>
                         <td colSpan={3}>
-                          <div className="p-4">
+                          <div className="p-2">
                             TimeLock expiry: {new Date(transaction.hashLockTimestamp * 1000).toLocaleString()}
                             <br />
                             <br />
@@ -155,9 +155,7 @@ export const HistoryTable = () => {
           )}
           {transactions.length === 0 && (
             <tr>
-              <td className="border border-gray-400 border-dashed text-center py-4">
-                Send your first lightning transaction!
-              </td>
+              <td className=" text-center py-4">No history...go send your first lightning payment!</td>
             </tr>
           )}
         </table>
