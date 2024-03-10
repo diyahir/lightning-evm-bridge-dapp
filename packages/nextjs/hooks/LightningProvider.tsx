@@ -51,7 +51,6 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
     toast.success(message, {
       position: "top-center",
       autoClose: 5000,
-      theme: "colored",
       toastId: Date.now().toString(),
     });
   };
@@ -60,7 +59,6 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
     toast.error(message, {
       position: "top-center",
       autoClose: 5000,
-      theme: "colored",
       toastId: Date.now().toString(),
     });
   };

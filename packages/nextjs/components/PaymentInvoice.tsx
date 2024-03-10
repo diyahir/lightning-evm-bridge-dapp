@@ -65,7 +65,7 @@ export const PaymentInvoice = ({ invoice, submitPayment, cancelPayment, step }: 
             <div className="flex flex-col">
               {stepInfo.title}
               &nbsp;
-              {step === index && <span className="loading loading-spinner"></span>}
+              {step === index && <span className="loading loading-dots"></span>}
             </div>
           </li>
         ))}
@@ -75,14 +75,18 @@ export const PaymentInvoice = ({ invoice, submitPayment, cancelPayment, step }: 
       {step < 2 ? (
         <div className="w-full flex justify-between">
           <button
-            className={`btn btn-error w-2/5 text-white ${step !== 1 ? "opacity-50 cursor-not-allowed" : ""}`}
+            className={`btn btn-outline btn-error w-2/5 text-white ${
+              step !== 1 ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             onClick={() => cancelPayment()}
             disabled={step == 2 || step == 3}
           >
             Cancel
           </button>
           <button
-            className={`btn btn-success w-2/5 text-white ${step !== 1 ? "opacity-50 cursor-not-allowed" : ""}`}
+            className={`btn btn-success bg-emerald-700 w-2/5 text-white ${
+              step !== 1 ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             onClick={() => submitPayment()}
             disabled={step == 2 || step == 3}
           >

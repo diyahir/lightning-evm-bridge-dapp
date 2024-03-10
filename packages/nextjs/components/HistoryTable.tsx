@@ -26,20 +26,20 @@ export const HistoryTable = () => {
     toastSuccess(message);
   };
 
-  // function getTooltipText(transaction: HistoricalTransaction) {
-  //   switch (transaction.status) {
-  //     case "pending":
-  //       return "Waiting for the transaction to be included in a block";
-  //     case "completed":
-  //       return "Expand for more details";
-  //     case "failed":
-  //       return `Transaction failed: Redeemable at ${new Date(transaction.hashLockTimestamp * 1000).toLocaleString()}`;
-  //     case "refunded":
-  //       return "Transaction refunded";
-  //     default:
-  //       return "";
-  //   }
-  // }
+  function getTooltipText(transaction: HistoricalTransaction) {
+    switch (transaction.status) {
+      case "pending":
+        return "Waiting for the transaction to be included in a block";
+      case "completed":
+        return "Expand for more details";
+      case "failed":
+        return `Transaction failed: Redeemable at ${new Date(transaction.hashLockTimestamp * 1000).toLocaleString()}`;
+      case "refunded":
+        return "Transaction refunded";
+      default:
+        return "";
+    }
+  }
 
   function refund(transaction: HistoricalTransaction) {
     if (transaction.contractId === "") return;
@@ -71,7 +71,7 @@ export const HistoryTable = () => {
   return (
     <div className="card bg-brand-bg text-white">
       <div className="card-body p-4">
-        <h2 className="text-center font-mono text-md ">History</h2>
+        <h2 className="text-center font-mono text-md">History</h2>
         <table className="table table-auto w-full text-sm">
           {transactions.length > 0 && (
             <>
@@ -87,12 +87,14 @@ export const HistoryTable = () => {
                   <React.Fragment key={index}>
                     <tr
                       onClick={() => toggleRow(index)}
-                      className={`cursor-pointer ${
+                      className={`cursor-pointer  ${
                         transaction.status === "failed" ? "bg-red-400" : ""
                       } hover:bg-white hover:bg-opacity-10`}
                     >
                       <td>{transaction.status}</td>
-                      <td>{transaction.date}</td>
+                      <td className="tooltip" data-tip={getTooltipText(transaction)}>
+                        {transaction.date}
+                      </td>
                       <td className="text-right">{transaction.amount} sats</td>
                     </tr>
                     {expandedRow === index && (
