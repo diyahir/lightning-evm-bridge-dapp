@@ -2,11 +2,11 @@
 FROM node:14
 
 # Set the working directory in the container
-WORKDIR /src/
+WORKDIR /packages/server/src/
 
 # Copy package.json and package-lock.json to leverage Docker cache
 # to speed up build times when dependencies haven't changed
-COPY package*.json ./
+COPY packages/server/package*.json ./
 
 # Install dependencies
 RUN npm install
@@ -15,7 +15,7 @@ RUN npm install
 RUN npm install -g typescript ts-node
 
 # Copy the current directory contents into the container at /usr/src/app
-COPY . .
+COPY packages/server/. .
 
 
 # Make port available to the world outside this container
@@ -27,7 +27,7 @@ ENV NODE_ENV=production
 
 # Add .env file and other necessary files
 # Use .dockerignore to exclude files from your container
-COPY .env .
+COPY packages/server/.env .
 
 # Run the app when the container launches
 CMD ["ts-node", "src/app.ts"]
