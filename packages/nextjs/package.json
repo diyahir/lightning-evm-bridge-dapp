@@ -27,6 +27,7 @@
     "@uniswap/sdk-core": "~4.0.1",
     "@uniswap/v2-sdk": "~3.0.1",
     "@yudiel/react-qr-scanner": "^2.0.0-beta.3",
+    "axios": "^1.6.7",
     "blo": "~1.0.1",
     "bolt11": "^1.4.1",
     "daisyui": "~4.4.19",
@@ -39,15 +40,13 @@
     "react-copy-to-clipboard": "~5.1.0",
     "react-dom": "~18.2.0",
     "react-hot-toast": "~2.4.0",
+    "react-spinners": "^0.13.8",
     "react-toastify": "^10.0.4",
     "use-debounce": "~8.0.4",
     "usehooks-ts": "~2.9.1",
     "viem": "1.19.9",
     "wagmi": "1.4.12",
-    "zustand": "~4.1.2",
-    "axios": "^1.6.7",
-    "react-spinners": "^0.13.8"
-
+    "zustand": "~4.1.2"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "~4.1.1",

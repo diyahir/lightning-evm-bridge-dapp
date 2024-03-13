@@ -3110,6 +3110,7 @@ __metadata:
     "@uniswap/v2-sdk": ~3.0.1
     "@yudiel/react-qr-scanner": ^2.0.0-beta.3
     autoprefixer: ~10.4.12
+    axios: ^1.6.7
     blo: ~1.0.1
     bolt11: ^1.4.1
     daisyui: ~4.4.19
@@ -3128,6 +3129,7 @@ __metadata:
     react-copy-to-clipboard: ~5.1.0
     react-dom: ~18.2.0
     react-hot-toast: ~2.4.0
+    react-spinners: ^0.13.8
     react-toastify: ^10.0.4
     tailwindcss: ~3.3.3
     type-fest: ~4.6.0
