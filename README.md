@@ -53,6 +53,13 @@ cd lightning-dapp
 yarn install
 ```
 
+or building using docker
+
+```
+docker build -f packages/nextjs/Dockerfile . -t botanix-ln-webapp
+docker build -f packages/server/Dockerfile . -t botanix-ln-server
+```
+
 2. Copy the `sample.env` file in the root of the project and add the following and change for all 3 packages.
 
 3. Run a local LSP in the first terminal:
