@@ -7,6 +7,7 @@ This is a project to create a trust minimized bridge between EVM chains and the 
 ## Contents
 
 - [Project Structure](#project-structure)
+- [Payment Flow](#payment-flow)
 - [Requirements](#requirements)
 - [Getting Started](#getting-started)
 - [Deploying Smart Contracts](#deploying-your-smart-contracts-to-a-live-network)
@@ -26,13 +27,39 @@ There are three main parts to this project:
 | [Frontend](./packages/nextjs)         | This is the frontend of the app.                                                                                            |
 | [Lightning server](./packages/server) | This is the lightning service provider who is paying the invoices, this connects to your lightning node (is not one itself) |
 
+## Payment Flow
+
+```mermaid
+sequenceDiagram
+
+    participant User as Payer
+    participant Botanix
+    participant LSP
+    participant LN
+    participant Payee
+
+    Payee-->>User: Payee creates ln-invoice
+    User->>Botanix: User creates/funds HTLC
+    User-->>LSP: User communicates with LSP: HTLC and Invoice
+    LSP-->>Botanix: LSP verifies HTLC and Invoice
+    LSP->>LN: LSP pays Invoice
+    LN-->>Payee: LN pays invoice
+    Payee-->>LN: Preimage is sent to LN
+    LN-->>LSP: LN sends preimage
+    LSP->>Botanix: LSP unlocks HTLC with preimage
+    LSP-->>User: Botanix tells user the payment is complete
+
+```
+
 ## Requirements
 
 Before you begin, you need to install the following tools:
 
 - [Node (v18 LTS)](https://nodejs.org/en/download/)
 - Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
+- [Docker](https://www.docker.com/products/docker-desktop)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+- [Foundry](https://book.getfoundry.sh/)
 
 ## Getting Started
 
@@ -190,4 +217,4 @@ Special thanks to:
 
 - Scaffold-eth for the base of this project
 - Voltage for the lightning node service
-- HTLC Solidity base from https://github.com/chatch/hashed-timelock-contract-ethereum
+- HTLC Solidity base which I forked and updated https://github.com/chatch/hashed-timelock-contract-ethereum
