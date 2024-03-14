@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  webapp:
+    build:
+      context: .
+      dockerfile: packages/nextjs/Dockerfile
+    image: botanix-ln-webapp:latest  # Custom image name and tag
+    ports:
+      - "3000:3000"
+    environment:
+      - WEBSOCKET_URL=ws://localhost:3003
+    depends_on:
+      - server
+    restart: always
+
+  server:
+    build:
+      context: .
+      dockerfile: packages/server/Dockerfile
+    image: botanix-ln-server:latest  # Custom image name and tag
+    ports:
+      - "3003:3003"
+    restart: always
+
