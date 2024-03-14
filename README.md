@@ -1,6 +1,6 @@
 # Lightning EVM Bridge
 
-This is a project to create a bridge between EVM chains and the Lightning Network. The goal is to allow for the creation of smart contracts that can make trust minimized payments to the Lightning Network. This really only makes sense in the context of chains using Bitcoin as their native currency, but it could be extended to other chains as well.
+This is a project to create a trust minimized bridge between EVM chains and the Lightning Network. The goal is to allow for the creation of smart contracts that can make trust minimized payments to the Lightning Network. This really only makes sense in the context of chains using Bitcoin as their native currency, but it could be extended to other chains as well.
 
 ⚙️ Built using NextJS, RainbowKit, Hardhat, Wagmi, Viem, and Typescript, and LND.
 
@@ -9,7 +9,10 @@ This is a project to create a bridge between EVM chains and the Lightning Networ
 - [Project Structure](#project-structure)
 - [Requirements](#requirements)
 - [Getting Started](#getting-started)
-- [Deploying your Smart Contracts to a Live Network](#deploying-your-smart-contracts-to-a-live-network)
+- [Deploying Smart Contracts](#deploying-your-smart-contracts-to-a-live-network)
+- [Running in Production](#running-in-production)
+- [Future Work](#future-work)
+- [Contributing](#contributing)
 
 ## Project Structure
 
@@ -17,11 +20,11 @@ There are three main parts to this project:
 
 <!-- Make a table with links to each folder -->
 
-| Folder                                | Description                                                       |
-| ------------------------------------- | ----------------------------------------------------------------- |
-| [Contracts](./packages/foundry)       | This is where the smart contracts live.                           |
-| [Frontend](./packages/nextjs)         | This is the frontend of the app.                                  |
-| [Lightning server](./packages/server) | This is the lightning service provider who is paying the invoices |
+| Folder                                | Description                                                                                                                 |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| [Contracts](./packages/foundry)       | This is where the smart contracts live.                                                                                     |
+| [Frontend](./packages/nextjs)         | This is the frontend of the app.                                                                                            |
+| [Lightning server](./packages/server) | This is the lightning service provider who is paying the invoices, this connects to your lightning node (is not one itself) |
 
 ## Requirements
 
@@ -33,7 +36,7 @@ Before you begin, you need to install the following tools:
 
 ## Getting Started
 
-**Disclaimer: this is using real lightning network sats because it is just easier and more stable to do so. Do not put more than you are willing to lose.**
+**Disclaimer: this is using REAL lightning network sats because it is just easier and more stable to do so. Do not put more than you are willing to lose.**
 
 #### Lightning Setup
 
@@ -53,7 +56,7 @@ cd lightning-dapp
 yarn install
 ```
 
-2. Copy the `sample.env` file in the root of the project and add the following and change for all 3 packages.
+2. Copy the `sample.env` file in the root of the project pacakges and add the following and change for all 3 packages.
 
 3. Start the services
 
@@ -68,7 +71,7 @@ docker build -f packages/nextjs/Dockerfile . -t botanix-ln-webapp
 docker build -f packages/server/Dockerfile . -t botanix-ln-server
 ```
 
-Alternatively: 3. Run a local LSP in the first terminal:
+Alternatively: 3. Run a local LSP server in the first terminal:
 
 ```
 cd packages/server
@@ -82,14 +85,6 @@ yarn start
 ```
 
 This command starts a local Ethereum network using Hardhat. The network runs on your local machine and can be used for testing and development. You can customize the network configuration in `hardhat.config.ts`.
-
-3. On a second terminal, deploy the test contract:
-
-```
-yarn deploy
-```
-
-Visit your app on: `http://localhost:3000`. You can interact with your smart contract using the contract component or the example ui in the frontend. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
 
 ## Deploying your Smart Contracts to a Live Network
 
@@ -145,6 +140,26 @@ If the chain you're using is not supported by any of the verifying methods, you 
 
 **Make sure your `packages/nextjs/scaffold.config.ts` file has the values you need.**
 
+## Running in Production
+
+To run the app in production, you need to build the app and run the server.
+
+1. Do all the steps in the [Deploying your Smart Contracts to a Live Network](#deploying-your-smart-contracts-to-a-live-network) section.
+
+2. Do all the steps in the [Lightning Setup](#lightning-setup) section.
+
+3. Pull the latest changes set your .env files and run the following commands:
+
+```
+docker-compose up -d --build
+```
+
+4. Run a Nginx server to serve the app, refer to the `example.nginx.config` file in the root of the project. This will require you to have a domain and a SSL certificate.
+
+5. Set your DNS to point to the server.
+
+6. Enjoy your app running in production.
+
 ### Future Work
 
 - [ ] Server funds rebalancing (cycle funds from the evm chain to the lightning network channel)
@@ -168,3 +183,11 @@ To disable it, **delete `.github` directory**
 We welcome contributions to the lightning dapp.
 
 Please see [CONTRIBUTING.MD](https://github.com/scaffold-eth/scaffold-eth-2/blob/main/CONTRIBUTING.md) for more information and guidelines for contributing to the lightning dapp.
+
+## Acknowledgements
+
+Special thanks to:
+
+- Scaffold-eth for the base of this project
+- Voltage for the lightning node service
+- HTLC Solidity base from https://github.com/chatch/hashed-timelock-contract-ethereum
