@@ -53,16 +53,22 @@ cd lightning-dapp
 yarn install
 ```
 
-or building using docker
+2. Copy the `sample.env` file in the root of the project and add the following and change for all 3 packages.
+
+3. Start the services
+
+```
+docker-compose up -d --build
+```
+
+or using docker build and run the images separately
 
 ```
 docker build -f packages/nextjs/Dockerfile . -t botanix-ln-webapp
 docker build -f packages/server/Dockerfile . -t botanix-ln-server
 ```
 
-2. Copy the `sample.env` file in the root of the project and add the following and change for all 3 packages.
-
-3. Run a local LSP in the first terminal:
+Alternatively: 3. Run a local LSP in the first terminal:
 
 ```
 cd packages/server
@@ -148,8 +154,8 @@ If the chain you're using is not supported by any of the verifying methods, you 
 - [ ] Create proper database for the server
 - [ ] Add ability to change LSP
 - [ ] Integrate service fee for the LSP
-- [ ] Preconfirmations for the LSP before user pays on-chain
-- [ ] Indexing payments to provide most recent history
+- [ ] Preconfirmations from the LSP before user pays on-chain
+- [ ] Indexing payments to provide most recent history
 
 ### Disabling Github Workflow
 

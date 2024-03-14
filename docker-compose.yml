@@ -5,11 +5,12 @@ services:
     build:
       context: .
       dockerfile: packages/nextjs/Dockerfile
-    image: botanix-ln-webapp:latest  # Custom image name and tag
+    image: botanix-ln-webapp:latest  
     ports:
       - "3000:3000"
     environment:
-      - WEBSOCKET_URL=ws://localhost:3003
+      - WEBSOCKET_URL=ws://localhost:3003 
+      # Websocket server URL set to your domain if hosted example "wss://yourdomain.com/websocket" 
     depends_on:
       - server
     restart: always
@@ -18,7 +19,7 @@ services:
     build:
       context: .
       dockerfile: packages/server/Dockerfile
-    image: botanix-ln-server:latest  # Custom image name and tag
+    image: botanix-ln-server:latest
     ports:
       - "3003:3003"
     restart: always
