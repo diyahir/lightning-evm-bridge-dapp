@@ -52,7 +52,7 @@ const Home = () => {
           <div className="card-footer p-4 flex justify-between flex-wrap">
             <button
               className={`btn btn-neutral w-full min-w-[136px] disabled:opacity-50 glow glow-on-hover outline-none focus:outline-none ring-violet-800 ring-2 ring-offset-2`}
-              disabled={!isWebSocketConnected}
+              disabled={!isWebSocketConnected || balance === null || address === undefined}
               onClick={onOpen}
             >
               Send over Lightning

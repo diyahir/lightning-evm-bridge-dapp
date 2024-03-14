@@ -61,7 +61,7 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
 
   function handleScan(data: any) {
     console.log("Scanning", data);
-    handleInvoiceChange(data.text);
+    handleInvoiceChange(data);
   }
   function handleError(err: any) {
     console.error(err);
@@ -137,7 +137,7 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
     <>
       {isOpen && (
         <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-40 flex justify-center items-center">
-          <div className="card bg-base-200 rounded-lg">
+          <div className="card lg:w-1/3 md:w-1/2 w-full bg-base-200 rounded-lg md:h-auto">
             <div className="flex w-full items-center justify-center relative text-white bg-brand-bg pt-4 rounded-t-lg">
               <span className="">{lnInvoiceRef.current == null ? "Scan QR Code" : "Review"}</span>
               <button

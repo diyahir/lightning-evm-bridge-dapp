@@ -62,9 +62,6 @@ export const Header = () => {
           <img src="/logo.svg" alt="Botanix Logo" width={"24px"} height={"24px"} />
           <div className="flex flex-col font-plex font-bold text-white">Botanix {"<>"} Lightning </div>
         </Link>
-        {/* <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">
-          <HeaderMenuLinks />
-        </ul> */}
       </div>
       <div className="navbar-end flex-grow mr-4">
         {/* a div that shows if the client is connected to the server */}

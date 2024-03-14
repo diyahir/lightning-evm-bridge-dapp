@@ -115,11 +115,20 @@ module.exports = {
       animation: {
         "pulse-fast": "pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       },
+      height: {
+        'full-minus-200': 'calc(100vh - 200px)', // Full height minus 200 pixels
+      },
       fontFamily: {
         plex: ["IBM Plex Mono"],
       },
       backgroundImage: {
-        "custom-gradient": 'radial-gradient(var(--tw-gradient-stops))',
+        "custom-gradient": "radial-gradient(var(--tw-gradient-stops))",
+      },
+      screens: {
+        sm: "640px", // Small screens and up
+        md: "768px", // Medium screens and up
+        lg: "1024px", // Large screens and up
+        xl: "1280px", // Extra large screens and up
       },
     },
   },

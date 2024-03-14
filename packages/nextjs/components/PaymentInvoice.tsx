@@ -62,7 +62,7 @@ export const PaymentInvoice = ({ invoice, submitPayment, cancelPayment, step }: 
             key={index}
             className={`${index < step ? "step step-primary" : "step"} text-gray-400`}
           >
-            <div className="flex flex-col">
+            <div className="flex flex-col text-start">
               {stepInfo.title}
               &nbsp;
               {step === index && <span className="loading loading-dots"></span>}
