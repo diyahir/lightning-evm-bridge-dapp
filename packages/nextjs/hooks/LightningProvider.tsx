@@ -3,7 +3,6 @@ import { useNativeCurrencyPrice, useScaffoldEventSubscriber } from "./scaffold-e
 import { useWebSocket } from "./useWebSocket";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-// import { useWalletClient } from "wagmi";
 import { InvoiceRequest, InvoiceResponse } from "~~/types/utils";
 
 // Define the types for your historical transactions and context

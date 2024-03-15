@@ -5,7 +5,6 @@ import { useState } from "react";
 import "../styles/bg.css";
 import "../styles/glowButton.css";
 import { useAccount } from "wagmi";
-// Import your custom components and hooks
 import { HistoryTable } from "~~/components/HistoryTable";
 import SendModalPopup from "~~/components/SendModalPopup";
 import { useLightningApp } from "~~/hooks/LightningProvider";
@@ -35,10 +34,7 @@ const Home = () => {
 
   return (
     <>
-      <div className="bg-oval-gradient justify-center absolute bg-gradient-to-r from-yellow-400 to-violet-800 opacity-25">
-        {/* Your content here */}
-      </div>
-
+      <div className="bg-oval-gradient justify-center absolute bg-gradient-to-r from-yellow-400 to-violet-800 opacity-25" />
       <div className="font-plex container mx-auto flex h-[95%] items-center justify-center">
         <div className="card w-[500px] ">
           <div className="card-header text-white p-4">

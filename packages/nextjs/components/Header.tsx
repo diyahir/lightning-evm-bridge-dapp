@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
@@ -59,12 +60,11 @@ export const Header = () => {
     <div className="sticky font-plex lg:static top-0 navbar bg-base-100 min-h-0 flex-shrink-0 justify-between z-20 px-0 sm:px-2">
       <div className="navbar-start w-auto lg:w-1/2">
         <Link color={"white"} href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6 shrink-0">
-          <img src="/logo.svg" alt="Botanix Logo" width={"24px"} height={"24px"} />
+          <Image src="/logo.svg" alt="Botanix Logo" width={"24"} height={"24"} />
           <div className="flex flex-col font-plex font-bold text-white">Botanix {"<>"} Lightning </div>
         </Link>
       </div>
       <div className="navbar-end flex-grow mr-4">
-        {/* a div that shows if the client is connected to the server */}
         <button
           className="btn btn-ghost btn-sm text-white font-plex"
           onClick={() => {

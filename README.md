@@ -21,11 +21,11 @@ There are three main parts to this project:
 
 <!-- Make a table with links to each folder -->
 
-| Folder                                | Description                                                                                                                 |
-| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| [Contracts](./packages/foundry)       | This is where the smart contracts live.                                                                                     |
-| [Frontend](./packages/nextjs)         | This is the frontend of the app.                                                                                            |
-| [Lightning server](./packages/server) | This is the lightning service provider who is paying the invoices, this connects to your lightning node (is not one itself) |
+| Folder                                | Description                                                                                                                           |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| [Contracts](./packages/foundry)       | This is where the smart contracts live                                                                                                |
+| [Frontend](./packages/nextjs)         | This is the frontend of the app built using Scaffold-Eth 2                                                                            |
+| [Lightning server](./packages/server) | This is the lightning service provider websocket who is paying the invoices, this connects to your lightning node (is not one itself) |
 
 ## Payment Flow
 
@@ -113,7 +113,13 @@ yarn start
 
 This command starts a local Ethereum network using Hardhat. The network runs on your local machine and can be used for testing and development. You can customize the network configuration in `hardhat.config.ts`.
 
-## Deploying your Smart Contracts to a Live Network
+## Deploying Smart Contracts
+
+To test the smart contracts
+
+```bash
+yarn foundry:test
+```
 
 Once you are ready to deploy your smart contracts, there are a few things you need to adjust.
 
@@ -190,8 +196,6 @@ docker-compose up -d --build
 ### Future Work
 
 - [ ] Server funds rebalancing (cycle funds from the evm chain to the lightning network channel)
-- [ ] ERC20 support for tBTC on other chains (Base, Arbitrum, etc.)
-- [ ] Make server multi-chain
 - [ ] Add support to receive payments from the lightning network to the evm chain
 - [ ] Create proper database for the server
 - [ ] Add ability to change LSP

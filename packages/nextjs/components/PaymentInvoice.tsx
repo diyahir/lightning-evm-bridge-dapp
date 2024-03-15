@@ -2,9 +2,6 @@ import React from "react";
 import { useLightningApp } from "~~/hooks/LightningProvider";
 import { LnPaymentInvoice } from "~~/types/utils";
 
-/**
- * Site footer
- */
 type PaymentInvoiceProps = {
   invoice: LnPaymentInvoice;
   contractId: string | null;
@@ -54,14 +51,9 @@ export const PaymentInvoice = ({ invoice, submitPayment, cancelPayment, step }: 
       </table>
 
       {/* Stepper Component */}
-      {/* You'll need to adapt or implement your own stepper logic with Tailwind CSS */}
       <ul className="steps steps-vertical">
         {steps.map((stepInfo, index) => (
-          <li
-            // data-content={index === step ? "" : index + 1}
-            key={index}
-            className={`${index < step ? "step step-primary" : "step"} text-gray-400`}
-          >
+          <li key={index} className={`${index < step ? "step step-primary" : "step"} text-gray-400`}>
             <div className="flex flex-col text-start">
               {stepInfo.title}
               &nbsp;
