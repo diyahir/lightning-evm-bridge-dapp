@@ -6,7 +6,7 @@
 :root,
 [data-theme] {
   background: oklch(var(--b2));
-  font-family: 'plex';
+  font-family: var(--font-ibm-plex-mono);
 }
 
 body {

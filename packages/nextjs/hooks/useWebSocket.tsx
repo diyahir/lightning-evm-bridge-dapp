@@ -40,6 +40,9 @@ export const useWebSocket = (url: string) => {
     socket.current.onerror = event => setError(event);
     socket.current.onmessage = event => {
       try {
+        if (event.data === "Server online: You are now connected!") {
+          return;
+        }
         const responseData: InvoiceResponse = JSON.parse(event.data);
         setData(responseData);
       } catch (err) {

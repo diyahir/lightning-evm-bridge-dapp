@@ -136,7 +136,7 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-40 flex justify-center items-center">
+        <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-40 flex justify-center items-center font-mono">
           <div className="card lg:w-1/3 md:w-1/2 w-full bg-base-200 rounded-lg md:h-auto">
             <div className="flex w-full items-center justify-center relative text-white bg-brand-bg pt-4 rounded-t-lg">
               <span className="">{lnInvoiceRef.current == null ? "Scan QR Code" : "Review"}</span>

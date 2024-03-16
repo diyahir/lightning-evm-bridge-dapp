@@ -116,10 +116,10 @@ module.exports = {
         "pulse-fast": "pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       },
       height: {
-        'full-minus-200': 'calc(100vh - 200px)', // Full height minus 200 pixels
+        "full-minus-200": "calc(100vh - 200px)", // Full height minus 200 pixels
       },
       fontFamily: {
-        plex: ["IBM Plex Mono"],
+        plex: ["var(--font-ibm-plex-mono)"],
       },
       backgroundImage: {
         "custom-gradient": "radial-gradient(var(--tw-gradient-stops))",

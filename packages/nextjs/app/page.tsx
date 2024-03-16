@@ -45,7 +45,7 @@ const Home = () => {
               {getBalanceWithVisibility()}
             </h1>
           </div>
-          <div className="card-footer p-4 flex justify-between flex-wrap">
+          <div className="card-footer p-4 flex justify-between flex-wrap font-mono">
             <button
               className={`btn btn-neutral w-full min-w-[136px] disabled:opacity-50 glow glow-on-hover outline-none focus:outline-none ring-violet-800 ring-2 ring-offset-2`}
               disabled={!isWebSocketConnected || balance === null || address === undefined}
