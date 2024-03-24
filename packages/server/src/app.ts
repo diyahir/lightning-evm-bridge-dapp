@@ -1,4 +1,5 @@
 import * as WebSocket from "ws";
+import http from "http";
 import lnService from "ln-service";
 import dotenv from "dotenv";
 import { ethers } from "ethers";
@@ -19,6 +20,19 @@ if ( !RPC_URL || !LSP_PRIVATE_KEY || !CHAIN_ID) {
 }
 
 // Initialize services
+const server = http.createServer((req, res) => {
+  // Handle the health check route
+  if (req.url === '/health') {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Server is up');
+  } else {
+    // Not Found for any other requests
+    res.writeHead(404, { 'Content-Type': 'text/plain' });
+    res.end('Not Found');
+  }
+});
+
+
 const wss = new WebSocket.Server({ port: Number(PORT) || 3003 });
 const { lnd } = lnService.authenticatedLndGrpc({
   cert: "",
@@ -182,6 +196,12 @@ async function getContractDetails(
     preimage: response[7],
   };
 }
+
+
+server.listen(PORT ?? 3004, () => {
+  console.log(`HTTP and WebSocket server is running on http://localhost:${PORT}`);
+  console.log(`Health check available at http://localhost:${PORT}/health`);
+});
 
 // Function to process cached payments
 async function processCachedPayments() {
