@@ -18,3 +18,9 @@ export interface InvoiceResponse {
   status: "success" | "error";
   message: string;
 }
+
+export enum ServerStatus {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+  MOCK = "MOCK",
+}

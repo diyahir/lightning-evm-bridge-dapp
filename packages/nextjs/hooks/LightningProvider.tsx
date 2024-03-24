@@ -3,7 +3,7 @@ import { useNativeCurrencyPrice, useScaffoldEventSubscriber } from "./scaffold-e
 import { useWebSocket } from "./useWebSocket";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { InvoiceRequest, InvoiceResponse } from "~~/types/utils";
+import { InvoiceRequest, InvoiceResponse, ServerStatus } from "~~/types/utils";
 
 // Define the types for your historical transactions and context
 export type HistoricalTransaction = {
@@ -26,6 +26,7 @@ export type LightningAppContextType = {
   price: number;
   toastSuccess: (message: string) => void;
   toastError: (message: string) => void;
+  lspStatus: ServerStatus;
 };
 
 // Create the context
@@ -42,7 +43,7 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
     setTransactionsState(transactions);
   };
   console.log(process.env.WEBSOCKET_URL ?? "ws://localhost:3003");
-  const { sendMessage, isWebSocketConnected, data, reconnect } = useWebSocket(
+  const { sendMessage, isWebSocketConnected, data, reconnect, status } = useWebSocket(
     process.env.WEBSOCKET_URL ?? "ws://localhost:3003",
   );
 
@@ -80,6 +81,7 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
   useEffect(() => {
     const lastTransaction = transactionRef.current[0];
     if (invoiceContractIdPair.length === 0) return;
+    if (lastTransaction === undefined) return;
     const [contractId, lnInvoice] = invoiceContractIdPair;
     addTransaction({
       status: "pending",
@@ -95,7 +97,7 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
   useEffect(() => {
     if (data === null) return;
     const lastTransaction = transactionRef.current[0];
-    console.log("Last Transaction", lastTransaction);
+    if (lastTransaction === undefined) return;
 
     if (data?.status === "success") {
       addTransaction({
@@ -154,6 +156,7 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
         reconnect,
         toastError,
         toastSuccess,
+        lspStatus: status,
       }}
     >
       {children}

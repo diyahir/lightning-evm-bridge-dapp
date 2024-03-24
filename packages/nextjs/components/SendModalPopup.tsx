@@ -82,7 +82,7 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
     yourContract.write
       .newContract(
         [
-          "0xf89335a26933d8Dd6193fD91cAB4e1466e5198Bf",
+          process.env.LSP_ADDRESS ?? "0xf89335a26933d8Dd6193fD91cAB4e1466e5198Bf",
           lnInvoiceRef.current.paymentHash,
           BigInt(getMinTimelock(lnInvoiceRef.current.timeExpireDate)),
         ],

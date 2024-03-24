@@ -19,4 +19,10 @@ export type ContractDetails = {
   preimage: string;
 };
 
+enum ServerStatus {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+  MOCK = "MOCK",
+}
+
 export const GWEIPERSAT = 1e10;

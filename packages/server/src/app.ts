@@ -11,9 +11,9 @@ import { providerConfig } from "./provider.config";
 dotenv.config();
 
 // Verify environment variables
-const { PORT, MACAROON, SOCKET, ETH_PROVIDER_URL, PRIVATE_KEY, CHAIN_ID } =
+const { PORT, LND_MACAROON, LND_SOCKET, RPC_URL, LSP_PRIVATE_KEY, CHAIN_ID } =
   process.env;
-if (!MACAROON || !SOCKET || !ETH_PROVIDER_URL || !PRIVATE_KEY || !CHAIN_ID) {
+if ( !RPC_URL || !LSP_PRIVATE_KEY || !CHAIN_ID) {
   console.error("Missing environment variables");
   process.exit(1);
 }
@@ -22,11 +22,12 @@ if (!MACAROON || !SOCKET || !ETH_PROVIDER_URL || !PRIVATE_KEY || !CHAIN_ID) {
 const wss = new WebSocket.Server({ port: Number(PORT) || 3003 });
 const { lnd } = lnService.authenticatedLndGrpc({
   cert: "",
-  macaroon: MACAROON,
-  socket: SOCKET,
+  macaroon: LND_MACAROON,
+  socket: LND_SOCKET,
 });
-const provider = new ethers.JsonRpcProvider(ETH_PROVIDER_URL);
-const signer = new ethers.Wallet(PRIVATE_KEY, provider);
+
+const provider = new ethers.JsonRpcProvider(RPC_URL);
+const signer = new ethers.Wallet(LSP_PRIVATE_KEY, provider);
 const htlcContractInfo = deployedContracts[CHAIN_ID]?.HashedTimelock;
 const htlcContract = new ethers.Contract(
   htlcContractInfo.address,
@@ -41,12 +42,14 @@ export type CachedPayment = {
 let cachedPayments: CachedPayment[] = [];
 // ideally this should be stored in a database, but for the sake of simplicity we are using an in-memory cache
 
-console.log(`RPC Provider is running on ${ETH_PROVIDER_URL}`);
+console.log(`RPC Provider is running on ${RPC_URL}`);
 console.log(`WebSocket server is running on ws://localhost:${PORT || 3003}`);
+console.log(`LSP Address: ${signer.address}`);
 
 wss.on("connection", (ws: WebSocket) => {
+  const serverStatus = process.env.LND_MACAROON ? "ACTIVE" : "MOCK";
   console.log("Client connected");
-  ws.send("Server online: You are now connected!");
+  ws.send(JSON.stringify({ status: serverStatus, message: "Connected to server" }));
 
   ws.on("message", async (message: string) => {
     console.log("Received message:", message);
@@ -71,6 +74,23 @@ async function processInvoiceRequest(request: InvoiceRequest, ws: WebSocket) {
   }
 
   console.log("Invoice Request Received:", request);
+
+    // Check if LND_MACAROON and LND_SOCKET are empty to simulate mock mode
+    if (!process.env.LND_MACAROON && !process.env.LND_SOCKET) {
+      console.log("Mock Server Mode: Simulating payment success");
+      
+      // Simulate processing delay
+      await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay for realism
+  
+      // Directly respond with a simulated success message
+      ws.send(JSON.stringify({
+        status: "success",
+        message: "Invoice paid successfully in mock mode.",
+      }));
+  
+      // Exit early since we're in mock mode
+      return;
+    }
 
   try {
     const options = { gasPrice: ethers.parseUnits("0.001", "gwei") };
