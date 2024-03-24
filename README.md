@@ -63,9 +63,19 @@ Before you begin, you need to install the following tools:
 
 ## Getting Started
 
-**Disclaimer: this is using REAL lightning network sats because it is just easier and more stable to do so. Do not put more than you are willing to lose.**
+#### Lightning Setup and Wallet Setup
 
-#### Lightning Setup
+This step is half optional. I provided you 3 options for running the lightning server:
+
+A. You can run your own lightning node and server.
+
+B. You can connect to my node and websocket server, so no nead to run any lightning stuff.
+
+C. Run the lightning server in 'MOCK' mode, which will simulate the lightning server.
+
+To set up, A, your own server:
+
+**Disclaimer: this is using REAL lightning network sats because it is just easier and more stable to do so. Do not put more than you are willing to lose.**
 
 1. You must have a lightning node running. I am using voltage which has a 20 day free trial to host your own node: [Voltage](https://voltage.cloud/).
 
@@ -73,7 +83,9 @@ Before you begin, you need to install the following tools:
 
 3. Fund your node with some sats and fund your channel. I recommend opening a channel with someone well connected because it has higher chances of payment success.
 
-#### Running Locally
+Generate a new botanix wallet, store the hex private key somewhere safe, and fund it with some testnet sats.
+
+#### Running Locally (A)
 
 3. Clone this repo & install dependencies
 
@@ -83,7 +95,7 @@ cd lightning-dapp
 yarn install
 ```
 
-2. Copy the `sample.env` file in the root of the project pacakges and add the following and change for all 3 packages.
+2. Copy the `sample.env` file in the root of the server and nextjs packages. Rename it to `.env` and fill in the required values.
 
 3. Start the services
 
@@ -98,20 +110,48 @@ docker build -f packages/nextjs/Dockerfile . -t botanix-ln-webapp
 docker build -f packages/server/Dockerfile . -t botanix-ln-server
 ```
 
-Alternatively: 3. Run a local LSP server in the first terminal:
+Alternatively:
 
-```
-cd packages/server
-yarn start
-```
-
-4. Run a local webapp in a second terminal
+Run the webapp in the first terminal:
 
 ```
 yarn start
 ```
 
-This command starts a local Ethereum network using Hardhat. The network runs on your local machine and can be used for testing and development. You can customize the network configuration in `hardhat.config.ts`.
+Run a local LSP server relayer in a second terminal
+
+```
+yarn server
+```
+
+#### Running Locally (B: Only Webapp, My Server)
+
+1. Clone this repo & install dependencies
+
+```
+git clone https://github.com/diyahir/lightning-dapp.git
+cd lightning-dapp
+yarn install
+```
+
+2. Copy the `sample.live.env` file in the root of the nextjs package. Rename it to `.env`.
+
+3. Start the webapp
+
+```
+yarn start
+```
+
+#### Running Locally (C: Mock Server)
+
+Same as A, no need to do any lightning setup, but in the server `.env` file, set
+
+```
+LND_MACAROON=""
+LND_SOCKET=""
+```
+
+This will run the server in mock mode.
 
 ## Deploying Smart Contracts
 

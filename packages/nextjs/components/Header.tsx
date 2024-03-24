@@ -7,7 +7,6 @@ import { usePathname } from "next/navigation";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useLightningApp } from "~~/hooks/LightningProvider";
 import { ServerStatus } from "~~/types/utils";
-import { get } from "http";
 
 type HeaderMenuLink = {
   label: string;
@@ -79,6 +78,7 @@ export const Header = () => {
         return "Server is in mock mode, all invoice payments will be mocked by the LSP";
     }
   }
+
   return (
     <div className="sticky font-mono lg:static top-0 navbar bg-base-100 min-h-0 flex-shrink-0 justify-between z-20 px-0 sm:px-2 ">
       <div className="navbar-start w-auto lg:w-1/2">
@@ -93,10 +93,10 @@ export const Header = () => {
           onClick={() => {
             if (!isWebSocketConnected) reconnect();
           }}
-          
         >
-          <div className={`tooltip tooltip-bottom ${getColorFromStatus(lspStatus)} rounded-full w-2 h-2 self-center`}
-          data-tip={getTooltipFromStatus(lspStatus)}
+          <div
+            className={`tooltip tooltip-bottom ${getColorFromStatus(lspStatus)} rounded-full w-2 h-2 self-center`}
+            data-tip={getTooltipFromStatus(lspStatus)}
           ></div>
           {isWebSocketConnected ? "LSP Connected" : "LSP Disconnected"}
         </button>

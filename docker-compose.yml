@@ -8,9 +8,6 @@ services:
     image: botanix-ln-webapp:latest  
     ports:
       - "3000:3000"
-    environment:
-      - WEBSOCKET_URL=ws://localhost:3003 
-      # Websocket server URL set to your domain if hosted example "wss://yourdomain.com/websocket" 
     depends_on:
       - server
     restart: always

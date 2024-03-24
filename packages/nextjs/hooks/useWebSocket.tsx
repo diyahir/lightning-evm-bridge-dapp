@@ -3,7 +3,7 @@ import { InvoiceRequest, InvoiceResponse, ServerStatus } from "~~/types/utils";
 
 export const useWebSocket = (url: string) => {
   const socket = useRef<WebSocket | null>(null);
-  const [status, setStatus] =useState<ServerStatus>(ServerStatus.INACTIVE);
+  const [status, setStatus] = useState<ServerStatus>(ServerStatus.INACTIVE);
   const [data, setData] = useState<InvoiceResponse | null>(null);
   const [error, setError] = useState<Event | null>(null);
   const [isWebSocketConnected, setIsWebSocketConnected] = useState<boolean>(false);
@@ -41,11 +41,10 @@ export const useWebSocket = (url: string) => {
     socket.current.onerror = event => setError(event);
     socket.current.onmessage = event => {
       try {
-
         const responseData: InvoiceResponse = JSON.parse(event.data);
         if (responseData.status) {
-           setStatus(responseData.status as ServerStatus);
-           return;
+          setStatus(responseData.status as ServerStatus);
+          return;
         }
         setData(responseData);
       } catch (err) {
