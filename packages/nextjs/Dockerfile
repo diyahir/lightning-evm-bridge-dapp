@@ -2,7 +2,7 @@
 FROM node:18-alpine AS base
 WORKDIR /app
 RUN apk add --no-cache libc6-compat
-ENV WEBSOCKET_URL="ws://localhost:3003"
+
 ENV NEXT_PUBLIC_API_URL="http://localhost:8888"
 # Copy the entire workspace to utilize Docker's cache efficiently and manage dependencies
 # Assuming you're still aiming for a structure that involves separate handling for each package,
