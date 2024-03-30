@@ -19,6 +19,10 @@ export interface InvoiceResponse {
   message: string;
 }
 
+export interface ConnectionResponse {
+  serverStatus: ServerStatus;
+}
+
 export enum ServerStatus {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",

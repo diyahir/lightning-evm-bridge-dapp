@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { InvoiceRequest, InvoiceResponse, ServerStatus } from "~~/types/utils";
+import { ConnectionResponse, InvoiceRequest, InvoiceResponse, ServerStatus } from "~~/types/utils";
 
 export const useWebSocket = (url: string) => {
   const socket = useRef<WebSocket | null>(null);
@@ -41,12 +41,15 @@ export const useWebSocket = (url: string) => {
     socket.current.onerror = event => setError(event);
     socket.current.onmessage = event => {
       try {
-        const responseData: InvoiceResponse = JSON.parse(event.data);
-        if (responseData.status) {
-          setStatus(responseData.status as ServerStatus);
+        const responseData: ConnectionResponse | InvoiceResponse = JSON.parse(event.data);
+        if (responseData && "serverStatus" in responseData) {
+          setStatus(responseData.serverStatus as ServerStatus);
           return;
         }
-        setData(responseData);
+        if (responseData && "status" in responseData) {
+          setData(responseData);
+          return;
+        }
       } catch (err) {
         console.error("Failed to parse message", err);
       }
