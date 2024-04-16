@@ -52,6 +52,34 @@ contract HashedTimelockTest is Test {
         assertEq(receiver.balance, amount);
     }
 
+    function testFuzzWithdraw(uint256 _amount, bytes32 _preimage, uint32 _num_runs) public {
+        vm.assume(_num_runs > 0);
+        vm.assume(_num_runs < 100);
+        vm.assume(_amount > 0.1 ether);
+
+        for (uint32 i = 0; i < _num_runs; i++) {
+            vm.deal(sender, _amount); // Provide the receiver with some Ether
+
+            _preimage = sha256(abi.encodePacked(_preimage));
+            hashlock = sha256(abi.encodePacked(_preimage));
+
+            bytes32 contractId = htlc.newContract{value: _amount}(
+                receiver,
+                hashlock,
+                timelock
+            );
+            vm.stopPrank();
+            vm.startPrank(receiver);
+
+            bool success = htlc.withdraw(contractId, _preimage);
+            assertTrue(success);
+
+            // Verify receiver's balance has increased by the contract amount
+            assertEq(receiver.balance, _amount);
+            
+        }
+    }
+
     function testWithdrawWithIncorrectPreimage() public {
         bytes32 contractId = htlc.newContract{value: amount}(
             receiver,
