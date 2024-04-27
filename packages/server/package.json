@@ -30,6 +30,9 @@
     "dotenv": "^16.4.4",
     "ethers": "^6.11.1",
     "ln-service": "^57.5.1",
+    "nextjs": "^0.0.3",
+    "shared": "workspace:^",
+    "ts-pattern": "^5.1.1",
     "ws": "^8.16.0"
   }
 }

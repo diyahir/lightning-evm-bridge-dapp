@@ -3,7 +3,7 @@ import { useNativeCurrencyPrice, useScaffoldEventSubscriber } from "./scaffold-e
 import { useWebSocket } from "./useWebSocket";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { InvoiceRequest, InvoiceResponse, ServerStatus } from "~~/types/utils";
+import { InvoiceRequest, InvoiceResponse, KIND, ServerStatus } from "shared";
 
 // Define the types for your historical transactions and context
 export type HistoricalTransaction = {
@@ -73,7 +73,11 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
       // check if the transaction has the same has as one of the transactions in the list
       const index = transactionRef.current.findIndex(t => t.txHash === txHash);
       if (index === -1) return;
-      sendMessage({ contractId: tmpContractId, lnInvoice: transactionRef.current[index]?.lnInvoice });
+      sendMessage({
+        contractId: tmpContractId,
+        kind: KIND.INVOICE,
+        lnInvoice: transactionRef.current[index]?.lnInvoice,
+      });
       setInvoiceContractIdPair([tmpContractId, transactionRef.current[index]?.lnInvoice]);
     },
   });

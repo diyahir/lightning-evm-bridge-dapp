@@ -1,8 +1,3 @@
-export type InvoiceRequest = {
-  contractId: string;
-  lnInvoice: string;
-};
-
 export interface InvoiceResponse {
   status: "success" | "error";
   message: string;

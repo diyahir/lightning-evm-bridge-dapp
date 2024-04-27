@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ConnectionResponse, InvoiceRequest, InvoiceResponse, ServerStatus } from "~~/types/utils";
+import { ClientRequest, InvoiceResponse, ServerStatus } from "shared";
+import { ConnectionResponse } from "~~/types/utils";
 
 export const useWebSocket = (url: string) => {
   const socket = useRef<WebSocket | null>(null);
@@ -69,7 +70,7 @@ export const useWebSocket = (url: string) => {
   }, [url]);
 
   const sendMessage = useCallback(
-    (message: InvoiceRequest) => {
+    (message: ClientRequest) => {
       if (!isWebSocketConnected) {
         console.error("WebSocket is not open");
         return;

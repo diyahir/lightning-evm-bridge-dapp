@@ -4,9 +4,11 @@ import dotenv from "dotenv";
 import { ethers } from "ethers";
 import { decode } from "bolt11";
 import { validateLnInvoiceAndContract } from "./utils/validation";
-import { InvoiceRequest, ContractDetails, GWEIPERSAT } from "./types/types";
+import { ContractDetails, GWEIPERSAT } from "./types/types";
 import deployedContracts from "./contracts/deployedContracts";
 import { providerConfig } from "./provider.config";
+import { match } from "ts-pattern";
+import { ClientRequest, InvoiceRequest, KIND } from "shared";
 
 dotenv.config();
 
@@ -60,28 +62,43 @@ wss.on("connection", (ws: WebSocket) => {
 
   ws.on("message", async (message: string) => {
     console.log("Received message:", message);
-    const request: InvoiceRequest = JSON.parse(message);
-    if (pendingContracts.includes(request.contractId)) {
-      ws.send(
-        JSON.stringify({
-          status: "error",
-          message: "Contract is already being processed.",
-        })
-      );
-      return;
-    }
-    pendingContracts.push(request.contractId);
-    try {
-      await processInvoiceRequest(request, ws);
-    } catch (error) {
-      console.error("Error processing message:", error);
-      ws.send(JSON.stringify({ status: "error", message: "Invalid request" }));
-    }
-    pendingContracts = pendingContracts.filter((c) => c !== request.contractId);
+    const request: ClientRequest = JSON.parse(message);
+
+    match(request)
+      .with({ kind: KIND.INVOICE }, async (request) => {
+        await processClientInvoiceRequest(request, ws);
+      })
+      .with({ kind: KIND.INITIATION }, async (request) => {
+        // handle initiation request
+      })
+      .exhaustive();
   });
 
   ws.on("close", () => console.log("Client disconnected"));
 });
+
+async function processClientInvoiceRequest(
+  request: InvoiceRequest,
+  ws: WebSocket
+) {
+  if (pendingContracts.includes(request.contractId)) {
+    ws.send(
+      JSON.stringify({
+        status: "error",
+        message: "Contract is already being processed.",
+      })
+    );
+    return;
+  }
+  pendingContracts.push(request.contractId);
+  try {
+    await processInvoiceRequest(request, ws);
+  } catch (error) {
+    console.error("Error processing message:", error);
+    ws.send(JSON.stringify({ status: "error", message: "Invalid request" }));
+  }
+  pendingContracts = pendingContracts.filter((c) => c !== request.contractId);
+}
 
 async function processInvoiceRequest(request: InvoiceRequest, ws: WebSocket) {
   if (!request.contractId || !request.lnInvoice) {
@@ -154,6 +171,7 @@ async function processInvoiceRequest(request: InvoiceRequest, ws: WebSocket) {
       request: request.lnInvoice,
       max_fee: providerConfig.maxLNFee,
     });
+
     console.log("Payment Response:", paymentResponse);
     ws.send(
       JSON.stringify({

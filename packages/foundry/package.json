@@ -1,5 +1,5 @@
 {
-  "name": "@se-2/foundry",
+  "name": "@lightning-evm-bridge/foundry",
   "version": "0.0.1",
   "scripts": {
     "account": "node script/ListAccount.js",
