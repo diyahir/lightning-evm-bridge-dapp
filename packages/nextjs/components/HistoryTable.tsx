@@ -72,7 +72,7 @@ export const HistoryTable = () => {
     <div className="card bg-brand-bg text-white font-mono">
       <div className="card-body p-4">
         <h2 className="text-center font-mono text-md">History</h2>
-        <table className="table table-auto w-full text-sm">
+        <table className="table table-auto w-full text-sm ">
           {transactions.length > 0 && (
             <>
               <thead>

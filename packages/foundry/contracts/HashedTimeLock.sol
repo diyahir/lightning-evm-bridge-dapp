@@ -32,6 +32,8 @@ contract HashedTimelock {
         bytes32 preimage;
     }
 
+    uint256 constant WITHDRAW_GAS_COST  = 120_000;
+
     mapping(bytes32 => LockContract) contracts;
 
     modifier fundsSent() {
@@ -53,8 +55,6 @@ contract HashedTimelock {
         _;
     }
     modifier withdrawable(bytes32 _contractId) {
-        if (contracts[_contractId].receiver != msg.sender)
-            revert("withdrawable: not receiver");
         if (contracts[_contractId].withdrawn)
             revert("withdrawable: already withdrawn");
         if (contracts[_contractId].timelock <= block.timestamp)
@@ -133,6 +133,31 @@ contract HashedTimelock {
         c.receiver.transfer(c.amount);
         emit LogHTLCWithdraw(_contractId);
         return true;
+    }
+
+    function withdrawWithBounty(
+        bytes32 _contractId,
+        bytes32 _preimage
+    )
+        external
+        contractExists(_contractId)
+        hashlockMatches(_contractId, _preimage)
+        withdrawable(_contractId)
+        returns (bool)
+    {
+        LockContract storage c = contracts[_contractId];
+        c.preimage = _preimage;
+        c.withdrawn = true;
+        uint256 bounty = calculateBounty();
+        if (c.amount < bounty) revert("Bounty is greater than the amount");
+        c.receiver.transfer(c.amount - bounty);
+        payable(msg.sender).transfer(bounty);
+        emit LogHTLCWithdraw(_contractId);
+        return true;
+    }
+
+    function calculateBounty() public view returns (uint) {
+        return WITHDRAW_GAS_COST * block.basefee * 120 / 100;
     }
 
     function refund(

@@ -8,6 +8,7 @@ contract HashedTimelockTest is Test {
     HashedTimelock htlc;
     address payable sender;
     address payable receiver;
+    address payable relayer;
     uint amount = 1 ether;
     bytes32 hashlock;
     bytes32 preimage;
@@ -17,6 +18,7 @@ contract HashedTimelockTest is Test {
     function setUp() public {
         sender = payable(address(0x123));
         receiver = payable(address(0x456));
+        relayer = payable(address(0x789));
         htlc = new HashedTimelock();
         preimage = "secret";
         console.logBytes("secret");
@@ -76,8 +78,28 @@ contract HashedTimelockTest is Test {
 
             // Verify receiver's balance has increased by the contract amount
             assertEq(receiver.balance, _amount);
-            
         }
+    }
+
+    function testWithdrawWithBounty() public {
+        bytes32 contractId = htlc.newContract{value: amount}(
+            receiver,
+            hashlock,
+            timelock
+        );
+        vm.stopPrank();
+        vm.startPrank(relayer);
+        vm.fee(100);
+        uint bounty = htlc.calculateBounty();
+        bool success = htlc.withdrawWithBounty(contractId, preimage);
+        assertTrue(success);
+
+        // Verify receiver's balance has increased by the contract amount
+        assertEq(receiver.balance, amount - bounty);
+        console.log("bounty", bounty);
+        console.log("receiver", receiver.balance);  
+        console.log("relayer", relayer.balance);
+        // assertEq(bounty, relayer.balance);
     }
 
     function testWithdrawWithIncorrectPreimage() public {

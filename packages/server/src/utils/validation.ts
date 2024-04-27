@@ -14,7 +14,7 @@ export function validateLnInvoiceAndContract(
   if (lnInvoiceDetails.satoshis > Number(contractDetails.amount)) {
     return {
       isValid: false,
-      message: "Invoice amount is less than contract amount",
+      message: "Invoice amount is greater than contract amount",
     };
   }
   if (lnInvoiceDetails.satoshis > providerConfig.maxSats) {
@@ -30,12 +30,12 @@ export function validateLnInvoiceAndContract(
     };
   }
   if (
-    Number(contractDetails.amount) <
-    getContractAmountFromInvoice(lnInvoiceDetails.satoshis)
+    getContractAmountFromInvoice(Number(contractDetails.amount)) <
+    lnInvoiceDetails.satoshis
   ) {
     return {
       isValid: false,
-      message: "Invoice amount is less than contract amount with fees",
+      message: `Invoice amount is greater than contract amount`,
     };
   }
 

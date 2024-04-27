@@ -242,6 +242,7 @@ docker-compose up -d --build
 - [ ] Integrate service fee for the LSP
 - [ ] Preconfirmations from the LSP before user pays on-chain
 - [ ] Indexing payments to provide most recent history
+- [ ] Relay server for unlocking HTLCs
 
 ### Disabling Github Workflow
 
