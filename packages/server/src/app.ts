@@ -1,14 +1,24 @@
 import * as WebSocket from "ws";
 import lnService from "ln-service";
 import dotenv from "dotenv";
-import { ethers } from "ethers";
+import { EventLog, ethers } from "ethers";
 import { decode } from "bolt11";
+import { v4 as uuidv4 } from "uuid";
 import { validateLnInvoiceAndContract } from "./utils/validation";
 import { ContractDetails, GWEIPERSAT } from "./types/types";
 import deployedContracts from "./contracts/deployedContracts";
 import { providerConfig } from "./provider.config";
 import { match } from "ts-pattern";
-import { ClientRequest, InvoiceRequest, KIND } from "shared";
+import {
+  ClientRequest,
+  ConnectionResponse,
+  HodlInvoiceResponse,
+  InitiationRequest,
+  InitiationResponse,
+  InvoiceRequest,
+  KIND,
+  ServerStatus,
+} from "shared";
 
 dotenv.config();
 
@@ -21,7 +31,11 @@ if (!RPC_URL || !LSP_PRIVATE_KEY || !CHAIN_ID) {
 }
 
 // Initialize services
-const wss = new WebSocket.Server({ port: Number(PORT) || 3003 });
+const wss = new WebSocket.Server({
+  port: Number(PORT) || 3003,
+  clientTracking: true,
+});
+
 const { lnd } = lnService.authenticatedLndGrpc({
   cert: "",
   macaroon: LND_MACAROON,
@@ -42,6 +56,7 @@ export type CachedPayment = {
   secret: string;
 };
 
+let sockets: { [id: string]: WebSocket } = {};
 let cachedPayments: CachedPayment[] = [];
 let pendingContracts: string[] = [];
 // ideally this should be stored in a database, but for the sake of simplicity we are using an in-memory cache
@@ -51,17 +66,23 @@ console.log(`WebSocket server is running on ws://localhost:${PORT || 3003}`);
 console.log(`LSP Address: ${signer.address}`);
 
 wss.on("connection", (ws: WebSocket) => {
-  const serverStatus = process.env.LND_MACAROON ? "ACTIVE" : "MOCK";
   console.log("Client connected");
-  ws.send(
-    JSON.stringify({
-      serverStatus: serverStatus,
-      message: "Connected to server",
-    })
-  );
+  const serverStatus: ServerStatus = process.env.LND_MACAROON
+    ? ServerStatus.ACTIVE
+    : ServerStatus.MOCK;
+
+  const uuid = uuidv4();
+  sockets[uuid] = ws;
+
+  const connectionResponse: ConnectionResponse = {
+    serverStatus,
+    uuid,
+    message: "Connected to server",
+  };
+
+  ws.send(JSON.stringify(connectionResponse));
 
   ws.on("message", async (message: string) => {
-    console.log("Received message:", message);
     const request: ClientRequest = JSON.parse(message);
 
     match(request)
@@ -69,13 +90,106 @@ wss.on("connection", (ws: WebSocket) => {
         await processClientInvoiceRequest(request, ws);
       })
       .with({ kind: KIND.INITIATION }, async (request) => {
-        // handle initiation request
+        await processClientInitiationRequest(request, ws);
       })
       .exhaustive();
   });
 
   ws.on("close", () => console.log("Client disconnected"));
 });
+
+async function processClientInitiationRequest(
+  request: InitiationRequest,
+  ws: WebSocket
+) {
+  try {
+    // get client user id
+    const invoice = await lnService.createInvoice({
+      lnd,
+      tokens: 10,
+    });
+
+    const intiationResponse: InitiationResponse = {
+      lnInvoice: invoice.request,
+    };
+
+    const sub = await lnService.subscribeToInvoice({
+      lnd,
+      id: invoice.id,
+    });
+
+    console.log("Subscribing to invoice updates");
+
+    sub.on("invoice_updated", async (invoice) =>
+      onInitiationInvoicePaidCallback(invoice, ws, sub, request)
+    );
+
+    ws.send(JSON.stringify(intiationResponse));
+  } catch (error) {
+    console.error("Error creating invoice:", error);
+    ws.send(
+      JSON.stringify({ status: "error", message: "Failed to create invoice." })
+    );
+  }
+}
+
+async function onInitiationInvoicePaidCallback(
+  invoice: any,
+  ws: WebSocket,
+  sub: any,
+  request: InitiationRequest
+) {
+  if (invoice.is_confirmed) {
+    console.log("Invoice Confirmed:", invoice);
+
+    const options = {
+      gasPrice: ethers.parseUnits("0.001", "gwei"),
+      value: BigInt(request.amount * GWEIPERSAT),
+    };
+    const now = Math.floor(Date.now() / 1000);
+
+    await htlcContract
+      .newContract(
+        request.recipient,
+        "0x" + request.hashlock,
+        BigInt(now + 600),
+        options
+      )
+      .then(async (tx: any) => {
+        await tx.wait().then((res) => {
+          console.log("Contract Logs:", res.logs[0].args[0]);
+          // find log with fragment name LogHTLCNew
+        });
+        console.log("Contract Hash:", tx.hash);
+      })
+      .catch((error: any) => {
+        console.error("Contract Error:", error);
+        ws.send(
+          JSON.stringify({
+            status: "error",
+            message: "Failed to create contract.",
+          })
+        );
+        sub.removeAllListeners();
+        return;
+      });
+
+    const hodlInvoice = await lnService.createHodlInvoice({
+      lnd,
+      id: request.hashlock,
+    });
+
+    console.log("Hodl Invoice:", hodlInvoice);
+
+    const hodlInvoiceRes: HodlInvoiceResponse = {
+      lnInvoice: hodlInvoice.request,
+    };
+
+    ws.send(JSON.stringify(hodlInvoiceRes));
+
+    sub.removeAllListeners();
+  }
+}
 
 async function processClientInvoiceRequest(
   request: InvoiceRequest,

@@ -1,8 +1,3 @@
-export interface InvoiceResponse {
-  status: "success" | "error";
-  message: string;
-}
-
 export type ContractDetails = {
   sender: string;
   receiver: string;
@@ -14,10 +9,9 @@ export type ContractDetails = {
   preimage: string;
 };
 
-enum ServerStatus {
-  ACTIVE = "ACTIVE",
-  INACTIVE = "INACTIVE",
-  MOCK = "MOCK",
-}
-
 export const GWEIPERSAT = 1e10;
+
+export type validationResponse = {
+  isValid: boolean;
+  message: string;
+};

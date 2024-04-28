@@ -9,6 +9,16 @@ export interface InvoiceRequest {
 export interface InitiationRequest {
   kind: KIND.INITIATION;
   amount: number;
+  recipient: string;
+  hashlock: string;
+}
+
+export interface InitiationResponse {
+  lnInvoice: string;
+}
+
+export interface HodlInvoiceResponse {
+  lnInvoice: string;
 }
 
 export enum KIND {
@@ -25,4 +35,10 @@ export enum ServerStatus {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
   MOCK = "MOCK",
+}
+
+export interface ConnectionResponse {
+  serverStatus: ServerStatus;
+  uuid: string;
+  message: string;
 }

@@ -1,9 +1,14 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { IntegerInput } from "./scaffold-eth";
+import { randomBytes } from "crypto";
+import { sha256 } from "js-sha256";
 // import { PaymentRequestObject, decode } from "bolt11";
 import QRCode from "qrcode.react";
+import { InitiationRequest, KIND } from "shared";
+import { Hex, stringToHex } from "viem";
+import { useWalletClient } from "wagmi";
 // import { useWalletClient } from "wagmi";
 import { useLightningApp } from "~~/hooks/LightningProvider";
 // import { useScaffoldContract } from "~~/hooks/scaffold-eth";
@@ -12,6 +17,11 @@ import { LnPaymentInvoice } from "~~/types/utils";
 type RecieveModalProps = {
   isOpen: boolean;
   onClose: () => void;
+};
+
+type HashLock = {
+  secret: Hex;
+  hash: Hex;
 };
 
 export const steps = [
@@ -28,12 +38,13 @@ export const steps = [
 ];
 
 function RecieveModal({ isOpen, onClose }: RecieveModalProps) {
-  const { toastSuccess } = useLightningApp();
+  const { toastSuccess, sendMessage, lnInitationResponse } = useLightningApp();
   const [invoice, setInvoice] = useState<string>("");
   const [amount, setAmount] = useState<bigint>(BigInt(0));
   const lnInvoiceRef = useRef<LnPaymentInvoice | null>(null);
+  const [hashLock, setHashLock] = useState<HashLock | null>(null);
   // const [sessionToken, setSessionToken] = useState<string>("");
-
+  const { data: walletClient } = useWalletClient();
   function cleanAndClose() {
     lnInvoiceRef.current = null;
     setInvoice("");
@@ -55,6 +66,32 @@ function RecieveModal({ isOpen, onClose }: RecieveModalProps) {
     toastSuccess("Lightning Invoice Copied");
     setActiveStep(activeStep + 1);
   }
+
+  function onClickContinue() {
+    setActiveStep(activeStep + 1);
+
+    // genereate 32 random bytes in hex
+    const secret = randomBytes(32).toString("hex") as Hex;
+    const hash = sha256.hex(secret) as Hex;
+
+    setHashLock({ secret, hash });
+    console.log("hash", hash);
+    console.log("secret", secret);
+
+    const msg: InitiationRequest = {
+      kind: KIND.INITIATION,
+      amount: Number(amount.toString()),
+      recipient: walletClient?.account.address ?? "",
+      hashlock: hash,
+    };
+    sendMessage(msg);
+  }
+
+  useEffect(() => {
+    if (lnInitationResponse) {
+      setInvoice(lnInitationResponse.lnInvoice);
+    }
+  }, [lnInitationResponse]);
 
   // function getPaymentHash(requestObject: PaymentRequestObject): `0x${string}` | undefined {
   //   // go through the tags and find the 'payment_hash' tagName and return the 'data'
@@ -111,7 +148,10 @@ function RecieveModal({ isOpen, onClose }: RecieveModalProps) {
                     &nbsp;
                     <div className="flex ">
                       <IntegerInput value={amount} onChange={val => setAmount(BigInt(val))} disableMultiplyBy1e18 />
-                      <button className="btn btn-neutral justify-between rounded-none" onClick={() => setActiveStep(2)}>
+                      <button
+                        className="btn btn-neutral justify-between rounded-none"
+                        onClick={() => onClickContinue()}
+                      >
                         Continue
                       </button>
                     </div>
@@ -123,12 +163,7 @@ function RecieveModal({ isOpen, onClose }: RecieveModalProps) {
                     &nbsp;
                     {activeStep === 2 && (
                       <div className="self-center">
-                        <QRCode
-                          size={250}
-                          value={
-                            "lnbc150n1pnz6xljpp5g8fudgfd3n7vty4d79ut6xcmkj6y5lpdwjma77zjt8rs66dery5qdqqcqzpuxqyz5vqsp5l9k8vwrl7plkrcd08zvu2h6ry8l0m82lepm8csneq08tadufatus9qyyssqgms4395l0vqs6nwg8cxjc48cadwfxmhjgxd5qnw0rqgcnvhwuvspswu3aarq64k039gw7zu6kerrw5t3mgd5ea5h5em00pz020hkp7qp5rsygh"
-                          }
-                        />
+                        <QRCode size={250} value={invoice} />
                       </div>
                     )}
                   </div>
@@ -137,7 +172,7 @@ function RecieveModal({ isOpen, onClose }: RecieveModalProps) {
                   <div className="flex flex-col text-start cursor-pointer  w-full" onClick={() => onClickQRCode()}>
                     {steps[2].title}
                     &nbsp;
-                    {activeStep === 3 && (
+                    {activeStep === 3 && lnInitationResponse !== null && (
                       <div className="self-center">
                         <QRCode
                           size={250}

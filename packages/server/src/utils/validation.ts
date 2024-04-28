@@ -1,11 +1,6 @@
 import { PaymentRequestObject } from "bolt11";
-import { ContractDetails } from "../types/types";
+import { ContractDetails, validationResponse } from "../types/types";
 import { providerConfig } from "../provider.config";
-
-type validationResponse = {
-  isValid: boolean;
-  message: string;
-};
 
 export function validateLnInvoiceAndContract(
   lnInvoiceDetails: PaymentRequestObject,
