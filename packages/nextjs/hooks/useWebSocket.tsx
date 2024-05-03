@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ClientRequest, ConnectionResponse, InitiationResponse, InvoiceResponse, ServerStatus } from "shared";
+import { ClientRequest, InitiationResponse, InvoiceResponse, ServerResponse, ServerStatus } from "shared";
 
 export const useWebSocket = (url: string) => {
   const socket = useRef<WebSocket | null>(null);
@@ -8,6 +8,7 @@ export const useWebSocket = (url: string) => {
   const [error, setError] = useState<Event | null>(null);
   const [uuid, setUuid] = useState<string>("");
   const [lnInitationResponse, setLnInitationResponse] = useState<InitiationResponse | null>(null);
+  const [recieveContractId, setRecieveContractId] = useState<string>("");
   const [isWebSocketConnected, setIsWebSocketConnected] = useState<boolean>(false);
   const reconnectInterval = useRef<NodeJS.Timeout | null>(null);
 
@@ -44,7 +45,7 @@ export const useWebSocket = (url: string) => {
     socket.current.onmessage = event => {
       console.log("Received message", event.data);
       try {
-        const responseData: ConnectionResponse | InvoiceResponse = JSON.parse(event.data);
+        const responseData: ServerResponse = JSON.parse(event.data);
         if (responseData && "serverStatus" in responseData) {
           setStatus(responseData.serverStatus as ServerStatus);
           setUuid(responseData.uuid);
@@ -52,6 +53,10 @@ export const useWebSocket = (url: string) => {
         }
         if (responseData && "status" in responseData) {
           setData(responseData);
+          return;
+        }
+        if (responseData && "contractId" in responseData) {
+          setRecieveContractId(responseData.contractId);
           return;
         }
         if (responseData && "lnInvoice" in responseData) {
@@ -87,5 +92,15 @@ export const useWebSocket = (url: string) => {
     [isWebSocketConnected],
   );
 
-  return { sendMessage, data, error, isWebSocketConnected, reconnect, status, lnInitationResponse, uuid };
+  return {
+    sendMessage,
+    data,
+    error,
+    isWebSocketConnected,
+    reconnect,
+    status,
+    lnInitationResponse,
+    uuid,
+    recieveContractId,
+  };
 };

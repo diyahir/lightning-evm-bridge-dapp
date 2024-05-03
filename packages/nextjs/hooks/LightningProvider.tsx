@@ -4,6 +4,7 @@ import { useWebSocket } from "./useWebSocket";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ClientRequest, InvoiceResponse, KIND, ServerStatus } from "shared";
+import { HashLock } from "~~/types/utils";
 
 // Define the types for your historical transactions and context
 export type HistoricalTransaction = {
@@ -28,6 +29,9 @@ export type LightningAppContextType = {
   toastError: (message: string) => void;
   lspStatus: ServerStatus;
   lnInitationResponse: { lnInvoice: string } | null;
+  hashLock: HashLock | null;
+  setHashLock: (hashLock: HashLock) => void;
+  recieveContractId: string;
 };
 
 // Create the context
@@ -36,6 +40,7 @@ const HistoricalTransactionsContext = createContext<LightningAppContextType | un
 // Provider component
 export const LightningProvider = ({ children }: { children: React.ReactNode }) => {
   const price = useNativeCurrencyPrice();
+  const [hashLock, setHashLock] = useState<HashLock | null>(null);
   const [transactions, setTransactionsState] = useState<HistoricalTransaction[]>([]);
   const transactionRef = React.useRef<HistoricalTransaction[]>([]);
   const [invoiceContractIdPair, setInvoiceContractIdPair] = useState<string[]>([]);
@@ -44,9 +49,8 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
     setTransactionsState(transactions);
   };
   console.log(process.env.WEBSOCKET_URL ?? "ws://localhost:3003");
-  const { sendMessage, isWebSocketConnected, data, reconnect, status, lnInitationResponse } = useWebSocket(
-    process.env.WEBSOCKET_URL ?? "ws://localhost:3003",
-  );
+  const { sendMessage, isWebSocketConnected, data, reconnect, status, lnInitationResponse, recieveContractId } =
+    useWebSocket(process.env.WEBSOCKET_URL ?? "ws://localhost:3003");
 
   const toastSuccess = (message: string) => {
     toast.success(message, {
@@ -76,7 +80,7 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
       if (index === -1) return;
       sendMessage({
         contractId: tmpContractId,
-        kind: KIND.INVOICE,
+        kind: KIND.INVOICE_SEND,
         lnInvoice: transactionRef.current[index]?.lnInvoice,
       });
       setInvoiceContractIdPair([tmpContractId, transactionRef.current[index]?.lnInvoice]);
@@ -163,6 +167,9 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
         toastSuccess,
         lspStatus: status,
         lnInitationResponse,
+        hashLock,
+        setHashLock,
+        recieveContractId,
       }}
     >
       {children}

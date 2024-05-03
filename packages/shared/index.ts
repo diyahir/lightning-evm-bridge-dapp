@@ -1,7 +1,7 @@
 export type ClientRequest = InvoiceRequest | InitiationRequest;
 
 export interface InvoiceRequest {
-  kind: KIND.INVOICE;
+  kind: KIND.INVOICE_SEND;
   contractId: string;
   lnInvoice: string;
 }
@@ -18,12 +18,20 @@ export interface InitiationResponse {
 }
 
 export interface HodlInvoiceResponse {
+  kind: KIND.HODL_RES;
   lnInvoice: string;
 }
 
+export interface HodlInvoiceContractResponse {
+  kind: KIND.HODL_CONTRACT_RES;
+  contractId: string;
+}
+
 export enum KIND {
-  INVOICE = "invoice",
+  INVOICE_SEND = "invoice_send",
   INITIATION = "initiation",
+  HODL_RES = "hodl_res",
+  HODL_CONTRACT_RES = "hodl_contract_res",
 }
 
 export interface InvoiceResponse {
@@ -42,3 +50,11 @@ export interface ConnectionResponse {
   uuid: string;
   message: string;
 }
+
+export type ServerResponse =
+  | InvoiceResponse
+  | ConnectionResponse
+  | HodlInvoiceResponse
+  | HodlInvoiceContractResponse;
+
+export const GWEIPERSAT = 1e10;

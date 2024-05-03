@@ -7,21 +7,16 @@ import { sha256 } from "js-sha256";
 // import { PaymentRequestObject, decode } from "bolt11";
 import QRCode from "qrcode.react";
 import { InitiationRequest, KIND } from "shared";
-import { Hex, stringToHex } from "viem";
 import { useWalletClient } from "wagmi";
 // import { useWalletClient } from "wagmi";
 import { useLightningApp } from "~~/hooks/LightningProvider";
+import { useScaffoldContract } from "~~/hooks/scaffold-eth";
 // import { useScaffoldContract } from "~~/hooks/scaffold-eth";
 import { LnPaymentInvoice } from "~~/types/utils";
 
 type RecieveModalProps = {
   isOpen: boolean;
   onClose: () => void;
-};
-
-type HashLock = {
-  secret: Hex;
-  hash: Hex;
 };
 
 export const steps = [
@@ -38,11 +33,12 @@ export const steps = [
 ];
 
 function RecieveModal({ isOpen, onClose }: RecieveModalProps) {
-  const { toastSuccess, sendMessage, lnInitationResponse } = useLightningApp();
+  const { toastSuccess, sendMessage, lnInitationResponse, hashLock, setHashLock, recieveContractId } =
+    useLightningApp();
   const [invoice, setInvoice] = useState<string>("");
   const [amount, setAmount] = useState<bigint>(BigInt(0));
   const lnInvoiceRef = useRef<LnPaymentInvoice | null>(null);
-  const [hashLock, setHashLock] = useState<HashLock | null>(null);
+
   // const [sessionToken, setSessionToken] = useState<string>("");
   const { data: walletClient } = useWalletClient();
   function cleanAndClose() {
@@ -53,30 +49,43 @@ function RecieveModal({ isOpen, onClose }: RecieveModalProps) {
     onClose();
   }
 
-  // const { data: walletClient } = useWalletClient();
-  // const { data: yourContract } = useScaffoldContract({
-  //   contractName: "HashedTimelock",
-  //   walletClient,
-  // });
+  const { data: yourContract } = useScaffoldContract({
+    contractName: "HashedTimelock",
+    walletClient,
+  });
+
+  useEffect(() => {
+    if (recieveContractId !== "") {
+      // set the contract id to the contract
+      if (hashLock === null) return;
+      const secret = "0x" + hashLock.secret;
+      yourContract?.write.withdraw([recieveContractId as `0x${string}`, secret as `0x${string}`]).then(() => {
+        console.log("Withdrawn");
+      });
+    }
+  }, [recieveContractId]);
 
   const [activeStep, setActiveStep] = useState<number>(1);
 
   function onClickQRCode() {
     navigator.clipboard.writeText(invoice);
     toastSuccess("Lightning Invoice Copied");
-    setActiveStep(activeStep + 1);
+    // setActiveStep(activeStep + 1);
   }
 
   function onClickContinue() {
     setActiveStep(activeStep + 1);
 
     // genereate 32 random bytes in hex
-    const secret = randomBytes(32).toString("hex") as Hex;
-    const hash = sha256.hex(secret) as Hex;
+    const secret = randomBytes(32);
+    const hash = sha256.hex(secret);
 
-    setHashLock({ secret, hash });
-    console.log("hash", hash);
     console.log("secret", secret);
+    console.log("hash", hash);
+
+    setHashLock({ secret: secret.toString("hex"), hash });
+    console.log("hash", hash);
+    console.log("secret", secret.toString("hex"));
 
     const msg: InitiationRequest = {
       kind: KIND.INITIATION,

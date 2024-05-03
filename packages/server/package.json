@@ -30,6 +30,7 @@
     "bolt11": "^1.4.1",
     "dotenv": "^16.4.4",
     "ethers": "^6.11.1",
+    "lightning": "^10.10.0",
     "ln-service": "^57.5.1",
     "nextjs": "^0.0.3",
     "shared": "workspace:^",

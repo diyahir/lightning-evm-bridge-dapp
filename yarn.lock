@@ -2255,6 +2255,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@grpc/grpc-js@npm:1.10.7":
+  version: 1.10.7
+  resolution: "@grpc/grpc-js@npm:1.10.7"
+  dependencies:
+    "@grpc/proto-loader": ^0.7.13
+    "@js-sdsl/ordered-map": ^4.4.2
+  checksum: 69e88768e59b53ca020e2cfa9474fbd645f4ee7dd3269559c9fb91970273da6e8db480c0c439bdd73b49f1831d8f47c9bc5305dc5f9ed4db8873d53572e4f019
+  languageName: node
+  linkType: hard
+
 "@grpc/proto-loader@npm:0.7.10, @grpc/proto-loader@npm:^0.7.8":
   version: 0.7.10
   resolution: "@grpc/proto-loader@npm:0.7.10"
@@ -2266,6 +2276,20 @@ __metadata:
   bin:
     proto-loader-gen-types: build/bin/proto-loader-gen-types.js
   checksum: 4987e23b57942c2363b6a6a106e63efae636666cefa348778dfafef2ff72da7343c8587667521cb1d52482827bcd001dd535bdc27065110af56d9c7c176334c9
+  languageName: node
+  linkType: hard
+
+"@grpc/proto-loader@npm:0.7.13, @grpc/proto-loader@npm:^0.7.13":
+  version: 0.7.13
+  resolution: "@grpc/proto-loader@npm:0.7.13"
+  dependencies:
+    lodash.camelcase: ^4.3.0
+    long: ^5.0.0
+    protobufjs: ^7.2.5
+    yargs: ^17.7.2
+  bin:
+    proto-loader-gen-types: build/bin/proto-loader-gen-types.js
+  checksum: 399c1b8a4627f93dc31660d9636ea6bf58be5675cc7581e3df56a249369e5be02c6cd0d642c5332b0d5673bc8621619bc06fb045aa3e8f57383737b5d35930dc
   languageName: node
   linkType: hard
 
@@ -2661,6 +2685,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@js-sdsl/ordered-map@npm:^4.4.2":
+  version: 4.4.2
+  resolution: "@js-sdsl/ordered-map@npm:4.4.2"
+  checksum: a927ae4ff8565ecb75355cc6886a4f8fadbf2af1268143c96c0cce3ba01261d241c3f4ba77f21f3f017a00f91dfe9e0673e95f830255945c80a0e96c6d30508a
+  languageName: node
+  linkType: hard
+
 "@lightning-evm-bridge/foundry@workspace:packages/foundry":
   version: 0.0.0-use.local
   resolution: "@lightning-evm-bridge/foundry@workspace:packages/foundry"
@@ -2749,6 +2780,7 @@ __metadata:
     dotenv: ^16.4.4
     ethers: ^6.11.1
     jest: ^29.7.0
+    lightning: ^10.10.0
     ln-service: ^57.5.1
     nextjs: ^0.0.3
     shared: "workspace:^"
@@ -4019,6 +4051,15 @@ __metadata:
   dependencies:
     undici-types: ~5.26.4
   checksum: 59c0dde187120adc97da30063c86511664b24b50fe777abfe1f557c217d0a0b84a68aaab5ef8ac44f5c2986b3f9cd605a15fa6e4f31195e594da96bbe9617c20
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:20.12.8":
+  version: 20.12.8
+  resolution: "@types/node@npm:20.12.8"
+  dependencies:
+    undici-types: ~5.26.4
+  checksum: 84d4876d95792a9567d2cc5a2c48db7028c397820e842cd65e2f848c23dd4b868b7131bda8eb66a1729d4944289070153d6180048de5bd155b35de421283c433
   languageName: node
   linkType: hard
 
@@ -6101,6 +6142,13 @@ __metadata:
   version: 2.0.0
   resolution: "bolt09@npm:2.0.0"
   checksum: 7cb913b040bcd9c7c04b746ba7bdafa64564955a1f9b9f46fcbf0c15c712db65f071f1b3c963a9ce6c628a2346bd7bb9e6e571bf018307d06d744cdf64d578aa
+  languageName: node
+  linkType: hard
+
+"bolt09@npm:2.1.0":
+  version: 2.1.0
+  resolution: "bolt09@npm:2.1.0"
+  checksum: 629cd3bdd49a68f0cd4f74146b4c45d1fbb63f9145fde88cc4973670c68ea4eaf2a9a9161611439e4080180ad62311db6ad0090bfc757a149a16022a159d64ba
   languageName: node
   linkType: hard
 
@@ -11109,6 +11157,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lightning@npm:^10.10.0":
+  version: 10.10.0
+  resolution: "lightning@npm:10.10.0"
+  dependencies:
+    "@grpc/grpc-js": 1.10.7
+    "@grpc/proto-loader": 0.7.13
+    "@types/node": 20.12.8
+    "@types/request": 2.48.12
+    "@types/ws": 8.5.10
+    async: 3.2.5
+    asyncjs-util: 1.2.12
+    bitcoinjs-lib: 6.1.5
+    bn.js: 5.2.1
+    bolt07: 1.8.4
+    bolt09: 2.1.0
+    ecpair: 2.1.0
+    invoices: 3.0.0
+    psbt: 3.0.0
+    tiny-secp256k1: 2.2.3
+    type-fest: 4.18.1
+  checksum: c36f0fdc09578c34dabe409581fab879a64a7ddad8b432c3dab37d3c1b6a85eca6965dd92a299ced36addf7300ddcd6478e57080be20d0704a29a22ba68c9fb4
+  languageName: node
+  linkType: hard
+
 "lilconfig@npm:2.1.0, lilconfig@npm:^2.1.0":
   version: 2.1.0
   resolution: "lilconfig@npm:2.1.0"
@@ -12955,7 +13027,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"protobufjs@npm:^7.2.4":
+"protobufjs@npm:^7.2.4, protobufjs@npm:^7.2.5":
   version: 7.2.6
   resolution: "protobufjs@npm:7.2.6"
   dependencies:
@@ -15026,6 +15098,13 @@ __metadata:
   version: 4.10.2
   resolution: "type-fest@npm:4.10.2"
   checksum: ef75736d51c10a885f955c07aed8f46103a8c9ae93742a75fbbdf023dd0e7169c524ebef292f37de19806051fb1bdd96c4098a0101c5f869f80db73bcb484bb1
+  languageName: node
+  linkType: hard
+
+"type-fest@npm:4.18.1":
+  version: 4.18.1
+  resolution: "type-fest@npm:4.18.1"
+  checksum: 7aec1907b289540093e93fced3a6d7f2ab743c2cdf7e58702e41b3095a06e5aa7abdf48881370053f9aac1b688e6d144bf89a107a3749ea9bb9e14b2af13d1a2
   languageName: node
   linkType: hard
 
