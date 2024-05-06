@@ -3,7 +3,7 @@ import { useNativeCurrencyPrice, useScaffoldEventSubscriber } from "./scaffold-e
 import { useWebSocket } from "./useWebSocket";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ClientRequest, InvoiceResponse, KIND, ServerStatus } from "shared";
+import { ClientRequest, HodlInvoiceResponse, InitiationResponse, InvoiceResponse, KIND, ServerStatus } from "shared";
 import { HashLock } from "~~/types/utils";
 
 // Define the types for your historical transactions and context
@@ -28,7 +28,8 @@ export type LightningAppContextType = {
   toastSuccess: (message: string) => void;
   toastError: (message: string) => void;
   lspStatus: ServerStatus;
-  lnInitationResponse: { lnInvoice: string } | null;
+  lnInitationResponse: InitiationResponse | null;
+  hodlInvoiceResponse: HodlInvoiceResponse | null;
   hashLock: HashLock | null;
   setHashLock: (hashLock: HashLock) => void;
   recieveContractId: string;
@@ -49,8 +50,16 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
     setTransactionsState(transactions);
   };
   console.log(process.env.WEBSOCKET_URL ?? "ws://localhost:3003");
-  const { sendMessage, isWebSocketConnected, data, reconnect, status, lnInitationResponse, recieveContractId } =
-    useWebSocket(process.env.WEBSOCKET_URL ?? "ws://localhost:3003");
+  const {
+    sendMessage,
+    isWebSocketConnected,
+    data,
+    reconnect,
+    status,
+    lnInitationResponse,
+    recieveContractId,
+    hodlInvoiceResponse,
+  } = useWebSocket(process.env.WEBSOCKET_URL ?? "ws://localhost:3003");
 
   const toastSuccess = (message: string) => {
     toast.success(message, {
@@ -167,6 +176,7 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
         toastSuccess,
         lspStatus: status,
         lnInitationResponse,
+        hodlInvoiceResponse,
         hashLock,
         setHashLock,
         recieveContractId,

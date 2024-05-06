@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ClientRequest, InitiationResponse, InvoiceResponse, ServerResponse, ServerStatus } from "shared";
+import {
+  ClientRequest,
+  HodlInvoiceResponse,
+  InitiationResponse,
+  InvoiceResponse,
+  KIND,
+  ServerResponse,
+  ServerStatus,
+} from "shared";
 
 export const useWebSocket = (url: string) => {
   const socket = useRef<WebSocket | null>(null);
@@ -8,6 +16,7 @@ export const useWebSocket = (url: string) => {
   const [error, setError] = useState<Event | null>(null);
   const [uuid, setUuid] = useState<string>("");
   const [lnInitationResponse, setLnInitationResponse] = useState<InitiationResponse | null>(null);
+  const [hodlInvoiceResponse, setHodlInvoiceResponse] = useState<HodlInvoiceResponse | null>(null);
   const [recieveContractId, setRecieveContractId] = useState<string>("");
   const [isWebSocketConnected, setIsWebSocketConnected] = useState<boolean>(false);
   const reconnectInterval = useRef<NodeJS.Timeout | null>(null);
@@ -59,6 +68,15 @@ export const useWebSocket = (url: string) => {
           setRecieveContractId(responseData.contractId);
           return;
         }
+        if (
+          responseData &&
+          "lnInvoice" in responseData &&
+          KIND.HODL_RES === responseData.kind &&
+          responseData !== null
+        ) {
+          setHodlInvoiceResponse(responseData);
+          return;
+        }
         if (responseData && "lnInvoice" in responseData) {
           setLnInitationResponse(responseData);
           return;
@@ -102,5 +120,6 @@ export const useWebSocket = (url: string) => {
     lnInitationResponse,
     uuid,
     recieveContractId,
+    hodlInvoiceResponse,
   };
 };

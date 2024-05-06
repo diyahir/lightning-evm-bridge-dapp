@@ -15,7 +15,6 @@ export const InputBase = <T extends { toString: () => string } | undefined = str
   error,
   disabled,
   prefix,
-  suffix,
 }: InputBaseProps<T>) => {
   let modifier = "";
   if (error) {
@@ -43,7 +42,6 @@ export const InputBase = <T extends { toString: () => string } | undefined = str
         disabled={disabled}
         autoComplete="off"
       />
-      {suffix}
     </div>
   );
 };

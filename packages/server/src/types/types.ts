@@ -13,7 +13,7 @@ export type ContractDetails = {
   preimage: string;
 };
 
-export const GWEIPERSAT = 1e10;
+
 
 export type validationResponse = {
   isValid: boolean;

@@ -1,8 +1,8 @@
 import { PaymentRequestObject } from "bolt11";
-import { ContractDetails, validationResponse } from "../types/types";
+import { validationResponse } from "../types/types";
 import { providerConfig } from "../provider.config";
 import { ethers } from "ethers";
-import { GWEIPERSAT } from "shared";
+import { GWEIPERSAT, parseContractDetails, ContractDetails } from "shared";
 
 export function validateLnInvoiceAndContract(
   lnInvoiceDetails: PaymentRequestObject,
@@ -98,14 +98,5 @@ export async function getContractDetails(
   htlcContract: ethers.Contract
 ): Promise<ContractDetails> {
   const response: any = await htlcContract.getContract(contractId);
-  return {
-    sender: response[0],
-    receiver: response[1],
-    amount: BigInt(Number(response[2]) / GWEIPERSAT),
-    hashlock: response[3],
-    timelock: response[4],
-    withdrawn: response[5],
-    refunded: response[6],
-    preimage: response[7],
-  };
+  return parseContractDetails(response);
 }
