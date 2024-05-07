@@ -77,6 +77,7 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
   }
 
   function submitPayment() {
+    console.log("submitting payment");
     if (!yourContract) return;
     if (!lnInvoiceRef.current) return;
     yourContract.write

@@ -4,9 +4,9 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ServerStatus } from "shared";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useLightningApp } from "~~/hooks/LightningProvider";
-import { ServerStatus } from "~~/types/utils";
 
 type HeaderMenuLink = {
   label: string;

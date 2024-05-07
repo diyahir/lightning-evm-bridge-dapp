@@ -1,0 +1,7 @@
+{
+  "name": "shared",
+  "packageManager": "yarn@3.2.3",
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

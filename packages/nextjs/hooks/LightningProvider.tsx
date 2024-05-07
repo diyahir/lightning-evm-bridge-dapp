@@ -3,7 +3,8 @@ import { useNativeCurrencyPrice, useScaffoldEventSubscriber } from "./scaffold-e
 import { useWebSocket } from "./useWebSocket";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { InvoiceRequest, InvoiceResponse, ServerStatus } from "~~/types/utils";
+import { ClientRequest, HodlInvoiceResponse, InitiationResponse, InvoiceResponse, KIND, ServerStatus } from "shared";
+import { HashLock } from "~~/types/utils";
 
 // Define the types for your historical transactions and context
 export type HistoricalTransaction = {
@@ -19,7 +20,7 @@ export type HistoricalTransaction = {
 export type LightningAppContextType = {
   transactions: HistoricalTransaction[];
   addTransaction: (transaction: HistoricalTransaction) => void;
-  sendMessage: (message: InvoiceRequest) => void;
+  sendMessage: (message: ClientRequest) => void;
   reconnect: () => void;
   isWebSocketConnected: boolean;
   data: InvoiceResponse | null;
@@ -27,6 +28,11 @@ export type LightningAppContextType = {
   toastSuccess: (message: string) => void;
   toastError: (message: string) => void;
   lspStatus: ServerStatus;
+  lnInitationResponse: InitiationResponse | null;
+  hodlInvoiceResponse: HodlInvoiceResponse | null;
+  hashLock: HashLock | null;
+  setHashLock: (hashLock: HashLock) => void;
+  recieveContractId: string;
 };
 
 // Create the context
@@ -35,6 +41,7 @@ const HistoricalTransactionsContext = createContext<LightningAppContextType | un
 // Provider component
 export const LightningProvider = ({ children }: { children: React.ReactNode }) => {
   const price = useNativeCurrencyPrice();
+  const [hashLock, setHashLock] = useState<HashLock | null>(null);
   const [transactions, setTransactionsState] = useState<HistoricalTransaction[]>([]);
   const transactionRef = React.useRef<HistoricalTransaction[]>([]);
   const [invoiceContractIdPair, setInvoiceContractIdPair] = useState<string[]>([]);
@@ -43,9 +50,16 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
     setTransactionsState(transactions);
   };
   console.log(process.env.WEBSOCKET_URL ?? "ws://localhost:3003");
-  const { sendMessage, isWebSocketConnected, data, reconnect, status } = useWebSocket(
-    process.env.WEBSOCKET_URL ?? "ws://localhost:3003",
-  );
+  const {
+    sendMessage,
+    isWebSocketConnected,
+    data,
+    reconnect,
+    status,
+    lnInitationResponse,
+    recieveContractId,
+    hodlInvoiceResponse,
+  } = useWebSocket(process.env.WEBSOCKET_URL ?? "ws://localhost:3003");
 
   const toastSuccess = (message: string) => {
     toast.success(message, {
@@ -73,7 +87,11 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
       // check if the transaction has the same has as one of the transactions in the list
       const index = transactionRef.current.findIndex(t => t.txHash === txHash);
       if (index === -1) return;
-      sendMessage({ contractId: tmpContractId, lnInvoice: transactionRef.current[index]?.lnInvoice });
+      sendMessage({
+        contractId: tmpContractId,
+        kind: KIND.INVOICE_SEND,
+        lnInvoice: transactionRef.current[index]?.lnInvoice,
+      });
       setInvoiceContractIdPair([tmpContractId, transactionRef.current[index]?.lnInvoice]);
     },
   });
@@ -157,6 +175,11 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
         toastError,
         toastSuccess,
         lspStatus: status,
+        lnInitationResponse,
+        hodlInvoiceResponse,
+        hashLock,
+        setHashLock,
+        recieveContractId,
       }}
     >
       {children}

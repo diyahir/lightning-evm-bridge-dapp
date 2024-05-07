@@ -1,11 +1,8 @@
 import { PaymentRequestObject } from "bolt11";
-import { ContractDetails } from "../types/types";
+import { validationResponse } from "../types/types";
 import { providerConfig } from "../provider.config";
-
-type validationResponse = {
-  isValid: boolean;
-  message: string;
-};
+import { ethers } from "ethers";
+import { GWEIPERSAT, parseContractDetails, ContractDetails } from "shared";
 
 export function validateLnInvoiceAndContract(
   lnInvoiceDetails: PaymentRequestObject,
@@ -14,7 +11,7 @@ export function validateLnInvoiceAndContract(
   if (lnInvoiceDetails.satoshis > Number(contractDetails.amount)) {
     return {
       isValid: false,
-      message: "Invoice amount is less than contract amount",
+      message: "Invoice amount is greater than contract amount",
     };
   }
   if (lnInvoiceDetails.satoshis > providerConfig.maxSats) {
@@ -30,12 +27,12 @@ export function validateLnInvoiceAndContract(
     };
   }
   if (
-    Number(contractDetails.amount) <
-    getContractAmountFromInvoice(lnInvoiceDetails.satoshis)
+    getContractAmountFromInvoice(Number(contractDetails.amount)) <
+    lnInvoiceDetails.satoshis
   ) {
     return {
       isValid: false,
-      message: "Invoice amount is less than contract amount with fees",
+      message: `Invoice amount is greater than contract amount`,
     };
   }
 
@@ -91,7 +88,15 @@ export function getPaymentHash(
 
 export function getContractAmountFromInvoice(satsInInvoice: number) {
   return (
-    satsInInvoice * (1 + providerConfig.basisPointFee / 10000) +
-    providerConfig.baseFee
+    satsInInvoice * (1 + providerConfig.sendBasisPointFee / 10000) +
+    providerConfig.sendBaseFee
   );
+}
+
+export async function getContractDetails(
+  contractId: string,
+  htlcContract: ethers.Contract
+): Promise<ContractDetails> {
+  const response: any = await htlcContract.getContract(contractId);
+  return parseContractDetails(response);
 }

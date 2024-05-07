@@ -1,3 +1,5 @@
+import { Hex } from "viem";
+
 export type Tuple<T, MaxLength extends number = 10, Current extends T[] = []> = Current["length"] extends MaxLength
   ? Current
   : Current | Tuple<T, MaxLength, [T, ...Current]>;
@@ -9,22 +11,7 @@ export type LnPaymentInvoice = {
   lnInvoice: string;
 };
 
-export type InvoiceRequest = {
-  contractId: string;
-  lnInvoice: string;
+export type HashLock = {
+  secret: string;
+  hash: string;
 };
-
-export interface InvoiceResponse {
-  status: "success" | "error";
-  message: string;
-}
-
-export interface ConnectionResponse {
-  serverStatus: ServerStatus;
-}
-
-export enum ServerStatus {
-  ACTIVE = "ACTIVE",
-  INACTIVE = "INACTIVE",
-  MOCK = "MOCK",
-}

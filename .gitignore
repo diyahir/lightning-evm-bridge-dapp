@@ -12,3 +12,5 @@ node_modules
 .vscode/**
 .DS_Store
 .env
+local.env
+/packages/foundry/lib

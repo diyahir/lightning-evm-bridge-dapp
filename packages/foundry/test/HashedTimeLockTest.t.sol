@@ -8,15 +8,17 @@ contract HashedTimelockTest is Test {
     HashedTimelock htlc;
     address payable sender;
     address payable receiver;
-    uint amount = 1 ether;
+    address payable relayer;
+    uint256 amount = 1 ether;
     bytes32 hashlock;
     bytes32 preimage;
     bytes32 wrongPreimage = "wrong";
-    uint timelock;
+    uint256 timelock;
 
     function setUp() public {
         sender = payable(address(0x123));
         receiver = payable(address(0x456));
+        relayer = payable(address(0x789));
         htlc = new HashedTimelock();
         preimage = "secret";
         console.logBytes("secret");
@@ -28,20 +30,12 @@ contract HashedTimelockTest is Test {
     }
 
     function testNewContract() public {
-        bytes32 contractId = htlc.newContract{value: amount}(
-            receiver,
-            hashlock,
-            timelock
-        );
+        bytes32 contractId = htlc.newContract{value: amount}(receiver, hashlock, timelock);
         assertTrue(htlc.haveContract(contractId));
     }
 
     function testWithdraw() public {
-        bytes32 contractId = htlc.newContract{value: amount}(
-            receiver,
-            hashlock,
-            timelock
-        );
+        bytes32 contractId = htlc.newContract{value: amount}(receiver, hashlock, timelock);
         vm.stopPrank();
         vm.startPrank(receiver);
 
@@ -52,12 +46,48 @@ contract HashedTimelockTest is Test {
         assertEq(receiver.balance, amount);
     }
 
+    function testFuzzWithdraw(uint256 _amount, bytes32 _preimage, uint32 _num_runs) public {
+        vm.assume(_num_runs > 0);
+        vm.assume(_num_runs < 100);
+        vm.assume(_amount > 0.1 ether);
+
+        for (uint32 i = 0; i < _num_runs; i++) {
+            vm.deal(sender, _amount); // Provide the receiver with some Ether
+
+            _preimage = sha256(abi.encodePacked(_preimage));
+            hashlock = sha256(abi.encodePacked(_preimage));
+
+            bytes32 contractId = htlc.newContract{value: _amount}(receiver, hashlock, timelock);
+            vm.stopPrank();
+            vm.startPrank(receiver);
+
+            bool success = htlc.withdraw(contractId, _preimage);
+            assertTrue(success);
+
+            // Verify receiver's balance has increased by the contract amount
+            assertEq(receiver.balance, _amount);
+        }
+    }
+
+    function testWithdrawWithBounty() public {
+        bytes32 contractId = htlc.newContract{value: amount}(receiver, hashlock, timelock);
+        vm.stopPrank();
+        vm.startPrank(relayer);
+        vm.fee(100);
+        uint256 bounty = htlc.calculateBounty();
+        bool success = htlc.withdrawWithBounty(contractId, preimage);
+        assertTrue(success);
+
+        // Verify receiver's balance has increased by the contract amount
+        assertEq(receiver.balance, amount - bounty);
+        console.log("bounty", bounty);
+        console.log("receiver", receiver.balance);
+        console.log("relayer", relayer.balance);
+        // assertEq(bounty, relayer.balance);
+    }
+
     function testWithdrawWithIncorrectPreimage() public {
-        bytes32 contractId = htlc.newContract{value: amount}(
-            receiver,
-            hashlock,
-            timelock
-        );
+        bytes32 contractId = htlc.newContract{value: amount}(receiver, hashlock, timelock);
         vm.stopPrank();
         vm.startPrank(receiver);
 
@@ -66,11 +96,7 @@ contract HashedTimelockTest is Test {
     }
 
     function testWithdrawAfterTimelockExpired() public {
-        bytes32 contractId = htlc.newContract{value: amount}(
-            receiver,
-            hashlock,
-            timelock
-        );
+        bytes32 contractId = htlc.newContract{value: amount}(receiver, hashlock, timelock);
         vm.stopPrank();
 
         // Fast forward time to after the timelock expiration
@@ -82,11 +108,7 @@ contract HashedTimelockTest is Test {
     }
 
     function testRefundBeforeTimelockExpires() public {
-        bytes32 contractId = htlc.newContract{value: amount}(
-            receiver,
-            hashlock,
-            timelock
-        );
+        bytes32 contractId = htlc.newContract{value: amount}(receiver, hashlock, timelock);
         vm.stopPrank();
 
         vm.startPrank(sender);
@@ -95,11 +117,7 @@ contract HashedTimelockTest is Test {
     }
 
     function testSuccessfulRefundAfterTimelockExpires() public {
-        bytes32 contractId = htlc.newContract{value: amount}(
-            receiver,
-            hashlock,
-            timelock
-        );
+        bytes32 contractId = htlc.newContract{value: amount}(receiver, hashlock, timelock);
         vm.stopPrank();
 
         // Fast forward time to after the timelock expiration
@@ -121,11 +139,7 @@ contract HashedTimelockTest is Test {
         bytes32 hash2 = sha256(abi.encodePacked(preImage));
         assertEq(contractHash, hash2);
 
-        bytes32 contractId = htlc.newContract{value: amount}(
-            receiver,
-            contractHash,
-            timelock
-        );
+        bytes32 contractId = htlc.newContract{value: amount}(receiver, contractHash, timelock);
 
         vm.stopPrank();
         vm.startPrank(receiver);

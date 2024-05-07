@@ -1,5 +1,5 @@
 {
-  "name": "se-2",
+  "name": "lightning-evm-bridge",
   "version": "0.0.1",
   "private": true,
   "workspaces": {
@@ -8,27 +8,27 @@
     ]
   },
   "scripts": {
-    "account": "yarn workspace @se-2/foundry account",
-    "chain": "yarn workspace @se-2/foundry chain",
-    "compile": "yarn workspace @se-2/foundry compile",
-    "deploy": "yarn workspace @se-2/foundry deploy",
-    "deploy:verify": "yarn workspace @se-2/foundry deploy:verify",
-    "fork": "yarn workspace @se-2/foundry fork",
-    "foundry:lint": "yarn workspace @se-2/foundry lint",
-    "foundry:test": "yarn workspace @se-2/foundry test",
-    "generate": "yarn workspace @se-2/foundry generate",
+    "account": "yarn workspace @lightning-evm-bridge/foundry account",
+    "chain": "yarn workspace @lightning-evm-bridge/foundry chain",
+    "compile": "yarn workspace @lightning-evm-bridge/foundry compile",
+    "deploy": "yarn workspace @lightning-evm-bridge/foundry deploy",
+    "deploy:verify": "yarn workspace @lightning-evm-bridge/foundry deploy:verify",
+    "fork": "yarn workspace @lightning-evm-bridge/foundry fork",
+    "foundry:lint": "yarn workspace @lightning-evm-bridge/foundry lint",
+    "foundry:test": "yarn workspace @lightning-evm-bridge/foundry test",
+    "generate": "yarn workspace @lightning-evm-bridge/foundry generate",
     "postinstall": "husky install",
-    "next:check-types": "yarn workspace @se-2/nextjs check-types",
-    "next:format": "yarn workspace @se-2/nextjs format",
-    "next:lint": "yarn workspace @se-2/nextjs lint",
+    "next:check-types": "yarn workspace @lightning-evm-bridge/nextjs check-types",
+    "next:format": "yarn workspace @lightning-evm-bridge/nextjs format",
+    "next:lint": "yarn workspace @lightning-evm-bridge/nextjs lint",
     "precommit": "lint-staged",
     "prepare": "install-self-peers -- --ignore-scripts",
-    "server": "yarn workspace server start",
-    "start": "yarn workspace @se-2/nextjs dev",
+    "server": "yarn workspace @lightning-evm-bridge/server start",
+    "start": "yarn workspace @lightning-evm-bridge/nextjs dev",
     "test": "yarn foundry:test",
-    "vercel": "yarn workspace @se-2/nextjs vercel",
-    "vercel:yolo": "yarn workspace @se-2/nextjs vercel:yolo",
-    "verify": "yarn workspace @se-2/foundry verify"
+    "vercel": "yarn workspace @lightning-evm-bridge/nextjs vercel",
+    "vercel:yolo": "yarn workspace @lightning-evm-bridge/nextjs vercel:yolo",
+    "verify": "yarn workspace @lightning-evm-bridge/foundry verify"
   },
   "resolutions": {
     "usehooks-ts@^2.7.2": "patch:usehooks-ts@npm:^2.7.2#./.yarn/patches/usehooks-ts-npm-2.7.2-fceffe0e43.patch"
@@ -41,7 +41,9 @@
   "packageManager": "yarn@3.2.3",
   "dependencies": {
     "axios": "^1.6.7",
+    "crypto": "^1.0.1",
     "express": "^4.17.1",
+    "js-sha256": "^0.11.0",
     "react-spinners": "^0.13.8"
   }
 }

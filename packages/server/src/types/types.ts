@@ -1,28 +1,21 @@
-export type InvoiceRequest = {
-  contractId: string;
-  lnInvoice: string;
-};
+import { ethers } from "ethers";
+import { AuthenticatedLnd } from "lightning";
+import { ServerStatus } from "shared";
 
-export interface InvoiceResponse {
-  status: "success" | "error";
+export type validationResponse = {
+  isValid: boolean;
   message: string;
-}
-
-export type ContractDetails = {
-  sender: string;
-  receiver: string;
-  amount: BigInt;
-  hashlock: string;
-  timelock: BigInt;
-  withdrawn: boolean;
-  refunded: boolean;
-  preimage: string;
 };
 
-enum ServerStatus {
-  ACTIVE = "ACTIVE",
-  INACTIVE = "INACTIVE",
-  MOCK = "MOCK",
-}
+export type CachedPayment = {
+  contractId: string;
+  secret: string;
+};
 
-export const GWEIPERSAT = 1e10;
+export type ServerState = {
+  lnd: AuthenticatedLnd;
+  htlcContract: ethers.Contract;
+  cachedPayments: CachedPayment[];
+  pendingContracts: string[];
+  serverStatus: ServerStatus;
+};
