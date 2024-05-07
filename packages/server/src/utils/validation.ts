@@ -88,8 +88,8 @@ export function getPaymentHash(
 
 export function getContractAmountFromInvoice(satsInInvoice: number) {
   return (
-    satsInInvoice * (1 + providerConfig.basisPointFee / 10000) +
-    providerConfig.baseFee
+    satsInInvoice * (1 + providerConfig.sendBasisPointFee / 10000) +
+    providerConfig.sendBaseFee
   );
 }
 

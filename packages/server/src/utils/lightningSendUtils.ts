@@ -1,8 +1,8 @@
 import { decode } from "bolt11";
 import { ethers } from "ethers";
-import { InvoiceRequest } from "shared";
+import { ContractDetails, InvoiceRequest } from "shared";
 import { providerConfig } from "../provider.config";
-import { ContractDetails, ServerState } from "../types/types";
+import { ServerState } from "../types/types";
 import { pay } from "lightning";
 import { getContractDetails, validateLnInvoiceAndContract } from "./validation";
 import * as WebSocket from "ws";

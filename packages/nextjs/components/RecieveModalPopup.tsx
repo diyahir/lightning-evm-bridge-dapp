@@ -56,55 +56,57 @@ function RecieveModal({ isOpen, onClose }: RecieveModalProps) {
   }, [walletClient?.account.address]);
 
   useEffect(() => {
-    console.log("Recieve Contract ID", recieveContractId);
-    if (recieveContractId !== "" && htlcContract && hashLock) {
-      // wait 5 seconds before continuing
-      // Todo: Sad RPC calls are slow
-      setTimeout(() => {
-        console.log("Checking contract details");
-        htlcContract.read.getContract([recieveContractId as `0x${string}`]).then((response: any) => {
-          const contractDetails = parseContractDetails(response);
-          console.log("Contract Details", contractDetails);
-          // validate contract details
-          if (contractDetails.receiver !== recipientAddress) {
-            toastError("Invalid contract details");
-            return;
-          }
+    const retryDelay = 5000; // Delay time in milliseconds
+    const maxRetries = 3; // Maximum number of retries
 
-          if (contractDetails.amount !== BigInt(amount)) {
-            toastError("Invalid contract details");
-            return;
-          }
+    const fetchContractDetails = async (retries = maxRetries) => {
+      if (recieveContractId === "" || !htlcContract || !hashLock) {
+        return;
+      }
 
-          if (contractDetails.hashlock !== "0x" + hashLock.hash) {
-            toastError("Invalid contract details");
-            return;
-          }
+      console.log("Checking contract details");
 
-          if (contractDetails.withdrawn || contractDetails.refunded) {
-            toastError("Invalid contract details");
-            return;
-          }
+      try {
+        const response = await htlcContract.read.getContract([`${recieveContractId}` as `0x${string}`]);
+        const contractDetails = parseContractDetails(response);
+        console.log("Contract Details", contractDetails);
 
-          if (Number(contractDetails.timelock) <= Date.now() / 1000) {
-            toastError("Contract has expired");
-            return;
-          }
+        // Validate contract details
+        if (
+          contractDetails.receiver !== recipientAddress ||
+          contractDetails.amount !== BigInt(amount) ||
+          contractDetails.hashlock !== `0x${hashLock.hash}` ||
+          contractDetails.withdrawn ||
+          contractDetails.refunded ||
+          Number(contractDetails.timelock) <= Date.now() / 1000
+        ) {
+          toastError("Invalid contract details");
+          return;
+        }
 
-          const secret = "0x" + hashLock.secret;
-          htlcContract.write
-            .withdraw([recieveContractId as `0x${string}`, secret as `0x${string}`])
-            .then(async (txHash: any) => {
-              await waitForTransaction({
-                hash: txHash,
-              }).then(() => {
-                setTxHash(txHash);
-                setActiveStep(3);
-              });
-            });
-        });
-      }, 5000);
-    }
+        const secret = `0x${hashLock.secret}`;
+        console.log("Withdrawing contract", recieveContractId, secret);
+        const txHash = await htlcContract.write.withdraw([
+          `${recieveContractId}` as `0x${string}`,
+          secret as `0x${string}`,
+        ]);
+        await waitForTransaction({ hash: txHash });
+        setTxHash(txHash);
+        setActiveStep(3);
+      } catch (error) {
+        console.error("Failed to fetch contract details:", error);
+        if (retries > 0) {
+          console.log(`Retrying... ${retries} retries left`);
+          setTimeout(() => fetchContractDetails(retries - 1), retryDelay);
+        } else {
+          toastError("Failed to process contract after several attempts.");
+        }
+      }
+    };
+
+    setTimeout(() => {
+      fetchContractDetails();
+    }, 5000); // Initial delay before the first attempt
   }, [recieveContractId]);
 
   useEffect(() => {
@@ -130,7 +132,7 @@ function RecieveModal({ isOpen, onClose }: RecieveModalProps) {
     setHashLock({ secret: secret.toString("hex"), hash });
 
     const msg: InitiationRequest = {
-      kind: KIND.INITIATION,
+      kind: KIND.INITIATION_RECIEVE,
       amount: Number(amount.toString()),
       recipient: recipientAddress,
       hashlock: hash,

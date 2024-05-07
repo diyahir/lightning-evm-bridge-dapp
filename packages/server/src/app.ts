@@ -6,7 +6,7 @@ import deployedContracts from "./contracts/deployedContracts";
 import { match } from "ts-pattern";
 import { ClientRequest, ConnectionResponse, KIND, ServerStatus } from "shared";
 import { processClientInvoiceRequest } from "./utils/lightningSendUtils";
-import { processClientLightningRecieveRequest } from "./utils/lightningRecieveUtils";
+import { processClientLightningReceiveRequest } from "./utils/lightningRecieveUtils";
 import { CachedPayment, ServerState } from "./types/types";
 import { authenticatedLndGrpc } from "lightning";
 dotenv.config();
@@ -88,8 +88,8 @@ wss.on("connection", (ws: WebSocket) => {
       .with({ kind: KIND.INVOICE_SEND }, async (request) => {
         await processClientInvoiceRequest(request, ws, serverState);
       })
-      .with({ kind: KIND.INITIATION }, async (request) => {
-        await processClientLightningRecieveRequest(request, ws, serverState);
+      .with({ kind: KIND.INITIATION_RECIEVE }, async (request) => {
+        await processClientLightningReceiveRequest(request, ws, serverState);
       })
       .exhaustive();
   });

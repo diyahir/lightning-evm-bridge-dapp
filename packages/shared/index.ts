@@ -7,7 +7,7 @@ export interface InvoiceRequest {
 }
 
 export interface InitiationRequest {
-  kind: KIND.INITIATION;
+  kind: KIND.INITIATION_RECIEVE;
   amount: number;
   recipient: string;
   hashlock: string;
@@ -29,7 +29,7 @@ export interface HodlInvoiceContractResponse {
 
 export enum KIND {
   INVOICE_SEND = "invoice_send",
-  INITIATION = "initiation",
+  INITIATION_RECIEVE = "initiation_recieve",
   HODL_RES = "hodl_res",
   HODL_CONTRACT_RES = "hodl_contract_res",
 }

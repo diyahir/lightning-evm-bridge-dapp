@@ -17,65 +17,71 @@ import {
   subscribeToInvoice,
 } from "lightning";
 import { getContractDetails } from "./validation";
+import { providerConfig } from "../provider.config";
 
-// Step 1: User sends initiation request and pays the initiation invoice
-export async function processClientLightningRecieveRequest(
+// Helper functions
+function logError(context, error) {
+  console.error(`Error in ${context}:`, error);
+}
+
+function sendWebSocketMessage(ws, message) {
+  ws.send(JSON.stringify(message));
+}
+
+// Main processing functions
+export async function processClientLightningReceiveRequest(
   request: InitiationRequest,
   ws: WebSocket,
   serverState: ServerState
 ) {
   try {
-    // get client user id
+    console.log("Creating initiation invoice");
     const invoice = await createInvoice({
       lnd: serverState.lnd,
-      tokens: 10,
+      tokens: providerConfig.recieveBaseFee,
     });
 
-    const intiationResponse: InitiationResponse = {
+    console.log("Initiation Invoice:", invoice);
+    const initiationResponse: InitiationResponse = {
       lnInvoice: invoice.request,
     };
+
+    console.log("Initiation Response:", initiationResponse);
+    sendWebSocketMessage(ws, initiationResponse);
 
     const sub = subscribeToInvoice({
       lnd: serverState.lnd,
       id: invoice.id,
     });
 
-    console.log("Subscribing to invoice updates");
-
-    sub.on("invoice_updated", async (invoice) => {
-      onInitiationInvoicePaidCallback(invoice, ws, sub, request, serverState);
+    sub.on("invoice_updated", (invoice) => {
+      handleSetupInvoiceUpdate(invoice, ws, sub, request, serverState);
     });
-
-    ws.send(JSON.stringify(intiationResponse));
+    console.log("Subscribed to invoice updates");
   } catch (error) {
-    console.error("Error creating invoice:", error);
-    ws.send(
-      JSON.stringify({ status: "error", message: "Failed to create invoice." })
-    );
+    logError("Creating Invoice", error);
+    sendWebSocketMessage(ws, {
+      status: "error",
+      message: "Failed to create invoice.",
+    });
   }
 }
 
 // Step 2: After the initiation invoice is paid
 // a hodl invoice with the client's hashlock is created
-async function onInitiationInvoicePaidCallback(
+async function handleSetupInvoiceUpdate(
   invoice: any,
   ws: WebSocket,
-  prevSub: any,
+  sub: any,
   request: InitiationRequest,
   serverState: ServerState
 ) {
-  if (invoice.is_confirmed) {
-    prevSub.removeAllListeners();
-    console.log("Invoice Confirmed");
+  if (!invoice.is_confirmed) return;
 
-    const now = Math.floor(Date.now() / 1000);
-    const expiryTime = now + 600;
+  sub.removeAllListeners();
+  const expiryTime = Math.floor(Date.now() / 1000) + 600;
 
-    const sub = subscribeToInvoice({
-      lnd: serverState.lnd,
-      id: request.hashlock,
-    });
-
+  try {
     const hodlInvoice = await createHodlInvoice({
       lnd: serverState.lnd,
       id: request.hashlock,
@@ -83,32 +89,47 @@ async function onInitiationInvoicePaidCallback(
       expires_at: expiryTime.toString(),
     });
 
-    console.log("Hodl Invoice Created:", hodlInvoice);
-
-    console.log("Subscribing to hodl invoice updates");
-    sub.on("invoice_updated", async (invoice) => {
-      console.log("Hodl Invoice Updated:", invoice);
-      if (invoice.is_held) {
-        console.log("Hodl Invoice Confirmed:", invoice);
-        processPaidHodlInvoice(
-          request,
-          serverState,
-          expiryTime,
-          hodlInvoice.id,
-          ws
-        );
-        sub.removeAllListeners();
-      }
-    });
-
-    const hodlInvoiceRes: HodlInvoiceResponse = {
+    const hodlInvoiceResponse: HodlInvoiceResponse = {
       kind: KIND.HODL_RES,
       lnInvoice: hodlInvoice.request,
     };
 
-    console.log("Sending hodl invoice to client", hodlInvoiceRes);
-    ws.send(JSON.stringify(hodlInvoiceRes));
+    sendWebSocketMessage(ws, hodlInvoiceResponse);
+
+    subscribeToHodlInvoice(
+      hodlInvoice.id,
+      request,
+      serverState,
+      ws,
+      expiryTime
+    );
+  } catch (error) {
+    logError("Creating Hodl Invoice", error);
+    sendWebSocketMessage(ws, {
+      status: "error",
+      message: "Failed to create Hodl invoice.",
+    });
   }
+}
+
+function subscribeToHodlInvoice(
+  invoiceId: string,
+  request: InitiationRequest,
+  serverState: ServerState,
+  ws: WebSocket,
+  expiryTime: number
+) {
+  const sub = subscribeToInvoice({
+    lnd: serverState.lnd,
+    id: invoiceId,
+  });
+
+  sub.on("invoice_updated", (invoice) => {
+    if (invoice.is_held) {
+      processPaidHodlInvoice(request, serverState, expiryTime, invoiceId, ws);
+      sub.removeAllListeners();
+    }
+  });
 }
 
 // Step 3: User pays the hodl invoice to claim the contract
@@ -181,11 +202,12 @@ async function processPaidHodlInvoice(
       console.log("Contract Details:", contractDetails);
       if (contractDetails.withdrawn) {
         console.log("Preimage found, settling hodl invoice");
-        const res = await settleHodlInvoice({
+
+        await settleHodlInvoice({
           lnd: serverState.lnd,
           secret: contractDetails.preimage.substring(2),
         });
-        console.log("Hodl Invoice Settled:", res);
+
         return;
       }
     } catch (error) {

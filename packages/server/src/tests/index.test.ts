@@ -94,8 +94,8 @@ describe("getContractAmountFromInvoice", () => {
   test("should calculate the correct amount including fees", () => {
     const satsInInvoice = 1000;
     const expected =
-      satsInInvoice * (1 + providerConfig.basisPointFee / 10000) +
-      providerConfig.baseFee;
+      satsInInvoice * (1 + providerConfig.sendBasisPointFee / 10000) +
+      providerConfig.sendBaseFee;
     const calculated = getContractAmountFromInvoice(satsInInvoice);
     expect(calculated).toBe(expected);
   });
