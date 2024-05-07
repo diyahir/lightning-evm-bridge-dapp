@@ -2,13 +2,21 @@ import * as WebSocket from "ws";
 import dotenv from "dotenv";
 import { ethers } from "ethers";
 import { v4 as uuidv4 } from "uuid";
-import deployedContracts from "./contracts/deployedContracts";
+
 import { match } from "ts-pattern";
-import { ClientRequest, ConnectionResponse, KIND, ServerStatus } from "shared";
+import {
+  ClientRequest,
+  ConnectionResponse,
+  KIND,
+  ServerStatus,
+  deployedContracts,
+} from "@lightning-evm-bridge/shared";
 import { processClientInvoiceRequest } from "./utils/lightningSendUtils";
 import { processClientLightningReceiveRequest } from "./utils/lightningRecieveUtils";
 import { CachedPayment, ServerState } from "./types/types";
 import { authenticatedLndGrpc } from "lightning";
+import { providerConfig } from "./provider.config";
+
 dotenv.config();
 
 // Verify environment variables
@@ -75,6 +83,7 @@ wss.on("connection", (ws: WebSocket) => {
 
   const connectionResponse: ConnectionResponse = {
     serverStatus: serverState.serverStatus,
+    serverConfig: providerConfig,
     uuid,
     message: "Connected to server",
   };

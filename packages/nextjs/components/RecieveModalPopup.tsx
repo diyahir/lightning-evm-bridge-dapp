@@ -2,12 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AddressInput, IntegerInput } from "./scaffold-eth";
+import { InitiationRequest, KIND, parseContractDetails } from "@lightning-evm-bridge/shared";
 import { waitForTransaction } from "@wagmi/core";
 import { PaymentRequestObject, decode } from "bolt11";
 import { randomBytes } from "crypto";
 import { sha256 } from "js-sha256";
 import QRCode from "qrcode.react";
-import { InitiationRequest, KIND, parseContractDetails } from "shared";
 import { useWalletClient } from "wagmi";
 import { useLightningApp } from "~~/hooks/LightningProvider";
 import { useScaffoldContract } from "~~/hooks/scaffold-eth";

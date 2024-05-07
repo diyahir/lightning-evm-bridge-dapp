@@ -1,13 +1,4 @@
-export type ProviderConfig = {
-  minSats: number;
-  maxSats: number;
-  sendBaseFee: number;
-  sendBasisPointFee: number; // 100 = 1%
-  secondsTillInvoiceExpires: number;
-  maxLNFee: number;
-  recieveBaseFee: number;
-  recieveBasisPointFee: number;
-};
+import { ProviderConfig } from "@lightning-evm-bridge/shared";
 
 export const providerConfig: ProviderConfig = {
   minSats: 2,

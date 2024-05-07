@@ -7,7 +7,7 @@ import {
   KIND,
   ServerResponse,
   ServerStatus,
-} from "shared";
+} from "@lightning-evm-bridge/shared";
 
 export const useWebSocket = (url: string) => {
   const socket = useRef<WebSocket | null>(null);

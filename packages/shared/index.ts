@@ -1,3 +1,19 @@
+import deployedContracts from "./contracts/deployedContracts";
+import externalContracts from "./contracts/externalContracts";
+
+export { deployedContracts, externalContracts };
+
+export type ProviderConfig = {
+  minSats: number;
+  maxSats: number;
+  sendBaseFee: number;
+  sendBasisPointFee: number; // 100 = 1%
+  secondsTillInvoiceExpires: number;
+  maxLNFee: number;
+  recieveBaseFee: number;
+  recieveBasisPointFee: number;
+};
+
 export type ClientRequest = InvoiceRequest | InitiationRequest;
 
 export interface InvoiceRequest {
@@ -47,6 +63,7 @@ export enum ServerStatus {
 
 export interface ConnectionResponse {
   serverStatus: ServerStatus;
+  serverConfig: ProviderConfig;
   uuid: string;
   message: string;
 }

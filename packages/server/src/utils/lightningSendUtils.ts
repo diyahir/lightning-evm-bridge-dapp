@@ -1,6 +1,6 @@
 import { decode } from "bolt11";
 import { ethers } from "ethers";
-import { ContractDetails, InvoiceRequest } from "shared";
+import { ContractDetails, InvoiceRequest } from "@lightning-evm-bridge/shared";
 import { providerConfig } from "../provider.config";
 import { ServerState } from "../types/types";
 import { pay } from "lightning";

@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import { AuthenticatedLnd } from "lightning";
-import { ServerStatus } from "shared";
+import { ServerStatus } from "@lightning-evm-bridge/shared";
 
 export type validationResponse = {
   isValid: boolean;

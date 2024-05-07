@@ -1,0 +1,4 @@
+{
+  "name": "@lightning-evm-bridge/relay-server",
+  "packageManager": "yarn@3.2.3"
+}
