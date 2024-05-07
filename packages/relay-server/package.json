@@ -1,4 +1,24 @@
 {
   "name": "@lightning-evm-bridge/relay-server",
-  "packageManager": "yarn@3.2.3"
+  "packageManager": "yarn@3.2.3",
+  "scripts": {
+    "build": "tsc",
+    "start": "ts-node src/app.ts"
+  },
+  "dependencies": {
+    "@lightning-evm-bridge/shared": "workspace:^",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.12.1",
+    "express": "^4.19.2",
+    "js-sha256": "^0.11.0"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.19.5",
+    "@types/cors": "^2",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.12.10",
+    "typescript": "^5.4.5"
+  }
 }

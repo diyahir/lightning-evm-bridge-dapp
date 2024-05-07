@@ -2,8 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AddressInput, IntegerInput } from "./scaffold-eth";
-import { InitiationRequest, KIND, parseContractDetails } from "@lightning-evm-bridge/shared";
+import {
+  InitiationRequest,
+  KIND,
+  RelayRequest,
+  RelayResponse,
+  parseContractDetails,
+} from "@lightning-evm-bridge/shared";
 import { waitForTransaction } from "@wagmi/core";
+import axios from "axios";
 import { PaymentRequestObject, decode } from "bolt11";
 import { randomBytes } from "crypto";
 import { sha256 } from "js-sha256";
@@ -44,6 +51,29 @@ function RecieveModal({ isOpen, onClose }: RecieveModalProps) {
     onClose();
   }
 
+  function relayContractAndPreimage() {
+    // send a request to the relayer to get the contract details
+    const msg: RelayRequest = {
+      kind: KIND.RELAY_REQUEST,
+      contractId: recieveContractId,
+      preimage: hashLock?.secret ?? "",
+    };
+
+    axios.post("http://localhost:3004/relay", msg).then(response => {
+      console.log(response);
+      const msg: RelayResponse = response.data;
+      if (msg.status === "success" && msg.txHash) {
+        setActiveStep(3);
+        setTxHash(msg.txHash);
+        console.log("Relay Response", msg);
+      } else {
+        toastError("Failed to relay contract and preimage");
+      }
+    });
+
+    return;
+  }
+
   const { data: htlcContract } = useScaffoldContract({
     contractName: "HashedTimelock",
     walletClient,
@@ -56,10 +86,20 @@ function RecieveModal({ isOpen, onClose }: RecieveModalProps) {
   }, [walletClient?.account.address]);
 
   useEffect(() => {
+    if (recieveContractId === "") {
+      return;
+    }
+
     const retryDelay = 5000; // Delay time in milliseconds
     const maxRetries = 3; // Maximum number of retries
 
     const fetchContractDetails = async (retries = maxRetries) => {
+      relayContractAndPreimage();
+      if (retryDelay > 0) {
+        return;
+      }
+      // send a request to the relayer to get the contract details
+
       if (recieveContractId === "" || !htlcContract || !hashLock) {
         return;
       }
@@ -166,14 +206,12 @@ function RecieveModal({ isOpen, onClose }: RecieveModalProps) {
               <ol className="flex items-center w-full p-3 space-x-2 text-sm font-medium text-center rounded-lg shadow-sm dark:text-gray-400 sm:text-base dark:bg-gray-800 dark:border-gray-700 sm:p-4 sm:space-x-4 rtl:space-x-reverse justify-between">
                 <li
                   className={`flex items-center text-sm text-left ${
-                    activeStep >= 1 ? "text-orange-600 dark:text-orange-500" : "text-gray-500 dark:text-gray-400"
+                    activeStep >= 1 ? "text-blue-400 dark:text-blue-400" : "text-gray-500 dark:text-gray-400"
                   }`}
                 >
                   <span
                     className={`flex items-center justify-center w-5 h-5 me-2 text-xs border ${
-                      activeStep >= 1
-                        ? "border-orange-600 dark:border-orange-500"
-                        : "border-gray-500 dark:border-gray-400"
+                      activeStep >= 1 ? "border-blue-400 dark:border-blue-300" : "border-gray-500 dark:border-gray-400"
                     } rounded-full shrink-0`}
                   >
                     1
@@ -197,14 +235,12 @@ function RecieveModal({ isOpen, onClose }: RecieveModalProps) {
                 </li>
                 <li
                   className={`flex items-center text-sm text-left ${
-                    activeStep >= 2 ? "text-orange-600 dark:text-orange-500" : "text-gray-500 dark:text-gray-400"
+                    activeStep >= 2 ? "text-blue-400 dark:text-blue-300" : "text-gray-500 dark:text-gray-400"
                   }`}
                 >
                   <span
                     className={`flex items-center justify-center w-5 h-5 me-2 text-xs border ${
-                      activeStep >= 2
-                        ? "border-orange-600 dark:border-orange-500"
-                        : "border-gray-500 dark:border-gray-400"
+                      activeStep >= 2 ? "border-blue-400 dark:border-blue-300" : "border-gray-500 dark:border-gray-400"
                     } rounded-full shrink-0`}
                   >
                     2
@@ -228,14 +264,12 @@ function RecieveModal({ isOpen, onClose }: RecieveModalProps) {
                 </li>
                 <li
                   className={`flex items-center text-sm text-left ${
-                    activeStep >= 3 ? "text-orange-600 dark:text-orange-500" : "text-gray-500 dark:text-gray-400"
+                    activeStep >= 3 ? "text-blue-400 dark:text-blue-300" : "text-gray-500 dark:text-gray-400"
                   }`}
                 >
                   <span
                     className={`flex items-center justify-center w-5 h-5 me-2 text-xs border ${
-                      activeStep >= 3
-                        ? "border-orange-600 dark:border-orange-500"
-                        : "border-gray-500 dark:border-gray-400"
+                      activeStep >= 3 ? "border-blue-400 dark:border-blue-300" : "border-gray-500 dark:border-gray-400"
                     } rounded-full shrink-0`}
                   >
                     3

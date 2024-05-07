@@ -99,8 +99,7 @@ wss.on("connection", (ws: WebSocket) => {
       })
       .with({ kind: KIND.INITIATION_RECIEVE }, async (request) => {
         await processClientLightningReceiveRequest(request, ws, serverState);
-      })
-      .exhaustive();
+      });
   });
 
   ws.on("close", () => console.log("Client disconnected"));
