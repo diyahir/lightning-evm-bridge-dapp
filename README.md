@@ -21,11 +21,12 @@ There are three main parts to this project:
 
 <!-- Make a table with links to each folder -->
 
-| Folder                                | Description                                                                                                                           |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| [Contracts](./packages/foundry)       | This is where the smart contracts live                                                                                                |
-| [Frontend](./packages/nextjs)         | This is the frontend of the app built using Scaffold-Eth 2                                                                            |
-| [Lightning server](./packages/server) | This is the lightning service provider websocket who is paying the invoices, this connects to your lightning node (is not one itself) |
+| Folder                                  | Description                                                                                                                           |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| [Contracts](./packages/foundry)         | This is where the smart contracts live                                                                                                |
+| [Frontend](./packages/nextjs)           | This is the frontend of the app built using Scaffold-Eth 2                                                                            |
+| [Lightning server](./packages/server)   | This is the lightning service provider websocket who is paying the invoices, this connects to your lightning node (is not one itself) |
+| [Relay server](./packages/relay-server) | This is the server that tries to claim the HTLC on behalf of the user who has no gas to recieve his payment                           |
 
 ## Payment Flow
 

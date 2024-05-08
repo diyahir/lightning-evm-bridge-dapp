@@ -2716,6 +2716,7 @@ __metadata:
     "@emotion/styled": ^11.11.0
     "@ethersproject/providers": ~5.7.2
     "@heroicons/react": ~2.0.11
+    "@lightning-evm-bridge/shared": "workspace:^"
     "@rainbow-me/rainbowkit": ^1.3.6
     "@trivago/prettier-plugin-sort-imports": ~4.1.1
     "@types/node": ^17.0.45
@@ -2749,7 +2750,6 @@ __metadata:
     react-hot-toast: ~2.4.0
     react-spinners: ^0.13.8
     react-toastify: ^10.0.4
-    shared: "workspace:^"
     tailwindcss: ~3.3.3
     type-fest: ~4.6.0
     typescript: ~5.1.6
@@ -2762,6 +2762,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@lightning-evm-bridge/relay-server@workspace:packages/relay-server":
+  version: 0.0.0-use.local
+  resolution: "@lightning-evm-bridge/relay-server@workspace:packages/relay-server"
+  dependencies:
+    "@lightning-evm-bridge/shared": "workspace:^"
+    "@types/body-parser": ^1.19.5
+    "@types/cors": ^2
+    "@types/express": ^4.17.21
+    "@types/node": ^20.12.10
+    body-parser: ^1.20.2
+    cors: ^2.8.5
+    dotenv: ^16.4.5
+    ethers: ^6.12.1
+    express: ^4.19.2
+    js-sha256: ^0.11.0
+    typescript: ^5.4.5
+  languageName: unknown
+  linkType: soft
+
 "@lightning-evm-bridge/server@workspace:packages/server":
   version: 0.0.0-use.local
   resolution: "@lightning-evm-bridge/server@workspace:packages/server"
@@ -2770,6 +2789,7 @@ __metadata:
     "@babel/preset-env": ^7.24.4
     "@babel/preset-typescript": ^7.24.1
     "@jest/globals": ^29.7.0
+    "@lightning-evm-bridge/shared": "workspace:^"
     "@types/babel__core": ^7
     "@types/babel__preset-env": ^7
     "@types/jest": ^29.5.12
@@ -2783,12 +2803,19 @@ __metadata:
     lightning: ^10.10.0
     ln-service: ^57.5.1
     nextjs: ^0.0.3
-    shared: "workspace:^"
     ts-jest: ^29.1.2
     ts-pattern: ^5.1.1
     typescript: ^5.3.3
     uuid: ^9.0.1
     ws: ^8.16.0
+  languageName: unknown
+  linkType: soft
+
+"@lightning-evm-bridge/shared@workspace:^, @lightning-evm-bridge/shared@workspace:packages/shared":
+  version: 0.0.0-use.local
+  resolution: "@lightning-evm-bridge/shared@workspace:packages/shared"
+  dependencies:
+    typescript: ^5.4.5
   languageName: unknown
   linkType: soft
 
@@ -3885,7 +3912,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/body-parser@npm:*":
+"@types/body-parser@npm:*, @types/body-parser@npm:^1.19.5":
   version: 1.19.5
   resolution: "@types/body-parser@npm:1.19.5"
   dependencies:
@@ -3911,6 +3938,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/cors@npm:^2":
+  version: 2.8.17
+  resolution: "@types/cors@npm:2.8.17"
+  dependencies:
+    "@types/node": "*"
+  checksum: 469bd85e29a35977099a3745c78e489916011169a664e97c4c3d6538143b0a16e4cc72b05b407dc008df3892ed7bf595f9b7c0f1f4680e169565ee9d64966bde
+  languageName: node
+  linkType: hard
+
 "@types/debug@npm:^4.1.7":
   version: 4.1.12
   resolution: "@types/debug@npm:4.1.12"
@@ -3932,6 +3968,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/express-serve-static-core@npm:^4.17.33":
+  version: 4.19.0
+  resolution: "@types/express-serve-static-core@npm:4.19.0"
+  dependencies:
+    "@types/node": "*"
+    "@types/qs": "*"
+    "@types/range-parser": "*"
+    "@types/send": "*"
+  checksum: 39c09fcb3f61de96ed56d97273874cafe50e6675ac254af4d77014e569e4fdc29d1d0d1dd12e11f008cb9a52785b07c2801c6ba91397965392b20c75ee01fb4e
+  languageName: node
+  linkType: hard
+
 "@types/express@npm:^4.17.1":
   version: 4.17.1
   resolution: "@types/express@npm:4.17.1"
@@ -3940,6 +3988,18 @@ __metadata:
     "@types/express-serve-static-core": "*"
     "@types/serve-static": "*"
   checksum: ff2a0b41f707bae64c2cc20a631ff08633a90ad1ec287bea00a43469551f115cf2974e11f1c755f14904026e4dde78f2ce793c61d09f64fd81b43624194eb0c3
+  languageName: node
+  linkType: hard
+
+"@types/express@npm:^4.17.21":
+  version: 4.17.21
+  resolution: "@types/express@npm:4.17.21"
+  dependencies:
+    "@types/body-parser": "*"
+    "@types/express-serve-static-core": ^4.17.33
+    "@types/qs": "*"
+    "@types/serve-static": "*"
+  checksum: fb238298630370a7392c7abdc80f495ae6c716723e114705d7e3fb67e3850b3859bbfd29391463a3fb8c0b32051847935933d99e719c0478710f8098ee7091c5
   languageName: node
   linkType: hard
 
@@ -4067,6 +4127,15 @@ __metadata:
   version: 17.0.45
   resolution: "@types/node@npm:17.0.45"
   checksum: aa04366b9103b7d6cfd6b2ef64182e0eaa7d4462c3f817618486ea0422984c51fc69fd0d436eae6c9e696ddfdbec9ccaa27a917f7c2e8c75c5d57827fe3d95e8
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^20.12.10":
+  version: 20.12.10
+  resolution: "@types/node@npm:20.12.10"
+  dependencies:
+    undici-types: ~5.26.4
+  checksum: 8c35a349f494846c1f1db4e4f8b21e7fc7f6ee14d99a0998f38699f941652be0e2a236b11f13fe404a6fec9b9a82e0e39b80ca71dafc38c742b160cc498b56c3
   languageName: node
   linkType: hard
 
@@ -6102,7 +6171,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"body-parser@npm:1.20.2":
+"body-parser@npm:1.20.2, body-parser@npm:^1.20.2":
   version: 1.20.2
   resolution: "body-parser@npm:1.20.2"
   dependencies:
@@ -6874,6 +6943,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cors@npm:^2.8.5":
+  version: 2.8.5
+  resolution: "cors@npm:2.8.5"
+  dependencies:
+    object-assign: ^4
+    vary: ^1
+  checksum: ced838404ccd184f61ab4fdc5847035b681c90db7ac17e428f3d81d69e2989d2b680cc254da0e2554f5ed4f8a341820a1ce3d1c16b499f6e2f47a1b9b07b5006
+  languageName: node
+  linkType: hard
+
 "cosmiconfig@npm:^7.0.0":
   version: 7.1.0
   resolution: "cosmiconfig@npm:7.1.0"
@@ -7314,6 +7393,13 @@ __metadata:
   version: 16.4.4
   resolution: "dotenv@npm:16.4.4"
   checksum: fbe0355972634d8843e1804115885e94d70618cfc975eadca67e26b2d71eb46f0ed45c12c2b88fd88cd6b1476a151471227b13311127a3504d10060cc74ce2f7
+  languageName: node
+  linkType: hard
+
+"dotenv@npm:^16.4.5":
+  version: 16.4.5
+  resolution: "dotenv@npm:16.4.5"
+  checksum: 301a12c3d44fd49888b74eb9ccf9f07a1f5df43f489e7fcb89647a2edcd84c42d6bc349dc8df099cd18f07c35c7b04685c1a4f3e6a6a9e6b30f8d48c15b7f49c
   languageName: node
   linkType: hard
 
@@ -8314,6 +8400,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ethers@npm:^6.12.1":
+  version: 6.12.1
+  resolution: "ethers@npm:6.12.1"
+  dependencies:
+    "@adraffy/ens-normalize": 1.10.1
+    "@noble/curves": 1.2.0
+    "@noble/hashes": 1.3.2
+    "@types/node": 18.15.13
+    aes-js: 4.0.0-beta.5
+    tslib: 2.4.0
+    ws: 8.5.0
+  checksum: ddf398c91f584b9e643740ec17a9c82b4a1c4ea3fb6efd00f1a043b89d1ec6f9427aa80894f75850ee805722e91b8d054bce18579a2c621226302c096774df90
+  languageName: node
+  linkType: hard
+
 "ethers@npm:~5.7.1":
   version: 5.7.2
   resolution: "ethers@npm:5.7.2"
@@ -8508,7 +8609,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express@npm:^4.13.3":
+"express@npm:^4.13.3, express@npm:^4.19.2":
   version: 4.19.2
   resolution: "express@npm:4.19.2"
   dependencies:
@@ -12231,7 +12332,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"object-assign@npm:^4.0.1, object-assign@npm:^4.1.1":
+"object-assign@npm:^4, object-assign@npm:^4.0.1, object-assign@npm:^4.1.1":
   version: 4.1.1
   resolution: "object-assign@npm:4.1.1"
   checksum: fcc6e4ea8c7fe48abfbb552578b1c53e0d194086e2e6bbbf59e0a536381a292f39943c6e9628af05b5528aa5e3318bb30d6b2e53cadaf5b8fe9e12c4b69af23f
@@ -14061,14 +14162,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"shared@workspace:^, shared@workspace:packages/shared":
-  version: 0.0.0-use.local
-  resolution: "shared@workspace:packages/shared"
-  dependencies:
-    typescript: ^5.4.5
-  languageName: unknown
-  linkType: soft
-
 "shebang-command@npm:^2.0.0":
   version: 2.0.0
   resolution: "shebang-command@npm:2.0.0"
@@ -15692,7 +15785,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vary@npm:~1.1.2":
+"vary@npm:^1, vary@npm:~1.1.2":
   version: 1.1.2
   resolution: "vary@npm:1.1.2"
   checksum: ae0123222c6df65b437669d63dfa8c36cee20a504101b2fcd97b8bf76f91259c17f9f2b4d70a1e3c6bbcee7f51b28392833adb6b2770b23b01abec84e369660b

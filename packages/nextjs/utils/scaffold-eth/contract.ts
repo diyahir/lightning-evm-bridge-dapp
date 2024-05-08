@@ -1,3 +1,4 @@
+import { deployedContracts, externalContracts } from "@lightning-evm-bridge/shared";
 import {
   Abi,
   AbiParameterToPrimitiveType,
@@ -19,8 +20,6 @@ import {
   TransactionReceipt,
 } from "viem";
 import { UseContractEventConfig, UseContractReadConfig, UseContractWriteConfig } from "wagmi";
-import deployedContractsData from "~~/contracts/deployedContracts";
-import externalContractsData from "~~/contracts/externalContracts";
 import scaffoldConfig from "~~/scaffold.config";
 
 type AddExternalFlag<T> = {
@@ -51,7 +50,7 @@ const deepMergeContracts = <L extends Record<PropertyKey, any>, E extends Record
   return result as MergeDeepRecord<AddExternalFlag<L>, AddExternalFlag<E>, { arrayMergeMode: "replace" }>;
 };
 
-const contractsData = deepMergeContracts(deployedContractsData, externalContractsData);
+const contractsData = deepMergeContracts(deployedContracts, externalContracts);
 
 export type InheritedFunctions = { readonly [key: string]: string };
 

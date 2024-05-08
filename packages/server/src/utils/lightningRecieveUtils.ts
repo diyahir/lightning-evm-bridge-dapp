@@ -6,7 +6,7 @@ import {
   GWEIPERSAT,
   KIND,
   HodlInvoiceContractResponse,
-} from "shared";
+} from "@lightning-evm-bridge/shared";
 import { ServerState } from "../types/types";
 import * as WebSocket from "ws";
 import {
@@ -199,6 +199,7 @@ async function processPaidHodlInvoice(
         contractId,
         serverState.htlcContract
       );
+
       console.log("Contract Details:", contractDetails);
       if (contractDetails.withdrawn) {
         console.log("Preimage found, settling hodl invoice");

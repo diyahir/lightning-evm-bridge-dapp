@@ -6,7 +6,7 @@ import {
   getContractAmountFromInvoice,
 } from "../utils/validation";
 import { PaymentRequestObject } from "bolt11";
-import { ContractDetails } from "shared";
+import { ContractDetails } from "@lightning-evm-bridge/shared";
 
 describe("validateLnInvoiceAndContract", () => {
   const mockCurrentTime = 1700000000; // Mock current timestamp

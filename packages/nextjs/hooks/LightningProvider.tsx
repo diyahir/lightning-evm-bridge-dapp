@@ -1,9 +1,16 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useNativeCurrencyPrice, useScaffoldEventSubscriber } from "./scaffold-eth";
 import { useWebSocket } from "./useWebSocket";
+import {
+  ClientRequest,
+  HodlInvoiceResponse,
+  InitiationResponse,
+  InvoiceResponse,
+  KIND,
+  ServerStatus,
+} from "@lightning-evm-bridge/shared";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ClientRequest, HodlInvoiceResponse, InitiationResponse, InvoiceResponse, KIND, ServerStatus } from "shared";
 import { HashLock } from "~~/types/utils";
 
 // Define the types for your historical transactions and context
@@ -81,7 +88,7 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
     contractName: "HashedTimelock",
     eventName: "LogHTLCNew",
     listener: event => {
-      const tmpContractId = event[0].args.contractId;
+      const tmpContractId = event[0].args.contractId as string;
       const txHash = event[0].transactionHash;
       if (!tmpContractId) return;
       // check if the transaction has the same has as one of the transactions in the list

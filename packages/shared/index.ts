@@ -1,4 +1,32 @@
-export type ClientRequest = InvoiceRequest | InitiationRequest;
+import deployedContracts from "./contracts/deployedContracts";
+import externalContracts from "./contracts/externalContracts";
+
+export { deployedContracts, externalContracts };
+
+export type ProviderConfig = {
+  minSats: number;
+  maxSats: number;
+  sendBaseFee: number;
+  sendBasisPointFee: number; // 100 = 1%
+  secondsTillInvoiceExpires: number;
+  maxLNFee: number;
+  recieveBaseFee: number;
+  recieveBasisPointFee: number;
+};
+
+export type ClientRequest = InvoiceRequest | InitiationRequest | RelayRequest;
+
+export interface RelayRequest {
+  kind: KIND.RELAY_REQUEST;
+  contractId: string;
+  preimage: string;
+}
+
+export interface RelayResponse {
+  kind: KIND.RELAY_RESPONSE;
+  status: "success" | "error";
+  txHash?: string;
+}
 
 export interface InvoiceRequest {
   kind: KIND.INVOICE_SEND;
@@ -28,6 +56,8 @@ export interface HodlInvoiceContractResponse {
 }
 
 export enum KIND {
+  RELAY_REQUEST = "relay_request",
+  RELAY_RESPONSE = "relay_response",
   INVOICE_SEND = "invoice_send",
   INITIATION_RECIEVE = "initiation_recieve",
   HODL_RES = "hodl_res",
@@ -47,6 +77,7 @@ export enum ServerStatus {
 
 export interface ConnectionResponse {
   serverStatus: ServerStatus;
+  serverConfig: ProviderConfig;
   uuid: string;
   message: string;
 }

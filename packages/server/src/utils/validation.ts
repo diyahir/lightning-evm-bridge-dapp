@@ -2,7 +2,11 @@ import { PaymentRequestObject } from "bolt11";
 import { validationResponse } from "../types/types";
 import { providerConfig } from "../provider.config";
 import { ethers } from "ethers";
-import { GWEIPERSAT, parseContractDetails, ContractDetails } from "shared";
+import {
+  GWEIPERSAT,
+  parseContractDetails,
+  ContractDetails,
+} from "@lightning-evm-bridge/shared";
 
 export function validateLnInvoiceAndContract(
   lnInvoiceDetails: PaymentRequestObject,

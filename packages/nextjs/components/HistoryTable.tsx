@@ -8,7 +8,7 @@ export const HistoryTable = () => {
   const { transactions, addTransaction, toastSuccess, toastError } = useLightningApp();
   const [expandedRow, setExpandedRow] = useState<number | null>(null); // State to manage expanded row index
   const { data: walletClient } = useWalletClient();
-  const { data: yourContract } = useScaffoldContract({
+  const { data: htlcContract } = useScaffoldContract({
     contractName: "HashedTimelock",
     walletClient,
   });
@@ -46,8 +46,8 @@ export const HistoryTable = () => {
     if (transaction.hashLockTimestamp > Date.now() / 1000) {
       return;
     }
-    if (!yourContract) return;
-    yourContract.write
+    if (!htlcContract) return;
+    htlcContract.write
       .refund([transaction.contractId as `0x${string}`], {})
       .then(tx => {
         console.log(tx);
