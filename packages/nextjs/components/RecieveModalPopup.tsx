@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AddressInput, IntegerInput } from "./scaffold-eth";
+import { Step1 } from "./recieve-steps/Step1";
+import { Step2 } from "./recieve-steps/Step2";
+import { Step3 } from "./recieve-steps/Step3";
 import {
   InitiationRequest,
   KIND,
@@ -11,10 +13,8 @@ import {
 } from "@lightning-evm-bridge/shared";
 import { waitForTransaction } from "@wagmi/core";
 import axios from "axios";
-import { PaymentRequestObject, decode } from "bolt11";
 import { randomBytes } from "crypto";
 import { sha256 } from "js-sha256";
-import QRCode from "qrcode.react";
 import { useWalletClient } from "wagmi";
 import { useLightningApp } from "~~/hooks/LightningProvider";
 import { useScaffoldContract } from "~~/hooks/scaffold-eth";
@@ -161,7 +161,6 @@ function RecieveModal({ isOpen, onClose }: RecieveModalProps) {
   function onClickQRCode() {
     navigator.clipboard.writeText(invoice);
     toastSuccess("Lightning Invoice Copied");
-    // setActiveStep(activeStep + 1);
   }
 
   function onClickContinue() {
@@ -279,7 +278,7 @@ function RecieveModal({ isOpen, onClose }: RecieveModalProps) {
               </ol>
 
               {activeStep === 1 &&
-                step1({
+                Step1({
                   amount,
                   invoice,
                   recipientAddress,
@@ -289,132 +288,14 @@ function RecieveModal({ isOpen, onClose }: RecieveModalProps) {
                   onClickQRCode,
                 })}
 
-              {activeStep === 2 && step2({ invoice, onClickQRCode })}
+              {activeStep === 2 && Step2({ invoice, onClickQRCode })}
 
-              {activeStep === 3 && step3({ txHash })}
+              {activeStep === 3 && Step3({ txHash })}
             </div>
           </div>
         </div>
       )}
     </>
-  );
-}
-
-export function step1({
-  amount,
-  invoice,
-  recipientAddress,
-  setRecipientAddress,
-  setAmount,
-  onClickContinue,
-  onClickQRCode,
-}: {
-  amount: bigint;
-  invoice: string;
-  recipientAddress: string;
-  setRecipientAddress: (val: string) => void;
-  setAmount: (val: bigint) => void;
-  onClickContinue: () => void;
-  onClickQRCode: () => void;
-}) {
-  let paymentRequest: PaymentRequestObject = {
-    satoshis: Number(0),
-    tags: [{ tagName: "payment_hash", data: "abc123" }],
-  };
-  if (invoice !== "") {
-    paymentRequest = decode(invoice);
-  }
-
-  function isGenerateQRDisabled(): boolean {
-    return amount === BigInt(0) || invoice !== "";
-  }
-  return (
-    <div className="flex flex-col text-start w-full gap-2">
-      <div className="flex-col">
-        <span className="text-sm text-gray-500">Recipient Address</span>
-        <AddressInput
-          placeholder="0x123...321"
-          value={recipientAddress}
-          onChange={newAddress => {
-            setRecipientAddress(newAddress);
-          }}
-          disabled={invoice !== ""}
-        />
-      </div>
-      <div className="flex-col">
-        <span className="text-sm text-gray-500">Amount (sats)</span>
-        <IntegerInput
-          value={amount}
-          onChange={val => setAmount(BigInt(val))}
-          disableMultiplyBy1e18
-          disabled={invoice !== ""}
-        />
-      </div>
-      <button
-        className="btn btn-secondary rounded-none w-full"
-        disabled={isGenerateQRDisabled()}
-        onClick={() => onClickContinue()}
-      >
-        Generate Service Fee Invoice
-      </button>
-      {invoice && (
-        <div className="flex flex-col w-full gap-2 h-full">
-          <button
-            className="btn btn-neutral rounded-none text-center w-full"
-            onClick={() => {
-              onClickQRCode();
-            }}
-          >
-            Copy Invoice
-          </button>
-          <div className="flex flex-col items-center">
-            <QRCode size={250} value={invoice} className="" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-center text-gray-500">Service Fee: {paymentRequest.satoshis} sats</span>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function step2({ invoice, onClickQRCode }: { invoice: string; onClickQRCode: () => void }) {
-  let paymentRequest: PaymentRequestObject = {
-    satoshis: Number(0),
-    tags: [{ tagName: "payment_hash", data: "abc123" }],
-  };
-  if (invoice !== "") {
-    paymentRequest = decode(invoice);
-  }
-  return (
-    <div className="flex flex-col text-start cursor-pointer w-full" onClick={() => onClickQRCode()}>
-      &nbsp;
-      <div className="flex flex-col self-center gap-2">
-        <QRCode size={250} value={invoice} />
-        <button className="btn btn-neutral rounded-none w-full text-center" onClick={() => onClickQRCode()}>
-          Copy Invoice
-        </button>
-        <div className="flex flex-col">
-          <span className="text-center text-gray-500">Invoice: {paymentRequest.satoshis} sats</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function step3({ txHash }: { txHash: string }) {
-  return (
-    <div className="flex flex-col text-start w-full gap-2">
-      <a
-        href={`https://3xpl.com/botanix/transaction/${txHash}`}
-        target="_blank"
-        rel="noreferrer"
-        className="btn btn-secondary rounded-none w-full"
-      >
-        View Transaction
-      </a>
-    </div>
   );
 }
 

@@ -14,6 +14,7 @@ type SendModalProps = {
   isOpen: boolean;
   onClose: () => void;
 };
+
 function SendModal({ isOpen, onClose }: SendModalProps) {
   const { addTransaction, transactions, toastError } = useLightningApp();
   const [invoice, setInvoice] = useState<string>("");
@@ -47,7 +48,7 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
   }, [transactions]);
 
   const { data: walletClient } = useWalletClient();
-  const { data: yourContract } = useScaffoldContract({
+  const { data: htlcContract } = useScaffoldContract({
     contractName: "HashedTimelock",
     walletClient,
   });
@@ -78,9 +79,9 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
 
   function submitPayment() {
     console.log("submitting payment");
-    if (!yourContract) return;
+    if (!htlcContract) return;
     if (!lnInvoiceRef.current) return;
-    yourContract.write
+    htlcContract.write
       .newContract(
         [
           process.env.LSP_ADDRESS ?? "0xf89335a26933d8Dd6193fD91cAB4e1466e5198Bf",
