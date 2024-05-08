@@ -60,6 +60,7 @@ export const HistoryTable = () => {
           contractId: transaction.contractId,
           hashLockTimestamp: transaction.hashLockTimestamp,
           lnInvoice: transaction.lnInvoice,
+          type: "send",
         });
       })
       .catch(e => {
@@ -96,7 +97,10 @@ export const HistoryTable = () => {
                     <td className="tooltip" data-tip={getTooltipText(transaction)}>
                       {transaction.date}
                     </td>
-                    <td className="text-right">{transaction.amount} sats</td>
+                    <td className={`text-right ${transaction.type === "send" ? "text-red-500" : "text-green-500"}`}>
+                      {transaction.type === "send" ? "-" : "+"}
+                      {transaction.amount} sats
+                    </td>
                   </tr>
                   {expandedRow === index && (
                     <tr>

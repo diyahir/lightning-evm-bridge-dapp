@@ -102,6 +102,7 @@ function SendModal({ isOpen, onClose }: SendModalProps) {
           contractId: contractId || "",
           hashLockTimestamp: getMinTimelock(lnInvoiceRef.current ? lnInvoiceRef.current.timeExpireDate : 0),
           lnInvoice: lnInvoiceRef.current ? lnInvoiceRef.current.lnInvoice : "",
+          type: "send",
         });
         setActiveStep(2);
       })

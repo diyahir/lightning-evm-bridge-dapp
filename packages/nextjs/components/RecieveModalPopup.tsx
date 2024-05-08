@@ -35,6 +35,7 @@ function RecieveModal({ isOpen, onClose }: RecieveModalProps) {
     hodlInvoiceResponse,
     setHashLock,
     recieveContractId,
+    addTransaction,
   } = useLightningApp();
   const [invoice, setInvoice] = useState<string>("");
   const [recipientAddress, setRecipientAddress] = useState<string>("");
@@ -51,27 +52,44 @@ function RecieveModal({ isOpen, onClose }: RecieveModalProps) {
     onClose();
   }
 
-  function relayContractAndPreimage() {
-    // send a request to the relayer to get the contract details
+  async function relayContractAndPreimageSuccess(): Promise<boolean> {
     const msg: RelayRequest = {
       kind: KIND.RELAY_REQUEST,
       contractId: recieveContractId,
       preimage: hashLock?.secret ?? "",
     };
 
-    axios.post("http://localhost:3004/relay", msg).then(response => {
+    console.log("Relay Request", msg);
+
+    try {
+      const response = await axios.post("http://localhost:3004/relay", msg);
       console.log(response);
-      const msg: RelayResponse = response.data;
-      if (msg.status === "success" && msg.txHash) {
+      const relayResponse: RelayResponse = response.data;
+
+      if (relayResponse.status === "success" && relayResponse.txHash) {
         setActiveStep(3);
-        setTxHash(msg.txHash);
-        console.log("Relay Response", msg);
+        setTxHash(relayResponse.txHash);
+        addTransaction({
+          status: "completed",
+          date: new Date().toLocaleString(),
+          amount: Number(amount.toString()),
+          contractId: recieveContractId,
+          txHash: relayResponse.txHash,
+          hashLockTimestamp: Math.floor(Date.now() / 1000),
+          lnInvoice: invoice,
+          type: "recieve",
+        });
+        console.log("Relay Response", relayResponse);
+        return true; // Successfully relayed
       } else {
         toastError("Failed to relay contract and preimage");
+        return false; // Failed to relay
       }
-    });
-
-    return;
+    } catch (error) {
+      console.error("Error in relaying contract and preimage:", error);
+      toastError("Failed to relay contract and preimage");
+      return false; // Error occurred
+    }
   }
 
   const { data: htlcContract } = useScaffoldContract({
@@ -94,12 +112,6 @@ function RecieveModal({ isOpen, onClose }: RecieveModalProps) {
     const maxRetries = 3; // Maximum number of retries
 
     const fetchContractDetails = async (retries = maxRetries) => {
-      relayContractAndPreimage();
-      if (retryDelay > 0) {
-        return;
-      }
-      // send a request to the relayer to get the contract details
-
       if (recieveContractId === "" || !htlcContract || !hashLock) {
         return;
       }
@@ -124,12 +136,21 @@ function RecieveModal({ isOpen, onClose }: RecieveModalProps) {
           return;
         }
 
-        const secret = `0x${hashLock.secret}`;
-        console.log("Withdrawing contract", recieveContractId, secret);
+        // Try to relay the contract and preimage
+        const success = await relayContractAndPreimageSuccess();
+        if (success) {
+          console.log("Relay successful, no further actions needed.");
+          return; // Early return to stop execution since relay was successful
+        }
+
+        // If the relay fails, try to withdraw the contract directly
+        const secret0x = `0x${hashLock.secret}`;
+        console.log("Withdrawing contract", recieveContractId, secret0x);
         const txHash = await htlcContract.write.withdraw([
           `${recieveContractId}` as `0x${string}`,
-          secret as `0x${string}`,
+          secret0x as `0x${string}`,
         ]);
+
         await waitForTransaction({ hash: txHash });
         setTxHash(txHash);
         setActiveStep(3);

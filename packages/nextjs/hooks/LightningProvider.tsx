@@ -22,6 +22,7 @@ export type HistoricalTransaction = {
   txHash: string;
   hashLockTimestamp: number;
   lnInvoice: string;
+  type: "send" | "recieve";
 };
 
 export type LightningAppContextType = {
@@ -56,7 +57,6 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
     transactionRef.current = transactions;
     setTransactionsState(transactions);
   };
-  console.log(process.env.WEBSOCKET_URL ?? "ws://localhost:3003");
   const {
     sendMessage,
     isWebSocketConnected,
@@ -116,6 +116,7 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
       contractId,
       hashLockTimestamp: lastTransaction.hashLockTimestamp,
       lnInvoice,
+      type: "send",
     });
   }, [invoiceContractIdPair]);
 
@@ -133,6 +134,7 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
         contractId: lastTransaction.contractId,
         hashLockTimestamp: lastTransaction.hashLockTimestamp,
         lnInvoice: lastTransaction.lnInvoice,
+        type: "send",
       });
       toastSuccess("Payment successful");
     } else {
@@ -145,6 +147,7 @@ export const LightningProvider = ({ children }: { children: React.ReactNode }) =
         contractId: lastTransaction.contractId,
         hashLockTimestamp: lastTransaction.hashLockTimestamp,
         lnInvoice: lastTransaction.lnInvoice,
+        type: "send",
       });
     }
   }, [data]);
