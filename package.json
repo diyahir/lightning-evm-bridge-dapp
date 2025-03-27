@@ -23,6 +23,7 @@
     "next:lint": "yarn workspace @lightning-evm-bridge/nextjs lint",
     "precommit": "lint-staged",
     "prepare": "install-self-peers -- --ignore-scripts",
+    "relayer": "yarn workspace @lightning-evm-bridge/relay-server start",
     "server": "yarn workspace @lightning-evm-bridge/server start",
     "start": "yarn workspace @lightning-evm-bridge/nextjs dev",
     "test": "yarn foundry:test",

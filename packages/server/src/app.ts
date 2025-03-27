@@ -2,7 +2,6 @@ import * as WebSocket from "ws";
 import dotenv from "dotenv";
 import { ethers } from "ethers";
 import { v4 as uuidv4 } from "uuid";
-
 import { match } from "ts-pattern";
 import {
   ClientRequest,
@@ -54,6 +53,7 @@ const htlcContract = new ethers.Contract(
   htlcContractInfo.abi,
   signer
 );
+
 const serverStatus: ServerStatus = process.env.LND_MACAROON
   ? ServerStatus.ACTIVE
   : ServerStatus.MOCK;

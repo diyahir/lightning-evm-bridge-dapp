@@ -29,57 +29,47 @@ contract HashedTimelock {
         bytes32 preimage;
     }
 
-    uint256 constant WITHDRAW_GAS_COST = 120_000;
+    uint256 constant WITHDRAW_GAS_COST = 140_000;
 
     mapping(bytes32 => LockContract) contracts;
+    mapping(bytes32 => bool) usedHashlocks;
+
+    modifier uniqueHashlock(bytes32 _hashlock) {
+        require(!usedHashlocks[_hashlock], "hashlock already used");
+        _;
+    }
 
     modifier fundsSent() {
-        if (msg.value <= 0) revert("msg.value must be > 0");
+        require(msg.value > 0, "msg.value must be > 0");
         _;
     }
 
     modifier futureTimelock(uint256 _time) {
-        if (_time <= block.timestamp) {
-            revert("timelock time must be in the future");
-        }
+        require(_time > block.timestamp, "timelock time must be in the future");
         _;
     }
 
     modifier contractExists(bytes32 _contractId) {
-        if (!haveContract(_contractId)) revert("contractId does not exist");
+        require(haveContract(_contractId), "contractId does not exist");
         _;
     }
 
     modifier hashlockMatches(bytes32 _contractId, bytes32 _x) {
-        if (contracts[_contractId].hashlock != sha256(abi.encodePacked(_x))) {
-            revert("hashlock hash does not match");
-        }
+        require(contracts[_contractId].hashlock == sha256(abi.encodePacked(_x)), "hashlock hash does not match");
         _;
     }
 
     modifier withdrawable(bytes32 _contractId) {
-        if (contracts[_contractId].withdrawn) {
-            revert("withdrawable: already withdrawn");
-        }
-        if (contracts[_contractId].timelock <= block.timestamp) {
-            revert("withdrawable: timelock time must be in the future");
-        }
+        require(!contracts[_contractId].withdrawn, "withdrawable: already withdrawn");
+        require(contracts[_contractId].timelock > block.timestamp, "withdrawable: timelock time must be in the future");
         _;
     }
 
     modifier refundable(bytes32 _contractId) {
-        if (contracts[_contractId].sender != msg.sender) {
-            revert("refundable: not sender");
-        }
-        if (contracts[_contractId].refunded) {
-            revert("refundable: already refunded");
-        }
-        if (contracts[_contractId].withdrawn) {
-            revert("refundable: already withdrawn");
-        }
-        if (contracts[_contractId].timelock > block.timestamp) {
-            revert("refundable: timelock not yet passed");
-        }
+        require(contracts[_contractId].sender == msg.sender, "refundable: not sender");
+        require(!contracts[_contractId].refunded, "refundable: already refunded");
+        require(!contracts[_contractId].withdrawn, "refundable: already withdrawn");
+        require(contracts[_contractId].timelock <= block.timestamp, "refundable: timelock not yet passed");
         _;
     }
 
@@ -88,12 +78,14 @@ contract HashedTimelock {
         payable
         fundsSent
         futureTimelock(_timelock)
+        uniqueHashlock(_hashlock)
         returns (bytes32 contractId)
     {
         contractId = sha256(abi.encodePacked(msg.sender, _receiver, msg.value, _hashlock, _timelock));
 
-        if (haveContract(contractId)) revert("Contract already exists");
+        require(!haveContract(contractId), "Contract already exists");
 
+        usedHashlocks[_hashlock] = true;
         contracts[contractId] =
             LockContract(payable(msg.sender), _receiver, msg.value, _hashlock, _timelock, false, false, 0x0);
 
@@ -126,7 +118,7 @@ contract HashedTimelock {
         c.preimage = _preimage;
         c.withdrawn = true;
         uint256 bounty = calculateBounty();
-        if (c.amount < bounty) revert("Bounty is greater than the amount");
+        require(c.amount >= bounty, "Bounty is greater than the amount");
         c.receiver.transfer(c.amount - bounty);
         payable(msg.sender).transfer(bounty);
         emit LogHTLCWithdraw(_contractId);

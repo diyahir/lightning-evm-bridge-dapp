@@ -147,4 +147,15 @@ contract HashedTimelockTest is Test {
         bool success = htlc.withdraw(contractId, preImage);
         assertTrue(success);
     }
+
+    function testHashlockReuse() public {
+        // Create first contract with the hashlock
+        htlc.newContract{value: amount}(receiver, hashlock, timelock);
+        vm.stopPrank();
+
+        // Try to create another contract with the same hashlock
+        vm.startPrank(sender);
+        vm.expectRevert();
+        htlc.newContract{value: amount}(receiver, hashlock, timelock + 1);
+    }
 }
